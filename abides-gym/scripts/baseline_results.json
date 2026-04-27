@@ -1,0 +1,4916 @@
+{
+  "HOLD": {
+    "summary": {
+      "n_episodes": 50,
+      "total_reward": {
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "p5": 0.0,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p95": 0.0
+      },
+      "final_pnl_cents": {
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "p5": 0.0,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p95": 0.0
+      },
+      "episode_length": {
+        "mean": 386.0,
+        "std": 0.0,
+        "min": 386.0,
+        "max": 386.0,
+        "p5": 386.0,
+        "p25": 386.0,
+        "p50": 386.0,
+        "p75": 386.0,
+        "p95": 386.0
+      },
+      "max_drawdown": {
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "p5": 0.0,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p95": 0.0
+      },
+      "transaction_cost": {
+        "mean": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0,
+        "p5": 0.0,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p95": 0.0
+      },
+      "sharpe": 0.0,
+      "win_rate": 1.0,
+      "action_pct": {
+        "BUY": 0.0,
+        "HOLD": 1.0,
+        "SELL": 0.0
+      }
+    },
+    "episodes": [
+      {
+        "seed": 0,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 1,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 2,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 3,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 4,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 5,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 6,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 7,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 8,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 9,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 10,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 11,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 12,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 13,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 14,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 15,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 16,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 17,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 18,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 19,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 20,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 21,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 22,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 23,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 24,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 25,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 26,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 27,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 28,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 29,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 30,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 31,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 32,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 33,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 34,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 35,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 36,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 37,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 38,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 39,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 40,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 41,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 42,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 43,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 44,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 45,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 46,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 47,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 48,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 49,
+        "total_reward": 0.0,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 0.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 0,
+          "HOLD": 386,
+          "SELL": 0
+        }
+      }
+    ]
+  },
+  "BUY_HOLD": {
+    "summary": {
+      "n_episodes": 50,
+      "total_reward": {
+        "mean": 0.016153846153846328,
+        "std": 2.6474904629628586,
+        "min": -6.153846153846153,
+        "max": 5.379487179487178,
+        "p5": -4.5643589743589725,
+        "p25": -1.0955128205128206,
+        "p50": -0.4519230769230773,
+        "p75": 1.8583333333333332,
+        "p95": 4.382692307692309
+      },
+      "final_pnl_cents": {
+        "mean": -643.2,
+        "std": 7336.967343528249,
+        "min": -14780.0,
+        "max": 21970.0,
+        "p5": -12824.0,
+        "p25": -5100.0,
+        "p50": -900.0,
+        "p75": 4092.5,
+        "p95": 8755.999999999996
+      },
+      "episode_length": {
+        "mean": 386.0,
+        "std": 0.0,
+        "min": 386.0,
+        "max": 386.0,
+        "p5": 386.0,
+        "p25": 386.0,
+        "p50": 386.0,
+        "p75": 386.0,
+        "p95": 386.0
+      },
+      "max_drawdown": {
+        "mean": 0.008525212383850782,
+        "std": 0.0035437938013946012,
+        "min": 0.0,
+        "max": 0.017885512734684906,
+        "p5": 0.004155757609092743,
+        "p25": 0.006062197934163885,
+        "p50": 0.00784446877771416,
+        "p75": 0.010354950475534664,
+        "p95": 0.015362980594967079
+      },
+      "transaction_cost": {
+        "mean": 1.25,
+        "std": 1.63783393541592,
+        "min": 0.5,
+        "max": 8.0,
+        "p5": 0.5,
+        "p25": 0.5,
+        "p50": 0.5,
+        "p75": 1.0,
+        "p95": 4.049999999999997
+      },
+      "sharpe": -0.08766564847359587,
+      "win_rate": 0.46,
+      "action_pct": {
+        "BUY": 0.0026,
+        "HOLD": 0.9974,
+        "SELL": 0.0
+      }
+    },
+    "episodes": [
+      {
+        "seed": 0,
+        "total_reward": -0.7948717948717967,
+        "final_m2m": 996900.0,
+        "final_pnl": -3100.0,
+        "episode_length": 386,
+        "max_drawdown": 0.00908,
+        "transaction_cost": 3.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 1,
+        "total_reward": 2.6051282051282048,
+        "final_m2m": 1007060.0,
+        "final_pnl": 7060.0,
+        "episode_length": 386,
+        "max_drawdown": 0.004822420301598909,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 2,
+        "total_reward": -0.4948717948717952,
+        "final_m2m": 1005130.0,
+        "final_pnl": 5130.0,
+        "episode_length": 386,
+        "max_drawdown": 0.004168283244297212,
+        "transaction_cost": 1.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 3,
+        "total_reward": -0.09641025641025577,
+        "final_m2m": 1004754.0,
+        "final_pnl": 4754.0,
+        "episode_length": 386,
+        "max_drawdown": 0.005886372102381043,
+        "transaction_cost": 8.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 4,
+        "total_reward": -2.2189743589743594,
+        "final_m2m": 996100.0,
+        "final_pnl": -3900.0,
+        "episode_length": 386,
+        "max_drawdown": 0.008824176043811085,
+        "transaction_cost": 1.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 5,
+        "total_reward": -0.46538461538461606,
+        "final_m2m": 994285.0,
+        "final_pnl": -5715.0,
+        "episode_length": 386,
+        "max_drawdown": 0.01251527012540201,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 6,
+        "total_reward": -0.46282051282051284,
+        "final_m2m": 992480.0,
+        "final_pnl": -7520.0,
+        "episode_length": 386,
+        "max_drawdown": 0.008349582520873956,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 7,
+        "total_reward": 1.9282051282051282,
+        "final_m2m": 1000000.0,
+        "final_pnl": 0.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0,
+        "transaction_cost": 3.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 8,
+        "total_reward": -0.47692307692307656,
+        "final_m2m": 998140.0,
+        "final_pnl": -1860.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0076192183578343495,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 9,
+        "total_reward": -0.8153846153846162,
+        "final_m2m": 994960.0,
+        "final_pnl": -5040.0,
+        "episode_length": 386,
+        "max_drawdown": 0.011499760421657882,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 10,
+        "total_reward": 1.9669230769230768,
+        "final_m2m": 1002631.0,
+        "final_pnl": 2631.0,
+        "episode_length": 386,
+        "max_drawdown": 0.006467035556738023,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 11,
+        "total_reward": -2.6335897435897437,
+        "final_m2m": 992360.0,
+        "final_pnl": -7640.0,
+        "episode_length": 386,
+        "max_drawdown": 0.009771824406603718,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 12,
+        "total_reward": 4.33333333333334,
+        "final_m2m": 1009260.0,
+        "final_pnl": 9260.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0065030626044069685,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 13,
+        "total_reward": -3.892307692307691,
+        "final_m2m": 994080.0,
+        "final_pnl": -5920.0,
+        "episode_length": 386,
+        "max_drawdown": 0.011348311239423394,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 14,
+        "total_reward": 1.1076923076923084,
+        "final_m2m": 998400.0,
+        "final_pnl": -1600.0,
+        "episode_length": 386,
+        "max_drawdown": 0.012929662635264162,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 15,
+        "total_reward": -0.5051282051282067,
+        "final_m2m": 996430.0,
+        "final_pnl": -3570.0,
+        "episode_length": 386,
+        "max_drawdown": 0.008486435697007256,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 16,
+        "total_reward": 1.6487179487179482,
+        "final_m2m": 1002860.0,
+        "final_pnl": 2860.0,
+        "episode_length": 386,
+        "max_drawdown": 0.005939842868694532,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 17,
+        "total_reward": -4.010256410256411,
+        "final_m2m": 987220.0,
+        "final_pnl": -12780.0,
+        "episode_length": 386,
+        "max_drawdown": 0.01681777423532928,
+        "transaction_cost": 1.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 18,
+        "total_reward": 4.423076923076922,
+        "final_m2m": 1004470.0,
+        "final_pnl": 4470.0,
+        "episode_length": 386,
+        "max_drawdown": 0.008069719197593974,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 19,
+        "total_reward": 0.6358974358974376,
+        "final_m2m": 1006950.0,
+        "final_pnl": 6950.0,
+        "episode_length": 386,
+        "max_drawdown": 0.00521,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 20,
+        "total_reward": -0.48205128205128306,
+        "final_m2m": 1005070.0,
+        "final_pnl": 5070.0,
+        "episode_length": 386,
+        "max_drawdown": 0.005385942986371481,
+        "transaction_cost": 3.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 21,
+        "total_reward": -0.6435897435897447,
+        "final_m2m": 1002560.0,
+        "final_pnl": 2560.0,
+        "episode_length": 386,
+        "max_drawdown": 0.006808459958117054,
+        "transaction_cost": 1.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 22,
+        "total_reward": -0.943589743589744,
+        "final_m2m": 998880.0,
+        "final_pnl": -1120.0,
+        "episode_length": 386,
+        "max_drawdown": 0.007377866400797607,
+        "transaction_cost": 4.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 23,
+        "total_reward": -2.2846153846153854,
+        "final_m2m": 989970.0,
+        "final_pnl": -10030.0,
+        "episode_length": 386,
+        "max_drawdown": 0.012551007173429378,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 24,
+        "total_reward": 3.6897435897435895,
+        "final_m2m": 1004360.0,
+        "final_pnl": 4360.0,
+        "episode_length": 386,
+        "max_drawdown": 0.005886821116597038,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 25,
+        "total_reward": 0.05128205128205132,
+        "final_m2m": 1004560.0,
+        "final_pnl": 4560.0,
+        "episode_length": 386,
+        "max_drawdown": 0.007558133730043831,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 26,
+        "total_reward": -4.958974358974357,
+        "final_m2m": 985220.0,
+        "final_pnl": -14780.0,
+        "episode_length": 386,
+        "max_drawdown": 0.017885512734684906,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 27,
+        "total_reward": 1.6384615384615384,
+        "final_m2m": 991610.0,
+        "final_pnl": -8390.0,
+        "episode_length": 386,
+        "max_drawdown": 0.008439578021098945,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 28,
+        "total_reward": -1.1461538461538463,
+        "final_m2m": 987140.0,
+        "final_pnl": -12860.0,
+        "episode_length": 386,
+        "max_drawdown": 0.013611152750712037,
+        "transaction_cost": 1.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 29,
+        "total_reward": 1.323076923076921,
+        "final_m2m": 992300.0,
+        "final_pnl": -7700.0,
+        "episode_length": 386,
+        "max_drawdown": 0.011881286724429837,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 30,
+        "total_reward": 2.625641025641029,
+        "final_m2m": 1002540.0,
+        "final_pnl": 2540.0,
+        "episode_length": 386,
+        "max_drawdown": 0.007252335707845799,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 31,
+        "total_reward": 0.192307692307693,
+        "final_m2m": 1003290.0,
+        "final_pnl": 3290.0,
+        "episode_length": 386,
+        "max_drawdown": 0.009615004154631426,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 32,
+        "total_reward": -0.853846153846154,
+        "final_m2m": 999960.0,
+        "final_pnl": -40.0,
+        "episode_length": 386,
+        "max_drawdown": 0.011580374729048925,
+        "transaction_cost": 1.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 33,
+        "total_reward": -0.16410256410256352,
+        "final_m2m": 999320.0,
+        "final_pnl": -680.0,
+        "episode_length": 386,
+        "max_drawdown": 0.009636069831765324,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 34,
+        "total_reward": -0.5846153846153851,
+        "final_m2m": 997040.0,
+        "final_pnl": -2960.0,
+        "episode_length": 386,
+        "max_drawdown": 0.00933814056148691,
+        "transaction_cost": 1.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 35,
+        "total_reward": -0.4410256410256418,
+        "final_m2m": 995320.0,
+        "final_pnl": -4680.0,
+        "episode_length": 386,
+        "max_drawdown": 0.009949801902138658,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 36,
+        "total_reward": 0.18205128205128418,
+        "final_m2m": 996030.0,
+        "final_pnl": -3970.0,
+        "episode_length": 386,
+        "max_drawdown": 0.006429263130571945,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 37,
+        "total_reward": 1.456410256410257,
+        "final_m2m": 1001710.0,
+        "final_pnl": 1710.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0056,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 38,
+        "total_reward": -4.08205128205128,
+        "final_m2m": 985790.0,
+        "final_pnl": -14210.0,
+        "episode_length": 386,
+        "max_drawdown": 0.016530986870984477,
+        "transaction_cost": 3.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 39,
+        "total_reward": 2.9307692307692332,
+        "final_m2m": 997220.0,
+        "final_pnl": -2780.0,
+        "episode_length": 386,
+        "max_drawdown": 0.007361302292177868,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 40,
+        "total_reward": -1.8461538461538451,
+        "final_m2m": 990020.0,
+        "final_pnl": -9980.0,
+        "episode_length": 386,
+        "max_drawdown": 0.01049,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 41,
+        "total_reward": 4.646153846153842,
+        "final_m2m": 1008140.0,
+        "final_pnl": 8140.0,
+        "episode_length": 386,
+        "max_drawdown": 0.004145509362107267,
+        "transaction_cost": 1.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 42,
+        "total_reward": -1.8333333333333326,
+        "final_m2m": 1000990.0,
+        "final_pnl": 990.0,
+        "episode_length": 386,
+        "max_drawdown": 0.007041833263710688,
+        "transaction_cost": 3.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 43,
+        "total_reward": 5.379487179487178,
+        "final_m2m": 1021970.0,
+        "final_pnl": 21970.0,
+        "episode_length": 386,
+        "max_drawdown": 0.003315026470733759,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 44,
+        "total_reward": -6.153846153846153,
+        "final_m2m": 997970.0,
+        "final_pnl": -2030.0,
+        "episode_length": 386,
+        "max_drawdown": 0.008120142326117638,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 45,
+        "total_reward": 2.42820512820513,
+        "final_m2m": 1007440.0,
+        "final_pnl": 7440.0,
+        "episode_length": 386,
+        "max_drawdown": 0.00664622181025727,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 46,
+        "total_reward": -1.635897435897434,
+        "final_m2m": 1001060.0,
+        "final_pnl": 1060.0,
+        "episode_length": 386,
+        "max_drawdown": 0.006848771191487672,
+        "transaction_cost": 2.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 47,
+        "total_reward": 4.307692307692306,
+        "final_m2m": 1017860.0,
+        "final_pnl": 17860.0,
+        "episode_length": 386,
+        "max_drawdown": 0.005146803119876794,
+        "transaction_cost": 0.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 48,
+        "total_reward": -5.892307692307693,
+        "final_m2m": 994880.0,
+        "final_pnl": -5120.0,
+        "episode_length": 386,
+        "max_drawdown": 0.013935417368723611,
+        "transaction_cost": 0.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      },
+      {
+        "seed": 49,
+        "total_reward": 2.1205128205128227,
+        "final_m2m": 1003150.0,
+        "final_pnl": 3150.0,
+        "episode_length": 386,
+        "max_drawdown": 0.005583101943673146,
+        "transaction_cost": 7.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 1,
+          "HOLD": 385,
+          "SELL": 0
+        }
+      }
+    ]
+  },
+  "RANDOM": {
+    "summary": {
+      "n_episodes": 50,
+      "total_reward": {
+        "mean": -0.2699743589743562,
+        "std": 23.50352876519126,
+        "min": -47.67512820512817,
+        "max": 61.282051282051306,
+        "p5": -40.9546923076923,
+        "p25": -17.205641025640993,
+        "p50": 1.9676923076923083,
+        "p75": 14.835384615384616,
+        "p95": 33.586602564102535
+      },
+      "final_pnl_cents": {
+        "mean": 6033.86,
+        "std": 63751.45013190209,
+        "min": -145989.0,
+        "max": 151143.0,
+        "p5": -107094.15,
+        "p25": -33399.0,
+        "p50": 9994.5,
+        "p75": 40550.5,
+        "p95": 116063.49999999999
+      },
+      "episode_length": {
+        "mean": 386.0,
+        "std": 0.0,
+        "min": 386.0,
+        "max": 386.0,
+        "p5": 386.0,
+        "p25": 386.0,
+        "p50": 386.0,
+        "p75": 386.0,
+        "p95": 386.0
+      },
+      "max_drawdown": {
+        "mean": 0.07194974914393545,
+        "std": 0.04380903327042668,
+        "min": 0.008004969792024174,
+        "max": 0.19475984751230513,
+        "p5": 0.019640213729136286,
+        "p25": 0.037958548333509826,
+        "p50": 0.061322961370693006,
+        "p75": 0.09960899853878628,
+        "p95": 0.1570879913237459
+      },
+      "transaction_cost": {
+        "mean": 351.8,
+        "std": 138.54750087966218,
+        "min": 227.0,
+        "max": 826.5,
+        "p5": 228.725,
+        "p25": 251.75,
+        "p50": 292.0,
+        "p75": 402.875,
+        "p95": 599.25
+      },
+      "sharpe": 0.09464663137098703,
+      "win_rate": 0.58,
+      "action_pct": {
+        "BUY": 0.3317,
+        "HOLD": 0.3351,
+        "SELL": 0.3332
+      }
+    },
+    "episodes": [
+      {
+        "seed": 0,
+        "total_reward": 13.265128205128205,
+        "final_m2m": 1054884.0,
+        "final_pnl": 54884.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04594,
+        "transaction_cost": 259.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 136,
+          "HOLD": 130,
+          "SELL": 120
+        }
+      },
+      {
+        "seed": 1,
+        "total_reward": -11.72410256410257,
+        "final_m2m": 1009160.0,
+        "final_pnl": 9160.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06203070508699125,
+        "transaction_cost": 248.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 126,
+          "HOLD": 127,
+          "SELL": 133
+        }
+      },
+      {
+        "seed": 2,
+        "total_reward": 1.2297435897435895,
+        "final_m2m": 1013956.0,
+        "final_pnl": 13956.0,
+        "episode_length": 386,
+        "max_drawdown": 0.037626,
+        "transaction_cost": 482.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 124,
+          "HOLD": 139,
+          "SELL": 123
+        }
+      },
+      {
+        "seed": 3,
+        "total_reward": 6.002820512820509,
+        "final_m2m": 1037367.0,
+        "final_pnl": 37367.0,
+        "episode_length": 386,
+        "max_drawdown": 0.09892462649330126,
+        "transaction_cost": 319.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 145,
+          "HOLD": 129,
+          "SELL": 112
+        }
+      },
+      {
+        "seed": 4,
+        "total_reward": -19.691794871794865,
+        "final_m2m": 960569.0,
+        "final_pnl": -39431.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07681178924702241,
+        "transaction_cost": 242.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 121,
+          "HOLD": 129,
+          "SELL": 136
+        }
+      },
+      {
+        "seed": 5,
+        "total_reward": 14.413846153846158,
+        "final_m2m": 1016783.0,
+        "final_pnl": 16783.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0934327024234017,
+        "transaction_cost": 227.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 112,
+          "HOLD": 145,
+          "SELL": 129
+        }
+      },
+      {
+        "seed": 6,
+        "total_reward": 1.7851282051282076,
+        "final_m2m": 1023745.0,
+        "final_pnl": 23745.0,
+        "episode_length": 386,
+        "max_drawdown": 0.01383289744293689,
+        "transaction_cost": 251.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 123,
+          "HOLD": 120,
+          "SELL": 143
+        }
+      },
+      {
+        "seed": 7,
+        "total_reward": -25.44692307692305,
+        "final_m2m": 924502.0,
+        "final_pnl": -75498.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1432858341486525,
+        "transaction_cost": 601.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 129,
+          "HOLD": 127,
+          "SELL": 130
+        }
+      },
+      {
+        "seed": 8,
+        "total_reward": 19.777948717948693,
+        "final_m2m": 1001636.0,
+        "final_pnl": 1636.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06168628397778811,
+        "transaction_cost": 328.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 126,
+          "HOLD": 121,
+          "SELL": 139
+        }
+      },
+      {
+        "seed": 9,
+        "total_reward": -9.861282051282053,
+        "final_m2m": 963177.0,
+        "final_pnl": -36823.0,
+        "episode_length": 386,
+        "max_drawdown": 0.060959638763597904,
+        "transaction_cost": 826.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 120,
+          "HOLD": 141,
+          "SELL": 125
+        }
+      },
+      {
+        "seed": 10,
+        "total_reward": 14.975897435897435,
+        "final_m2m": 1021583.0,
+        "final_pnl": 21583.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1312178744967711,
+        "transaction_cost": 282.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 141,
+          "HOLD": 125,
+          "SELL": 120
+        }
+      },
+      {
+        "seed": 11,
+        "total_reward": -35.08641025641024,
+        "final_m2m": 884746.0,
+        "final_pnl": -115254.0,
+        "episode_length": 386,
+        "max_drawdown": 0.11804172617323652,
+        "transaction_cost": 567.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 131,
+          "HOLD": 135,
+          "SELL": 120
+        }
+      },
+      {
+        "seed": 12,
+        "total_reward": 33.33205128205123,
+        "final_m2m": 1014741.0,
+        "final_pnl": 14741.0,
+        "episode_length": 386,
+        "max_drawdown": 0.02041172744369434,
+        "transaction_cost": 473.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 149,
+          "HOLD": 117,
+          "SELL": 120
+        }
+      },
+      {
+        "seed": 13,
+        "total_reward": 7.312307692307696,
+        "final_m2m": 1043259.0,
+        "final_pnl": 43259.0,
+        "episode_length": 386,
+        "max_drawdown": 0.09983712255394796,
+        "transaction_cost": 403.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 119,
+          "HOLD": 133,
+          "SELL": 134
+        }
+      },
+      {
+        "seed": 14,
+        "total_reward": -3.8846153846153717,
+        "final_m2m": 1028109.0,
+        "final_pnl": 28109.0,
+        "episode_length": 386,
+        "max_drawdown": 0.10512511064424802,
+        "transaction_cost": 386.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 135,
+          "HOLD": 136,
+          "SELL": 115
+        }
+      },
+      {
+        "seed": 15,
+        "total_reward": 30.54820512820512,
+        "final_m2m": 1147247.0,
+        "final_pnl": 147247.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05933388206475293,
+        "transaction_cost": 266.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 136,
+          "HOLD": 146,
+          "SELL": 104
+        }
+      },
+      {
+        "seed": 16,
+        "total_reward": -45.65256410256402,
+        "final_m2m": 969202.0,
+        "final_pnl": -30798.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0550584948904142,
+        "transaction_cost": 229.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 124,
+          "HOLD": 145,
+          "SELL": 117
+        }
+      },
+      {
+        "seed": 17,
+        "total_reward": 46.65153846153845,
+        "final_m2m": 1151143.0,
+        "final_pnl": 151143.0,
+        "episode_length": 386,
+        "max_drawdown": 0.049375470875133824,
+        "transaction_cost": 401.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 132,
+          "HOLD": 125,
+          "SELL": 129
+        }
+      },
+      {
+        "seed": 18,
+        "total_reward": -47.67512820512817,
+        "final_m2m": 965210.0,
+        "final_pnl": -34790.0,
+        "episode_length": 386,
+        "max_drawdown": 0.19475984751230513,
+        "transaction_cost": 287.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 136,
+          "HOLD": 138,
+          "SELL": 112
+        }
+      },
+      {
+        "seed": 19,
+        "total_reward": -7.5730769230769255,
+        "final_m2m": 935675.0,
+        "final_pnl": -64325.0,
+        "episode_length": 386,
+        "max_drawdown": 0.10823786776627513,
+        "transaction_cost": 285.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 113,
+          "HOLD": 140,
+          "SELL": 133
+        }
+      },
+      {
+        "seed": 20,
+        "total_reward": 7.70743589743588,
+        "final_m2m": 965734.0,
+        "final_pnl": -34266.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05190687794757196,
+        "transaction_cost": 274.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 127,
+          "HOLD": 133,
+          "SELL": 126
+        }
+      },
+      {
+        "seed": 21,
+        "total_reward": 9.298461538461545,
+        "final_m2m": 1001998.0,
+        "final_pnl": 1998.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05789506944485587,
+        "transaction_cost": 341.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 124,
+          "HOLD": 129,
+          "SELL": 133
+        }
+      },
+      {
+        "seed": 22,
+        "total_reward": -8.141282051282055,
+        "final_m2m": 970247.0,
+        "final_pnl": -29753.0,
+        "episode_length": 386,
+        "max_drawdown": 0.036244912563173665,
+        "transaction_cost": 301.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 131,
+          "HOLD": 132,
+          "SELL": 123
+        }
+      },
+      {
+        "seed": 23,
+        "total_reward": -20.088717948717946,
+        "final_m2m": 891901.0,
+        "final_pnl": -108099.0,
+        "episode_length": 386,
+        "max_drawdown": 0.12805954183993437,
+        "transaction_cost": 525.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 137,
+          "HOLD": 125,
+          "SELL": 124
+        }
+      },
+      {
+        "seed": 24,
+        "total_reward": 21.661794871794864,
+        "final_m2m": 976382.0,
+        "final_pnl": -23618.0,
+        "episode_length": 386,
+        "max_drawdown": 0.03710531093328864,
+        "transaction_cost": 292.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 132,
+          "HOLD": 130,
+          "SELL": 124
+        }
+      },
+      {
+        "seed": 25,
+        "total_reward": 8.19461538461539,
+        "final_m2m": 1008341.0,
+        "final_pnl": 8341.0,
+        "episode_length": 386,
+        "max_drawdown": 0.026706822408465898,
+        "transaction_cost": 331.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 128,
+          "HOLD": 124,
+          "SELL": 134
+        }
+      },
+      {
+        "seed": 26,
+        "total_reward": -39.57179487179488,
+        "final_m2m": 854011.0,
+        "final_pnl": -145989.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1768925494733672,
+        "transaction_cost": 293.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 134,
+          "HOLD": 123,
+          "SELL": 129
+        }
+      },
+      {
+        "seed": 27,
+        "total_reward": 61.282051282051306,
+        "final_m2m": 1093011.0,
+        "final_pnl": 93011.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0244916558038015,
+        "transaction_cost": 296.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 122,
+          "HOLD": 138,
+          "SELL": 126
+        }
+      },
+      {
+        "seed": 28,
+        "total_reward": 5.432820512820515,
+        "final_m2m": 1114199.0,
+        "final_pnl": 114199.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0901354996638746,
+        "transaction_cost": 272.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 111,
+          "HOLD": 141,
+          "SELL": 134
+        }
+      },
+      {
+        "seed": 29,
+        "total_reward": -19.002307692307713,
+        "final_m2m": 1040090.0,
+        "final_pnl": 40090.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05050047347083716,
+        "transaction_cost": 227.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 108,
+          "HOLD": 150,
+          "SELL": 128
+        }
+      },
+      {
+        "seed": 30,
+        "total_reward": 3.4751282051282106,
+        "final_m2m": 1053643.0,
+        "final_pnl": 53643.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07579628139037412,
+        "transaction_cost": 316.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 135,
+          "HOLD": 99,
+          "SELL": 152
+        }
+      },
+      {
+        "seed": 31,
+        "total_reward": -6.758205128205147,
+        "final_m2m": 1027286.0,
+        "final_pnl": 27286.0,
+        "episode_length": 386,
+        "max_drawdown": 0.078952,
+        "transaction_cost": 497.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 130,
+          "HOLD": 127,
+          "SELL": 129
+        }
+      },
+      {
+        "seed": 32,
+        "total_reward": -34.141538461538474,
+        "final_m2m": 894134.0,
+        "final_pnl": -105866.0,
+        "episode_length": 386,
+        "max_drawdown": 0.16838066537609517,
+        "transaction_cost": 231.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 117,
+          "HOLD": 149,
+          "SELL": 120
+        }
+      },
+      {
+        "seed": 33,
+        "total_reward": 24.476666666666684,
+        "final_m2m": 989593.0,
+        "final_pnl": -10407.0,
+        "episode_length": 386,
+        "max_drawdown": 0.03895619333403931,
+        "transaction_cost": 364.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 126,
+          "HOLD": 127,
+          "SELL": 133
+        }
+      },
+      {
+        "seed": 34,
+        "total_reward": 24.25000000000003,
+        "final_m2m": 1084168.0,
+        "final_pnl": 84168.0,
+        "episode_length": 386,
+        "max_drawdown": 0.029732168588747207,
+        "transaction_cost": 559.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 130,
+          "HOLD": 123,
+          "SELL": 133
+        }
+      },
+      {
+        "seed": 35,
+        "total_reward": -42.08615384615382,
+        "final_m2m": 920032.0,
+        "final_pnl": -79968.0,
+        "episode_length": 386,
+        "max_drawdown": 0.10470462456246553,
+        "transaction_cost": 277.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 145,
+          "HOLD": 119,
+          "SELL": 122
+        }
+      },
+      {
+        "seed": 36,
+        "total_reward": 15.467692307692282,
+        "final_m2m": 980356.0,
+        "final_pnl": -19644.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07015539944166431,
+        "transaction_cost": 243.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 143,
+          "HOLD": 113,
+          "SELL": 130
+        }
+      },
+      {
+        "seed": 37,
+        "total_reward": 2.150256410256409,
+        "final_m2m": 988742.0,
+        "final_pnl": -11258.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06289393697008479,
+        "transaction_cost": 252.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 118,
+          "HOLD": 125,
+          "SELL": 143
+        }
+      },
+      {
+        "seed": 38,
+        "total_reward": 24.6479487179487,
+        "final_m2m": 1084869.0,
+        "final_pnl": 84869.0,
+        "episode_length": 386,
+        "max_drawdown": 0.028616265840166345,
+        "transaction_cost": 291.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 141,
+          "HOLD": 109,
+          "SELL": 136
+        }
+      },
+      {
+        "seed": 39,
+        "total_reward": -7.064615384615391,
+        "final_m2m": 1057317.0,
+        "final_pnl": 57317.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05199150999363902,
+        "transaction_cost": 466.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 131,
+          "HOLD": 116,
+          "SELL": 139
+        }
+      },
+      {
+        "seed": 40,
+        "total_reward": -1.9312820512820454,
+        "final_m2m": 1049785.0,
+        "final_pnl": 49785.0,
+        "episode_length": 386,
+        "max_drawdown": 0.019008975235406973,
+        "transaction_cost": 596.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 126,
+          "HOLD": 123,
+          "SELL": 137
+        }
+      },
+      {
+        "seed": 41,
+        "total_reward": -9.988717948717944,
+        "final_m2m": 1010829.0,
+        "final_pnl": 10829.0,
+        "episode_length": 386,
+        "max_drawdown": 0.033183140251417304,
+        "transaction_cost": 245.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 130,
+          "HOLD": 126,
+          "SELL": 130
+        }
+      },
+      {
+        "seed": 42,
+        "total_reward": 7.660256410256407,
+        "final_m2m": 1040704.0,
+        "final_pnl": 40704.0,
+        "episode_length": 386,
+        "max_drawdown": 0.008004969792024174,
+        "transaction_cost": 283.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 120,
+          "HOLD": 138,
+          "SELL": 128
+        }
+      },
+      {
+        "seed": 43,
+        "total_reward": -17.811025641025598,
+        "final_m2m": 971241.0,
+        "final_pnl": -28759.0,
+        "episode_length": 386,
+        "max_drawdown": 0.051083120420721946,
+        "transaction_cost": 238.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 129,
+          "HOLD": 136,
+          "SELL": 121
+        }
+      },
+      {
+        "seed": 44,
+        "total_reward": 3.7302564102564104,
+        "final_m2m": 985789.0,
+        "final_pnl": -14211.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06291439674336917,
+        "transaction_cost": 245.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 138,
+          "HOLD": 125,
+          "SELL": 123
+        }
+      },
+      {
+        "seed": 45,
+        "total_reward": 33.79487179487179,
+        "final_m2m": 1117589.0,
+        "final_pnl": 117589.0,
+        "episode_length": 386,
+        "max_drawdown": 0.11367673532717344,
+        "transaction_cost": 701.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 113,
+          "HOLD": 120,
+          "SELL": 153
+        }
+      },
+      {
+        "seed": 46,
+        "total_reward": -25.598205128205088,
+        "final_m2m": 1017756.0,
+        "final_pnl": 17756.0,
+        "episode_length": 386,
+        "max_drawdown": 0.020443361857236594,
+        "transaction_cost": 256.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 132,
+          "HOLD": 126,
+          "SELL": 128
+        }
+      },
+      {
+        "seed": 47,
+        "total_reward": -15.389487179487181,
+        "final_m2m": 957737.0,
+        "final_pnl": -42263.0,
+        "episode_length": 386,
+        "max_drawdown": 0.13785330406755436,
+        "transaction_cost": 230.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 117,
+          "HOLD": 133,
+          "SELL": 136
+        }
+      },
+      {
+        "seed": 48,
+        "total_reward": 20.326410256410266,
+        "final_m2m": 1037010.0,
+        "final_pnl": 37010.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04328946449417798,
+        "transaction_cost": 228.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 121,
+          "HOLD": 132,
+          "SELL": 133
+        }
+      },
+      {
+        "seed": 49,
+        "total_reward": -22.180769230769236,
+        "final_m2m": 950505.0,
+        "final_pnl": -49495.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0819826279567735,
+        "transaction_cost": 543.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 128,
+          "HOLD": 128,
+          "SELL": 130
+        }
+      }
+    ]
+  },
+  "MOMENTUM": {
+    "summary": {
+      "n_episodes": 50,
+      "total_reward": {
+        "mean": 0.6550102564102509,
+        "std": 50.78673799446954,
+        "min": -123.13948717948708,
+        "max": 94.46897435897438,
+        "p5": -85.81005128205126,
+        "p25": -25.787756410256456,
+        "p50": 3.2406410256410325,
+        "p75": 27.255128205128205,
+        "p95": 89.88711538461544
+      },
+      "final_pnl_cents": {
+        "mean": 66171.66,
+        "std": 131290.7124278957,
+        "min": -312674.0,
+        "max": 294473.0,
+        "p5": -223578.25,
+        "p25": 24155.25,
+        "p50": 88312.5,
+        "p75": 153364.75,
+        "p95": 221603.2999999999
+      },
+      "episode_length": {
+        "mean": 386.0,
+        "std": 0.0,
+        "min": 386.0,
+        "max": 386.0,
+        "p5": 386.0,
+        "p25": 386.0,
+        "p50": 386.0,
+        "p75": 386.0,
+        "p95": 386.0
+      },
+      "max_drawdown": {
+        "mean": 0.12198153215588042,
+        "std": 0.10634644361616835,
+        "min": 0.01792888148732086,
+        "max": 0.5317805041445441,
+        "p5": 0.026496021511530812,
+        "p25": 0.05641694371836254,
+        "p50": 0.08684739371822263,
+        "p75": 0.14666097025267083,
+        "p95": 0.31887989708269643
+      },
+      "transaction_cost": {
+        "mean": 371.3,
+        "std": 147.18719373641173,
+        "min": 234.5,
+        "max": 758.0,
+        "p5": 239.025,
+        "p25": 264.0,
+        "p50": 301.0,
+        "p75": 437.125,
+        "p95": 676.7
+      },
+      "sharpe": 0.5040086901527113,
+      "win_rate": 0.82,
+      "action_pct": {
+        "BUY": 0.3487,
+        "HOLD": 0.3108,
+        "SELL": 0.3405
+      }
+    },
+    "episodes": [
+      {
+        "seed": 0,
+        "total_reward": 88.1969230769231,
+        "final_m2m": 1294473.0,
+        "final_pnl": 294473.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06152569839110299,
+        "transaction_cost": 263.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 155,
+          "HOLD": 116,
+          "SELL": 115
+        }
+      },
+      {
+        "seed": 1,
+        "total_reward": -66.07692307692307,
+        "final_m2m": 1036773.0,
+        "final_pnl": 36773.0,
+        "episode_length": 386,
+        "max_drawdown": 0.20888244230066533,
+        "transaction_cost": 270.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 100,
+          "HOLD": 119,
+          "SELL": 167
+        }
+      },
+      {
+        "seed": 2,
+        "total_reward": -9.34871794871795,
+        "final_m2m": 1000313.0,
+        "final_pnl": 313.0,
+        "episode_length": 386,
+        "max_drawdown": 0.02652550224588645,
+        "transaction_cost": 443.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 145,
+          "HOLD": 108,
+          "SELL": 133
+        }
+      },
+      {
+        "seed": 3,
+        "total_reward": 22.575897435897435,
+        "final_m2m": 1088359.0,
+        "final_pnl": 88359.0,
+        "episode_length": 386,
+        "max_drawdown": 0.056340551377020744,
+        "transaction_cost": 470.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 127,
+          "HOLD": 128,
+          "SELL": 131
+        }
+      },
+      {
+        "seed": 4,
+        "total_reward": 4.6351282051282165,
+        "final_m2m": 1106436.0,
+        "final_pnl": 106436.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08709124038070132,
+        "transaction_cost": 282.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 135,
+          "HOLD": 118,
+          "SELL": 133
+        }
+      },
+      {
+        "seed": 5,
+        "total_reward": -21.151794871794888,
+        "final_m2m": 1023944.0,
+        "final_pnl": 23944.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0812666459133202,
+        "transaction_cost": 312.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 144,
+          "HOLD": 125,
+          "SELL": 117
+        }
+      },
+      {
+        "seed": 6,
+        "total_reward": 16.75512820512821,
+        "final_m2m": 1089289.0,
+        "final_pnl": 89289.0,
+        "episode_length": 386,
+        "max_drawdown": 0.09148059529600985,
+        "transaction_cost": 236.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 132,
+          "HOLD": 128,
+          "SELL": 126
+        }
+      },
+      {
+        "seed": 7,
+        "total_reward": -19.999999999999975,
+        "final_m2m": 1011289.0,
+        "final_pnl": 11289.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05032559230088778,
+        "transaction_cost": 570.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 142,
+          "HOLD": 135,
+          "SELL": 109
+        }
+      },
+      {
+        "seed": 8,
+        "total_reward": 57.77435897435895,
+        "final_m2m": 1236609.0,
+        "final_pnl": 236609.0,
+        "episode_length": 386,
+        "max_drawdown": 0.09616292368572767,
+        "transaction_cost": 298.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 111,
+          "HOLD": 137,
+          "SELL": 138
+        }
+      },
+      {
+        "seed": 9,
+        "total_reward": -49.61769230769233,
+        "final_m2m": 1043100.0,
+        "final_pnl": 43100.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1028783842920313,
+        "transaction_cost": 449.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 153,
+          "HOLD": 106,
+          "SELL": 127
+        }
+      },
+      {
+        "seed": 10,
+        "total_reward": 41.0674358974359,
+        "final_m2m": 1203263.0,
+        "final_pnl": 203263.0,
+        "episode_length": 386,
+        "max_drawdown": 0.049532715452527985,
+        "transaction_cost": 261.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 130,
+          "HOLD": 117,
+          "SELL": 139
+        }
+      },
+      {
+        "seed": 11,
+        "total_reward": -104.9823076923078,
+        "final_m2m": 793832.0,
+        "final_pnl": -206168.0,
+        "episode_length": 386,
+        "max_drawdown": 0.23674634741857992,
+        "transaction_cost": 382.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 145,
+          "HOLD": 125,
+          "SELL": 116
+        }
+      },
+      {
+        "seed": 12,
+        "total_reward": 91.2700000000001,
+        "final_m2m": 1149785.0,
+        "final_pnl": 149785.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07539181538034134,
+        "transaction_cost": 716.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 160,
+          "HOLD": 97,
+          "SELL": 129
+        }
+      },
+      {
+        "seed": 13,
+        "total_reward": 12.291025641025636,
+        "final_m2m": 1197720.0,
+        "final_pnl": 197720.0,
+        "episode_length": 386,
+        "max_drawdown": 0.09377305650285933,
+        "transaction_cost": 530.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 146,
+          "HOLD": 117,
+          "SELL": 123
+        }
+      },
+      {
+        "seed": 14,
+        "total_reward": -42.55256410256425,
+        "final_m2m": 1031765.0,
+        "final_pnl": 31765.0,
+        "episode_length": 386,
+        "max_drawdown": 0.3124369311605447,
+        "transaction_cost": 501.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 139,
+          "HOLD": 130,
+          "SELL": 117
+        }
+      },
+      {
+        "seed": 15,
+        "total_reward": 66.38307692307693,
+        "final_m2m": 1290659.0,
+        "final_pnl": 290659.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08224746738540728,
+        "transaction_cost": 269.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 148,
+          "HOLD": 126,
+          "SELL": 112
+        }
+      },
+      {
+        "seed": 16,
+        "total_reward": -27.333076923076977,
+        "final_m2m": 1184060.0,
+        "final_pnl": 184060.0,
+        "episode_length": 386,
+        "max_drawdown": 0.01792888148732086,
+        "transaction_cost": 280.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 133,
+          "HOLD": 111,
+          "SELL": 142
+        }
+      },
+      {
+        "seed": 17,
+        "total_reward": -40.237948717948726,
+        "final_m2m": 1027132.0,
+        "final_pnl": 27132.0,
+        "episode_length": 386,
+        "max_drawdown": 0.057103862856592226,
+        "transaction_cost": 401.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 143,
+          "HOLD": 115,
+          "SELL": 128
+        }
+      },
+      {
+        "seed": 18,
+        "total_reward": 26.72820512820512,
+        "final_m2m": 1131372.0,
+        "final_pnl": 131372.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07473676941138556,
+        "transaction_cost": 315.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 140,
+          "HOLD": 119,
+          "SELL": 127
+        }
+      },
+      {
+        "seed": 19,
+        "total_reward": 7.44794871794872,
+        "final_m2m": 1160419.0,
+        "final_pnl": 160419.0,
+        "episode_length": 386,
+        "max_drawdown": 0.058722388854912606,
+        "transaction_cost": 264.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 125,
+          "HOLD": 121,
+          "SELL": 140
+        }
+      },
+      {
+        "seed": 20,
+        "total_reward": -34.77692307692305,
+        "final_m2m": 1024789.0,
+        "final_pnl": 24789.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08887806487445715,
+        "transaction_cost": 234.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 122,
+          "HOLD": 133,
+          "SELL": 131
+        }
+      },
+      {
+        "seed": 21,
+        "total_reward": -8.597948717948714,
+        "final_m2m": 991257.0,
+        "final_pnl": -8743.0,
+        "episode_length": 386,
+        "max_drawdown": 0.2034974351392353,
+        "transaction_cost": 344.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 112,
+          "HOLD": 112,
+          "SELL": 162
+        }
+      },
+      {
+        "seed": 22,
+        "total_reward": 28.807435897435898,
+        "final_m2m": 1103606.0,
+        "final_pnl": 103606.0,
+        "episode_length": 386,
+        "max_drawdown": 0.5317805041445441,
+        "transaction_cost": 758.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 107,
+          "HOLD": 123,
+          "SELL": 156
+        }
+      },
+      {
+        "seed": 23,
+        "total_reward": -87.54589743589739,
+        "final_m2m": 762177.0,
+        "final_pnl": -237823.0,
+        "episode_length": 386,
+        "max_drawdown": 0.3223456722433399,
+        "transaction_cost": 678.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 144,
+          "HOLD": 115,
+          "SELL": 127
+        }
+      },
+      {
+        "seed": 24,
+        "total_reward": 63.925128205128146,
+        "final_m2m": 1011485.0,
+        "final_pnl": 11485.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08873488605884963,
+        "transaction_cost": 275.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 123,
+          "HOLD": 123,
+          "SELL": 140
+        }
+      },
+      {
+        "seed": 25,
+        "total_reward": -83.11769230769238,
+        "final_m2m": 687326.0,
+        "final_pnl": -312674.0,
+        "episode_length": 386,
+        "max_drawdown": 0.45051787125974263,
+        "transaction_cost": 249.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 94,
+          "HOLD": 139,
+          "SELL": 153
+        }
+      },
+      {
+        "seed": 26,
+        "total_reward": 92.58435897435899,
+        "final_m2m": 1048405.0,
+        "final_pnl": 48405.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08660354705574394,
+        "transaction_cost": 246.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 139,
+          "HOLD": 142,
+          "SELL": 105
+        }
+      },
+      {
+        "seed": 27,
+        "total_reward": 23.21871794871795,
+        "final_m2m": 1138958.0,
+        "final_pnl": 138958.0,
+        "episode_length": 386,
+        "max_drawdown": 0.022486239763726674,
+        "transaction_cost": 406.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 123,
+          "HOLD": 136,
+          "SELL": 127
+        }
+      },
+      {
+        "seed": 28,
+        "total_reward": -20.416153846153826,
+        "final_m2m": 1059335.0,
+        "final_pnl": 59335.0,
+        "episode_length": 386,
+        "max_drawdown": 0.21194916065833938,
+        "transaction_cost": 264.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 151,
+          "HOLD": 130,
+          "SELL": 105
+        }
+      },
+      {
+        "seed": 29,
+        "total_reward": -3.014615384615399,
+        "final_m2m": 1047578.0,
+        "final_pnl": 47578.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05358056440113837,
+        "transaction_cost": 251.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 139,
+          "HOLD": 109,
+          "SELL": 138
+        }
+      },
+      {
+        "seed": 30,
+        "total_reward": 27.430769230769233,
+        "final_m2m": 1154558.0,
+        "final_pnl": 154558.0,
+        "episode_length": 386,
+        "max_drawdown": 0.028593846546160713,
+        "transaction_cost": 254.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 136,
+          "HOLD": 111,
+          "SELL": 139
+        }
+      },
+      {
+        "seed": 31,
+        "total_reward": -13.370769230769229,
+        "final_m2m": 1102412.0,
+        "final_pnl": 102412.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0572177610180059,
+        "transaction_cost": 338.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 124,
+          "HOLD": 119,
+          "SELL": 143
+        }
+      },
+      {
+        "seed": 32,
+        "total_reward": 1.8461538461538483,
+        "final_m2m": 1109612.0,
+        "final_pnl": 109612.0,
+        "episode_length": 386,
+        "max_drawdown": 0.048078649378485404,
+        "transaction_cost": 260.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 122,
+          "HOLD": 132,
+          "SELL": 132
+        }
+      },
+      {
+        "seed": 33,
+        "total_reward": 22.285384615384583,
+        "final_m2m": 1196525.0,
+        "final_pnl": 196525.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04333364646285414,
+        "transaction_cost": 400.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 120,
+          "HOLD": 125,
+          "SELL": 141
+        }
+      },
+      {
+        "seed": 34,
+        "total_reward": -37.13897435897431,
+        "final_m2m": 1051683.0,
+        "final_pnl": 51683.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05664612074238793,
+        "transaction_cost": 667.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 114,
+          "HOLD": 113,
+          "SELL": 159
+        }
+      },
+      {
+        "seed": 35,
+        "total_reward": 22.80230769230766,
+        "final_m2m": 1140612.0,
+        "final_pnl": 140612.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04321012179447704,
+        "transaction_cost": 241.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 132,
+          "HOLD": 129,
+          "SELL": 125
+        }
+      },
+      {
+        "seed": 36,
+        "total_reward": 6.065641025641021,
+        "final_m2m": 1164268.0,
+        "final_pnl": 164268.0,
+        "episode_length": 386,
+        "max_drawdown": 0.14814534630474754,
+        "transaction_cost": 264.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 162,
+          "HOLD": 113,
+          "SELL": 111
+        }
+      },
+      {
+        "seed": 37,
+        "total_reward": 8.723589743589748,
+        "final_m2m": 1198290.0,
+        "final_pnl": 198290.0,
+        "episode_length": 386,
+        "max_drawdown": 0.026471900910694384,
+        "transaction_cost": 312.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 132,
+          "HOLD": 122,
+          "SELL": 132
+        }
+      },
+      {
+        "seed": 38,
+        "total_reward": -83.68846153846157,
+        "final_m2m": 871905.0,
+        "final_pnl": -128095.0,
+        "episode_length": 386,
+        "max_drawdown": 0.17756682290197737,
+        "transaction_cost": 293.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 156,
+          "HOLD": 108,
+          "SELL": 122
+        }
+      },
+      {
+        "seed": 39,
+        "total_reward": 77.69205128205128,
+        "final_m2m": 1174904.0,
+        "final_pnl": 174904.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07871346930331699,
+        "transaction_cost": 372.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 124,
+          "HOLD": 112,
+          "SELL": 150
+        }
+      },
+      {
+        "seed": 40,
+        "total_reward": -11.949743589743637,
+        "final_m2m": 1128300.0,
+        "final_pnl": 128300.0,
+        "episode_length": 386,
+        "max_drawdown": 0.060252008852166784,
+        "transaction_cost": 639.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 140,
+          "HOLD": 108,
+          "SELL": 138
+        }
+      },
+      {
+        "seed": 41,
+        "total_reward": -5.429487179487167,
+        "final_m2m": 1107125.0,
+        "final_pnl": 107125.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1308717096039998,
+        "transaction_cost": 246.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 158,
+          "HOLD": 117,
+          "SELL": 111
+        }
+      },
+      {
+        "seed": 42,
+        "total_reward": -58.584358974358985,
+        "final_m2m": 878646.0,
+        "final_pnl": -121354.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1627892666079512,
+        "transaction_cost": 418.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 159,
+          "HOLD": 117,
+          "SELL": 110
+        }
+      },
+      {
+        "seed": 43,
+        "total_reward": 10.29641025641025,
+        "final_m2m": 918802.0,
+        "final_pnl": -81198.0,
+        "episode_length": 386,
+        "max_drawdown": 0.18394439400106452,
+        "transaction_cost": 269.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 111,
+          "HOLD": 133,
+          "SELL": 142
+        }
+      },
+      {
+        "seed": 44,
+        "total_reward": 34.49358974358973,
+        "final_m2m": 1053327.0,
+        "final_pnl": 53327.0,
+        "episode_length": 386,
+        "max_drawdown": 0.10805655005423977,
+        "transaction_cost": 284.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 150,
+          "HOLD": 120,
+          "SELL": 116
+        }
+      },
+      {
+        "seed": 45,
+        "total_reward": -14.778717948717961,
+        "final_m2m": 995690.0,
+        "final_pnl": -4310.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05627677625129994,
+        "transaction_cost": 582.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 157,
+          "HOLD": 105,
+          "SELL": 124
+        }
+      },
+      {
+        "seed": 46,
+        "total_reward": 52.4079487179487,
+        "final_m2m": 1200081.0,
+        "final_pnl": 200081.0,
+        "episode_length": 386,
+        "max_drawdown": 0.13803315294326732,
+        "transaction_cost": 283.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 117,
+          "HOLD": 112,
+          "SELL": 157
+        }
+      },
+      {
+        "seed": 47,
+        "total_reward": -123.13948717948708,
+        "final_m2m": 719837.0,
+        "final_pnl": -280163.0,
+        "episode_length": 386,
+        "max_drawdown": 0.3146439496641322,
+        "transaction_cost": 237.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 110,
+          "HOLD": 118,
+          "SELL": 158
+        }
+      },
+      {
+        "seed": 48,
+        "total_reward": 94.46897435897438,
+        "final_m2m": 1088266.0,
+        "final_pnl": 88266.0,
+        "episode_length": 386,
+        "max_drawdown": 0.11254951466340904,
+        "transaction_cost": 303.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 145,
+          "HOLD": 120,
+          "SELL": 121
+        }
+      },
+      {
+        "seed": 49,
+        "total_reward": -2.572820512820518,
+        "final_m2m": 1078232.0,
+        "final_pnl": 78232.0,
+        "episode_length": 386,
+        "max_drawdown": 0.14220784209644075,
+        "transaction_cost": 674.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 154,
+          "HOLD": 104,
+          "SELL": 128
+        }
+      }
+    ]
+  },
+  "MR": {
+    "summary": {
+      "n_episodes": 50,
+      "total_reward": {
+        "mean": -0.1739999999999957,
+        "std": 44.24935445971218,
+        "min": -106.55820512820512,
+        "max": 92.65333333333339,
+        "p5": -83.2435128205128,
+        "p25": -19.72288461538463,
+        "p50": -3.081923076923089,
+        "p75": 30.80314102564102,
+        "p95": 77.41051282051288
+      },
+      "final_pnl_cents": {
+        "mean": -57942.0,
+        "std": 120705.00957010857,
+        "min": -416478.0,
+        "max": 92187.0,
+        "p5": -346880.65,
+        "p25": -90524.75,
+        "p50": -33364.5,
+        "p75": 24732.5,
+        "p95": 75900.14999999998
+      },
+      "episode_length": {
+        "mean": 386.0,
+        "std": 0.0,
+        "min": 386.0,
+        "max": 386.0,
+        "p5": 386.0,
+        "p25": 386.0,
+        "p50": 386.0,
+        "p75": 386.0,
+        "p95": 386.0
+      },
+      "max_drawdown": {
+        "mean": 0.13963047766671322,
+        "std": 0.10871664563557477,
+        "min": 0.02593753992079714,
+        "max": 0.449274,
+        "p5": 0.04427929897287173,
+        "p25": 0.06667841240836131,
+        "p50": 0.098203505217661,
+        "p75": 0.17827571457951413,
+        "p95": 0.38937782556563716
+      },
+      "transaction_cost": {
+        "mean": 462.57,
+        "std": 156.3173697961938,
+        "min": 307.0,
+        "max": 964.5,
+        "p5": 321.175,
+        "p25": 339.5,
+        "p50": 399.5,
+        "p75": 532.75,
+        "p95": 774.0499999999997
+      },
+      "sharpe": -0.48002978672020896,
+      "win_rate": 0.36,
+      "action_pct": {
+        "BUY": 0.4484,
+        "HOLD": 0.1077,
+        "SELL": 0.4439
+      }
+    },
+    "episodes": [
+      {
+        "seed": 0,
+        "total_reward": -16.84897435897436,
+        "final_m2m": 1012521.0,
+        "final_pnl": 12521.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07927998553919546,
+        "transaction_cost": 346.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 161,
+          "HOLD": 41,
+          "SELL": 184
+        }
+      },
+      {
+        "seed": 1,
+        "total_reward": -14.827435897435887,
+        "final_m2m": 954694.0,
+        "final_pnl": -45306.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08567181275484474,
+        "transaction_cost": 328.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 174,
+          "HOLD": 37,
+          "SELL": 175
+        }
+      },
+      {
+        "seed": 2,
+        "total_reward": -18.103846153846163,
+        "final_m2m": 884089.0,
+        "final_pnl": -115911.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1858465659745375,
+        "transaction_cost": 694.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 158,
+          "HOLD": 41,
+          "SELL": 187
+        }
+      },
+      {
+        "seed": 3,
+        "total_reward": 41.553589743589754,
+        "final_m2m": 1046148.0,
+        "final_pnl": 46148.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06279119630977492,
+        "transaction_cost": 495.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 178,
+          "HOLD": 42,
+          "SELL": 166
+        }
+      },
+      {
+        "seed": 4,
+        "total_reward": -1.1187179487179595,
+        "final_m2m": 1041785.0,
+        "final_pnl": 41785.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07104095505495182,
+        "transaction_cost": 448.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 177,
+          "HOLD": 44,
+          "SELL": 165
+        }
+      },
+      {
+        "seed": 5,
+        "total_reward": -5.0451282051282185,
+        "final_m2m": 1022109.0,
+        "final_pnl": 22109.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05426756788935494,
+        "transaction_cost": 338.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 179,
+          "HOLD": 35,
+          "SELL": 172
+        }
+      },
+      {
+        "seed": 6,
+        "total_reward": -32.99076923076924,
+        "final_m2m": 893445.0,
+        "final_pnl": -106555.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1802193145097208,
+        "transaction_cost": 367.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 181,
+          "HOLD": 51,
+          "SELL": 154
+        }
+      },
+      {
+        "seed": 7,
+        "total_reward": 36.21230769230769,
+        "final_m2m": 1034673.0,
+        "final_pnl": 34673.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05373142187148876,
+        "transaction_cost": 689.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 176,
+          "HOLD": 36,
+          "SELL": 174
+        }
+      },
+      {
+        "seed": 8,
+        "total_reward": 5.630769230769241,
+        "final_m2m": 1056633.0,
+        "final_pnl": 56633.0,
+        "episode_length": 386,
+        "max_drawdown": 0.14991091298521583,
+        "transaction_cost": 523.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 170,
+          "HOLD": 34,
+          "SELL": 182
+        }
+      },
+      {
+        "seed": 9,
+        "total_reward": -36.05589743589745,
+        "final_m2m": 916015.0,
+        "final_pnl": -83985.0,
+        "episode_length": 386,
+        "max_drawdown": 0.11004364566915119,
+        "transaction_cost": 492.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 178,
+          "HOLD": 39,
+          "SELL": 169
+        }
+      },
+      {
+        "seed": 10,
+        "total_reward": 12.265641025641047,
+        "final_m2m": 963851.0,
+        "final_pnl": -36149.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05072651531761376,
+        "transaction_cost": 368.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 173,
+          "HOLD": 45,
+          "SELL": 168
+        }
+      },
+      {
+        "seed": 11,
+        "total_reward": 11.641282051282042,
+        "final_m2m": 1009252.0,
+        "final_pnl": 9252.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05010965784591329,
+        "transaction_cost": 624.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 177,
+          "HOLD": 45,
+          "SELL": 164
+        }
+      },
+      {
+        "seed": 12,
+        "total_reward": -5.202051282051273,
+        "final_m2m": 988964.0,
+        "final_pnl": -11036.0,
+        "episode_length": 386,
+        "max_drawdown": 0.16074190941624658,
+        "transaction_cost": 839.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 168,
+          "HOLD": 36,
+          "SELL": 182
+        }
+      },
+      {
+        "seed": 13,
+        "total_reward": -7.306666666666681,
+        "final_m2m": 960468.0,
+        "final_pnl": -39532.0,
+        "episode_length": 386,
+        "max_drawdown": 0.14200840500971867,
+        "transaction_cost": 488.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 187,
+          "HOLD": 35,
+          "SELL": 164
+        }
+      },
+      {
+        "seed": 14,
+        "total_reward": -9.014358974358997,
+        "final_m2m": 925312.0,
+        "final_pnl": -74688.0,
+        "episode_length": 386,
+        "max_drawdown": 0.3698993899866482,
+        "transaction_cost": 553.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 193,
+          "HOLD": 35,
+          "SELL": 158
+        }
+      },
+      {
+        "seed": 15,
+        "total_reward": 36.007179487179485,
+        "final_m2m": 1065740.0,
+        "final_pnl": 65740.0,
+        "episode_length": 386,
+        "max_drawdown": 0.10065293252378568,
+        "transaction_cost": 307.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 181,
+          "HOLD": 42,
+          "SELL": 163
+        }
+      },
+      {
+        "seed": 16,
+        "total_reward": -53.98128205128204,
+        "final_m2m": 855213.0,
+        "final_pnl": -144787.0,
+        "episode_length": 386,
+        "max_drawdown": 0.19758763014792743,
+        "transaction_cost": 411.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 159,
+          "HOLD": 39,
+          "SELL": 188
+        }
+      },
+      {
+        "seed": 17,
+        "total_reward": 55.5353846153846,
+        "final_m2m": 1071801.0,
+        "final_pnl": 71801.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06652573913111971,
+        "transaction_cost": 536.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 169,
+          "HOLD": 41,
+          "SELL": 176
+        }
+      },
+      {
+        "seed": 18,
+        "total_reward": -42.09897435897432,
+        "final_m2m": 907615.0,
+        "final_pnl": -92385.0,
+        "episode_length": 386,
+        "max_drawdown": 0.150126,
+        "transaction_cost": 342.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 175,
+          "HOLD": 37,
+          "SELL": 174
+        }
+      },
+      {
+        "seed": 19,
+        "total_reward": -66.51564102564105,
+        "final_m2m": 648204.0,
+        "final_pnl": -351796.0,
+        "episode_length": 386,
+        "max_drawdown": 0.36089682915286325,
+        "transaction_cost": 376.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 143,
+          "HOLD": 56,
+          "SELL": 187
+        }
+      },
+      {
+        "seed": 20,
+        "total_reward": 33.37128205128206,
+        "final_m2m": 778352.0,
+        "final_pnl": -221648.0,
+        "episode_length": 386,
+        "max_drawdown": 0.2506043754686968,
+        "transaction_cost": 398.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 154,
+          "HOLD": 41,
+          "SELL": 191
+        }
+      },
+      {
+        "seed": 21,
+        "total_reward": 13.293846153846125,
+        "final_m2m": 830198.0,
+        "final_pnl": -169802.0,
+        "episode_length": 386,
+        "max_drawdown": 0.2337176203101197,
+        "transaction_cost": 398.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 189,
+          "HOLD": 39,
+          "SELL": 158
+        }
+      },
+      {
+        "seed": 22,
+        "total_reward": 63.8605128205128,
+        "final_m2m": 1079254.0,
+        "final_pnl": 79254.0,
+        "episode_length": 386,
+        "max_drawdown": 0.09575407791153633,
+        "transaction_cost": 493.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 166,
+          "HOLD": 46,
+          "SELL": 174
+        }
+      },
+      {
+        "seed": 23,
+        "total_reward": -23.648974358974353,
+        "final_m2m": 987023.0,
+        "final_pnl": -12977.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08276680315361865,
+        "transaction_cost": 713.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 177,
+          "HOLD": 42,
+          "SELL": 167
+        }
+      },
+      {
+        "seed": 24,
+        "total_reward": -20.26256410256412,
+        "final_m2m": 907999.0,
+        "final_pnl": -92001.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1619095354184832,
+        "transaction_cost": 344.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 157,
+          "HOLD": 45,
+          "SELL": 184
+        }
+      },
+      {
+        "seed": 25,
+        "total_reward": 31.12717948717948,
+        "final_m2m": 1029395.0,
+        "final_pnl": 29395.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07808637014055783,
+        "transaction_cost": 398.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 172,
+          "HOLD": 45,
+          "SELL": 169
+        }
+      },
+      {
+        "seed": 26,
+        "total_reward": -94.94051282051284,
+        "final_m2m": 659127.0,
+        "final_pnl": -340873.0,
+        "episode_length": 386,
+        "max_drawdown": 0.40531472740299196,
+        "transaction_cost": 459.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 187,
+          "HOLD": 40,
+          "SELL": 159
+        }
+      },
+      {
+        "seed": 27,
+        "total_reward": 79.91461538461546,
+        "final_m2m": 970794.0,
+        "final_pnl": -29206.0,
+        "episode_length": 386,
+        "max_drawdown": 0.03670811718337587,
+        "transaction_cost": 463.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 177,
+          "HOLD": 41,
+          "SELL": 168
+        }
+      },
+      {
+        "seed": 28,
+        "total_reward": -14.979999999999997,
+        "final_m2m": 912372.0,
+        "final_pnl": -87628.0,
+        "episode_length": 386,
+        "max_drawdown": 0.10460543337645536,
+        "transaction_cost": 338.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 178,
+          "HOLD": 44,
+          "SELL": 164
+        }
+      },
+      {
+        "seed": 29,
+        "total_reward": 20.77282051282049,
+        "final_m2m": 993386.0,
+        "final_pnl": -6614.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04608118228568576,
+        "transaction_cost": 366.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 184,
+          "HOLD": 33,
+          "SELL": 169
+        }
+      },
+      {
+        "seed": 30,
+        "total_reward": 3.309230769230773,
+        "final_m2m": 1006292.0,
+        "final_pnl": 6292.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04482875180195854,
+        "transaction_cost": 333.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 174,
+          "HOLD": 40,
+          "SELL": 172
+        }
+      },
+      {
+        "seed": 31,
+        "total_reward": -25.017435897435877,
+        "final_m2m": 908724.0,
+        "final_pnl": -91276.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1724449147888941,
+        "transaction_cost": 351.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 175,
+          "HOLD": 48,
+          "SELL": 163
+        }
+      },
+      {
+        "seed": 32,
+        "total_reward": 25.643589743589743,
+        "final_m2m": 1008734.0,
+        "final_pnl": 8734.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1913527009753453,
+        "transaction_cost": 400.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 168,
+          "HOLD": 30,
+          "SELL": 188
+        }
+      },
+      {
+        "seed": 33,
+        "total_reward": -15.661025641025642,
+        "final_m2m": 947656.0,
+        "final_pnl": -52344.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07262081020553023,
+        "transaction_cost": 593.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 178,
+          "HOLD": 45,
+          "SELL": 163
+        }
+      },
+      {
+        "seed": 34,
+        "total_reward": -9.212051282051277,
+        "final_m2m": 911729.0,
+        "final_pnl": -88271.0,
+        "episode_length": 386,
+        "max_drawdown": 0.18442693206736882,
+        "transaction_cost": 590.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 183,
+          "HOLD": 40,
+          "SELL": 163
+        }
+      },
+      {
+        "seed": 35,
+        "total_reward": 12.39307692307693,
+        "final_m2m": 960062.0,
+        "final_pnl": -39938.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0462895368659332,
+        "transaction_cost": 338.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 182,
+          "HOLD": 42,
+          "SELL": 162
+        }
+      },
+      {
+        "seed": 36,
+        "total_reward": 17.591794871794868,
+        "final_m2m": 1028670.0,
+        "final_pnl": 28670.0,
+        "episode_length": 386,
+        "max_drawdown": 0.11007239727534153,
+        "transaction_cost": 327.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 156,
+          "HOLD": 45,
+          "SELL": 185
+        }
+      },
+      {
+        "seed": 37,
+        "total_reward": -15.1923076923077,
+        "final_m2m": 969420.0,
+        "final_pnl": -30580.0,
+        "episode_length": 386,
+        "max_drawdown": 0.058241,
+        "transaction_cost": 334.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 166,
+          "HOLD": 54,
+          "SELL": 166
+        }
+      },
+      {
+        "seed": 38,
+        "total_reward": 31.47871794871796,
+        "final_m2m": 1092187.0,
+        "final_pnl": 92187.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07177086772459898,
+        "transaction_cost": 320.5,
+        "won": true,
+        "action_counts": {
+          "BUY": 173,
+          "HOLD": 43,
+          "SELL": 170
+        }
+      },
+      {
+        "seed": 39,
+        "total_reward": -33.40333333333334,
+        "final_m2m": 961914.0,
+        "final_pnl": -38086.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1239239564520012,
+        "transaction_cost": 624.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 177,
+          "HOLD": 40,
+          "SELL": 169
+        }
+      },
+      {
+        "seed": 40,
+        "total_reward": -68.94717948717945,
+        "final_m2m": 693020.0,
+        "final_pnl": -306980.0,
+        "episode_length": 386,
+        "max_drawdown": 0.3644607150848645,
+        "transaction_cost": 964.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 193,
+          "HOLD": 53,
+          "SELL": 140
+        }
+      },
+      {
+        "seed": 41,
+        "total_reward": 74.79871794871801,
+        "final_m2m": 984735.0,
+        "final_pnl": -15265.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07027794157330322,
+        "transaction_cost": 311.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 164,
+          "HOLD": 56,
+          "SELL": 166
+        }
+      },
+      {
+        "seed": 42,
+        "total_reward": 3.6830769230769262,
+        "final_m2m": 999099.0,
+        "final_pnl": -901.0,
+        "episode_length": 386,
+        "max_drawdown": 0.02593753992079714,
+        "transaction_cost": 425.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 176,
+          "HOLD": 31,
+          "SELL": 179
+        }
+      },
+      {
+        "seed": 43,
+        "total_reward": -106.55820512820512,
+        "final_m2m": 583522.0,
+        "final_pnl": -416478.0,
+        "episode_length": 386,
+        "max_drawdown": 0.420548,
+        "transaction_cost": 324.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 154,
+          "HOLD": 39,
+          "SELL": 193
+        }
+      },
+      {
+        "seed": 44,
+        "total_reward": 92.65333333333339,
+        "final_m2m": 944870.0,
+        "final_pnl": -55130.0,
+        "episode_length": 386,
+        "max_drawdown": 0.09272101774991341,
+        "transaction_cost": 366.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 189,
+          "HOLD": 38,
+          "SELL": 159
+        }
+      },
+      {
+        "seed": 45,
+        "total_reward": 34.70974358974359,
+        "final_m2m": 1080238.0,
+        "final_pnl": 80238.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08565440629042154,
+        "transaction_cost": 824.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 172,
+          "HOLD": 38,
+          "SELL": 176
+        }
+      },
+      {
+        "seed": 46,
+        "total_reward": -14.007948717948715,
+        "final_m2m": 1025607.0,
+        "final_pnl": 25607.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06713643224008607,
+        "transaction_cost": 322.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 180,
+          "HOLD": 48,
+          "SELL": 158
+        }
+      },
+      {
+        "seed": 47,
+        "total_reward": -104.58487179487179,
+        "final_m2m": 617726.0,
+        "final_pnl": -382274.0,
+        "episode_length": 386,
+        "max_drawdown": 0.449274,
+        "transaction_cost": 324.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 144,
+          "HOLD": 48,
+          "SELL": 194
+        }
+      },
+      {
+        "seed": 48,
+        "total_reward": 79.54743589743597,
+        "final_m2m": 927961.0,
+        "final_pnl": -72039.0,
+        "episode_length": 386,
+        "max_drawdown": 0.1080855859195445,
+        "transaction_cost": 402.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 184,
+          "HOLD": 31,
+          "SELL": 171
+        }
+      },
+      {
+        "seed": 49,
+        "total_reward": 29.831025641025636,
+        "final_m2m": 1044302.0,
+        "final_pnl": 44302.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04382974665816433,
+        "transaction_cost": 708.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 168,
+          "HOLD": 43,
+          "SELL": 175
+        }
+      }
+    ]
+  },
+  "MR_INV": {
+    "summary": {
+      "n_episodes": 50,
+      "total_reward": {
+        "mean": -0.48850769230769436,
+        "std": 10.717920080281948,
+        "min": -33.02615384615385,
+        "max": 26.705384615384627,
+        "p5": -13.710525641025642,
+        "p25": -7.4961538461538515,
+        "p50": 0.005769230769228306,
+        "p75": 7.810512820512813,
+        "p95": 14.362269230769202
+      },
+      "final_pnl_cents": {
+        "mean": -54810.98,
+        "std": 26958.350416514735,
+        "min": -113529.0,
+        "max": 25409.0,
+        "p5": -95620.3,
+        "p25": -73788.75,
+        "p50": -51094.0,
+        "p75": -37191.5,
+        "p95": -19309.75000000001
+      },
+      "episode_length": {
+        "mean": 386.0,
+        "std": 0.0,
+        "min": 386.0,
+        "max": 386.0,
+        "p5": 386.0,
+        "p25": 386.0,
+        "p50": 386.0,
+        "p75": 386.0,
+        "p95": 386.0
+      },
+      "max_drawdown": {
+        "mean": 0.06186812682621825,
+        "std": 0.022593478615680566,
+        "min": 0.017141361966876316,
+        "max": 0.114052,
+        "p5": 0.027875246959109538,
+        "p25": 0.04683764640810663,
+        "p50": 0.057311156523949636,
+        "p75": 0.07825178683332885,
+        "p95": 0.09687284510487623
+      },
+      "transaction_cost": {
+        "mean": 375.6,
+        "std": 153.8585064271716,
+        "min": 221.5,
+        "max": 852.5,
+        "p5": 248.725,
+        "p25": 263.5,
+        "p50": 299.25,
+        "p75": 444.0,
+        "p95": 691.4249999999998
+      },
+      "sharpe": -2.0331726219577106,
+      "win_rate": 0.02,
+      "action_pct": {
+        "BUY": 0.3651,
+        "HOLD": 0.2715,
+        "SELL": 0.3635
+      }
+    },
+    "episodes": [
+      {
+        "seed": 0,
+        "total_reward": -33.02615384615385,
+        "final_m2m": 915500.0,
+        "final_pnl": -84500.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08892626974570726,
+        "transaction_cost": 238.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 122,
+          "HOLD": 139,
+          "SELL": 125
+        }
+      },
+      {
+        "seed": 1,
+        "total_reward": 10.904358974358967,
+        "final_m2m": 958027.0,
+        "final_pnl": -41973.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04492381732132516,
+        "transaction_cost": 263.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 139,
+          "HOLD": 106,
+          "SELL": 141
+        }
+      },
+      {
+        "seed": 2,
+        "total_reward": 2.7343589743589662,
+        "final_m2m": 968691.0,
+        "final_pnl": -31309.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05012394176216197,
+        "transaction_cost": 656.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 151,
+          "HOLD": 86,
+          "SELL": 149
+        }
+      },
+      {
+        "seed": 3,
+        "total_reward": 2.561282051282043,
+        "final_m2m": 978680.0,
+        "final_pnl": -21320.0,
+        "episode_length": 386,
+        "max_drawdown": 0.02969374299792788,
+        "transaction_cost": 411.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 152,
+          "HOLD": 87,
+          "SELL": 147
+        }
+      },
+      {
+        "seed": 4,
+        "total_reward": -7.625128205128209,
+        "final_m2m": 948942.0,
+        "final_pnl": -51058.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05733682397794125,
+        "transaction_cost": 262.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 140,
+          "HOLD": 106,
+          "SELL": 140
+        }
+      },
+      {
+        "seed": 5,
+        "total_reward": 2.5497435897435823,
+        "final_m2m": 958886.0,
+        "final_pnl": -41114.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04575905631401525,
+        "transaction_cost": 332.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 149,
+          "HOLD": 83,
+          "SELL": 154
+        }
+      },
+      {
+        "seed": 6,
+        "total_reward": -9.648205128205134,
+        "final_m2m": 921258.0,
+        "final_pnl": -78742.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08094102426134327,
+        "transaction_cost": 248.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 132,
+          "HOLD": 123,
+          "SELL": 131
+        }
+      },
+      {
+        "seed": 7,
+        "total_reward": 26.705384615384627,
+        "final_m2m": 1025409.0,
+        "final_pnl": 25409.0,
+        "episode_length": 386,
+        "max_drawdown": 0.017141361966876316,
+        "transaction_cost": 720.0,
+        "won": true,
+        "action_counts": {
+          "BUY": 164,
+          "HOLD": 66,
+          "SELL": 156
+        }
+      },
+      {
+        "seed": 8,
+        "total_reward": -13.184358974358988,
+        "final_m2m": 973990.0,
+        "final_pnl": -26010.0,
+        "episode_length": 386,
+        "max_drawdown": 0.03650953555424324,
+        "transaction_cost": 359.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 147,
+          "HOLD": 90,
+          "SELL": 149
+        }
+      },
+      {
+        "seed": 9,
+        "total_reward": -0.10666666666666968,
+        "final_m2m": 973574.0,
+        "final_pnl": -26426.0,
+        "episode_length": 386,
+        "max_drawdown": 0.035526996601826344,
+        "transaction_cost": 450.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 155,
+          "HOLD": 79,
+          "SELL": 152
+        }
+      },
+      {
+        "seed": 10,
+        "total_reward": -4.693846153846158,
+        "final_m2m": 955268.0,
+        "final_pnl": -44732.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05050527196986307,
+        "transaction_cost": 290.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 144,
+          "HOLD": 95,
+          "SELL": 147
+        }
+      },
+      {
+        "seed": 11,
+        "total_reward": -7.543589743589747,
+        "final_m2m": 925848.0,
+        "final_pnl": -74152.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07845404911110514,
+        "transaction_cost": 426.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 137,
+          "HOLD": 117,
+          "SELL": 132
+        }
+      },
+      {
+        "seed": 12,
+        "total_reward": 10.333076923076936,
+        "final_m2m": 966147.0,
+        "final_pnl": -33853.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05280084688756055,
+        "transaction_cost": 611.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 159,
+          "HOLD": 75,
+          "SELL": 152
+        }
+      },
+      {
+        "seed": 13,
+        "total_reward": -3.948974358974359,
+        "final_m2m": 950746.0,
+        "final_pnl": -49254.0,
+        "episode_length": 386,
+        "max_drawdown": 0.051439134670630264,
+        "transaction_cost": 515.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 151,
+          "HOLD": 89,
+          "SELL": 146
+        }
+      },
+      {
+        "seed": 14,
+        "total_reward": -4.88846153846154,
+        "final_m2m": 931681.0,
+        "final_pnl": -68319.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07586600552933176,
+        "transaction_cost": 599.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 138,
+          "HOLD": 104,
+          "SELL": 144
+        }
+      },
+      {
+        "seed": 15,
+        "total_reward": -1.4435897435897445,
+        "final_m2m": 926051.0,
+        "final_pnl": -73949.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07716967782439287,
+        "transaction_cost": 304.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 133,
+          "HOLD": 117,
+          "SELL": 136
+        }
+      },
+      {
+        "seed": 16,
+        "total_reward": -10.148717948717934,
+        "final_m2m": 886471.0,
+        "final_pnl": -113529.0,
+        "episode_length": 386,
+        "max_drawdown": 0.114052,
+        "transaction_cost": 255.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 123,
+          "HOLD": 139,
+          "SELL": 124
+        }
+      },
+      {
+        "seed": 17,
+        "total_reward": 9.133589743589745,
+        "final_m2m": 922092.0,
+        "final_pnl": -77908.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08670153938125841,
+        "transaction_cost": 367.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 138,
+          "HOLD": 108,
+          "SELL": 140
+        }
+      },
+      {
+        "seed": 18,
+        "total_reward": -5.273846153846156,
+        "final_m2m": 901524.0,
+        "final_pnl": -98476.0,
+        "episode_length": 386,
+        "max_drawdown": 0.099666,
+        "transaction_cost": 249.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 131,
+          "HOLD": 127,
+          "SELL": 128
+        }
+      },
+      {
+        "seed": 19,
+        "total_reward": 8.43846153846154,
+        "final_m2m": 934434.0,
+        "final_pnl": -65566.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06917810272966246,
+        "transaction_cost": 272.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 140,
+          "HOLD": 109,
+          "SELL": 137
+        }
+      },
+      {
+        "seed": 20,
+        "total_reward": -6.81128205128205,
+        "final_m2m": 907870.0,
+        "final_pnl": -92130.0,
+        "episode_length": 386,
+        "max_drawdown": 0.09345898912194722,
+        "transaction_cost": 273.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 139,
+          "HOLD": 113,
+          "SELL": 134
+        }
+      },
+      {
+        "seed": 21,
+        "total_reward": 10.512820512820527,
+        "final_m2m": 948870.0,
+        "final_pnl": -51130.0,
+        "episode_length": 386,
+        "max_drawdown": 0.05624661709896362,
+        "transaction_cost": 335.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 136,
+          "HOLD": 116,
+          "SELL": 134
+        }
+      },
+      {
+        "seed": 22,
+        "total_reward": -5.007948717948717,
+        "final_m2m": 929339.0,
+        "final_pnl": -70661.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07749076389593491,
+        "transaction_cost": 359.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 137,
+          "HOLD": 110,
+          "SELL": 139
+        }
+      },
+      {
+        "seed": 23,
+        "total_reward": 8.762820512820506,
+        "final_m2m": 963514.0,
+        "final_pnl": -36486.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04767402342969094,
+        "transaction_cost": 852.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 152,
+          "HOLD": 81,
+          "SELL": 153
+        }
+      },
+      {
+        "seed": 24,
+        "total_reward": -8.775384615384615,
+        "final_m2m": 929290.0,
+        "final_pnl": -70710.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07573798535964354,
+        "transaction_cost": 290.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 147,
+          "HOLD": 97,
+          "SELL": 142
+        }
+      },
+      {
+        "seed": 25,
+        "total_reward": 5.412820512820508,
+        "final_m2m": 950400.0,
+        "final_pnl": -49600.0,
+        "episode_length": 386,
+        "max_drawdown": 0.052243737559469976,
+        "transaction_cost": 263.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 141,
+          "HOLD": 105,
+          "SELL": 140
+        }
+      },
+      {
+        "seed": 26,
+        "total_reward": -7.353846153846164,
+        "final_m2m": 921720.0,
+        "final_pnl": -78280.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08188228378220311,
+        "transaction_cost": 332.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 140,
+          "HOLD": 107,
+          "SELL": 139
+        }
+      },
+      {
+        "seed": 27,
+        "total_reward": 15.54230769230769,
+        "final_m2m": 982335.0,
+        "final_pnl": -17665.0,
+        "episode_length": 386,
+        "max_drawdown": 0.02759599093877885,
+        "transaction_cost": 459.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 152,
+          "HOLD": 87,
+          "SELL": 147
+        }
+      },
+      {
+        "seed": 28,
+        "total_reward": -14.141025641025633,
+        "final_m2m": 927185.0,
+        "final_pnl": -72815.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07850293259512263,
+        "transaction_cost": 293.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 135,
+          "HOLD": 112,
+          "SELL": 139
+        }
+      },
+      {
+        "seed": 29,
+        "total_reward": 12.919999999999957,
+        "final_m2m": 977573.0,
+        "final_pnl": -22427.0,
+        "episode_length": 386,
+        "max_drawdown": 0.028216559872847047,
+        "transaction_cost": 291.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 140,
+          "HOLD": 105,
+          "SELL": 141
+        }
+      },
+      {
+        "seed": 30,
+        "total_reward": -5.633589743589749,
+        "final_m2m": 955602.0,
+        "final_pnl": -44398.0,
+        "episode_length": 386,
+        "max_drawdown": 0.051198488840284335,
+        "transaction_cost": 282.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 139,
+          "HOLD": 106,
+          "SELL": 141
+        }
+      },
+      {
+        "seed": 31,
+        "total_reward": -11.64282051282052,
+        "final_m2m": 910195.0,
+        "final_pnl": -89805.0,
+        "episode_length": 386,
+        "max_drawdown": 0.09128620348831405,
+        "transaction_cost": 350.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 134,
+          "HOLD": 123,
+          "SELL": 129
+        }
+      },
+      {
+        "seed": 32,
+        "total_reward": 0.1182051282051263,
+        "final_m2m": 910656.0,
+        "final_pnl": -89344.0,
+        "episode_length": 386,
+        "max_drawdown": 0.09208137465541393,
+        "transaction_cost": 250.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 128,
+          "HOLD": 125,
+          "SELL": 133
+        }
+      },
+      {
+        "seed": 33,
+        "total_reward": 9.627435897435895,
+        "final_m2m": 948203.0,
+        "final_pnl": -51797.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0558635415731234,
+        "transaction_cost": 461.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 142,
+          "HOLD": 99,
+          "SELL": 145
+        }
+      },
+      {
+        "seed": 34,
+        "total_reward": 3.1512820512820516,
+        "final_m2m": 960493.0,
+        "final_pnl": -39507.0,
+        "episode_length": 386,
+        "max_drawdown": 0.057285489069958014,
+        "transaction_cost": 584.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 148,
+          "HOLD": 86,
+          "SELL": 152
+        }
+      },
+      {
+        "seed": 35,
+        "total_reward": -6.451282051282057,
+        "final_m2m": 935333.0,
+        "final_pnl": -64667.0,
+        "episode_length": 386,
+        "max_drawdown": 0.07336685716104367,
+        "transaction_cost": 289.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 136,
+          "HOLD": 109,
+          "SELL": 141
+        }
+      },
+      {
+        "seed": 36,
+        "total_reward": 8.22179487179487,
+        "final_m2m": 967398.0,
+        "final_pnl": -32602.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04573107088539648,
+        "transaction_cost": 292.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 144,
+          "HOLD": 102,
+          "SELL": 140
+        }
+      },
+      {
+        "seed": 37,
+        "total_reward": -10.437435897435895,
+        "final_m2m": 926692.0,
+        "final_pnl": -73308.0,
+        "episode_length": 386,
+        "max_drawdown": 0.073958,
+        "transaction_cost": 258.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 127,
+          "HOLD": 127,
+          "SELL": 132
+        }
+      },
+      {
+        "seed": 38,
+        "total_reward": 6.479743589743613,
+        "final_m2m": 951963.0,
+        "final_pnl": -48037.0,
+        "episode_length": 386,
+        "max_drawdown": 0.053163948997365366,
+        "transaction_cost": 253.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 138,
+          "HOLD": 112,
+          "SELL": 136
+        }
+      },
+      {
+        "seed": 39,
+        "total_reward": 3.85102564102563,
+        "final_m2m": 966982.0,
+        "final_pnl": -33018.0,
+        "episode_length": 386,
+        "max_drawdown": 0.039714387875129854,
+        "transaction_cost": 352.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 152,
+          "HOLD": 84,
+          "SELL": 150
+        }
+      },
+      {
+        "seed": 40,
+        "total_reward": -10.096153846153845,
+        "final_m2m": 927607.0,
+        "final_pnl": -72393.0,
+        "episode_length": 386,
+        "max_drawdown": 0.077645,
+        "transaction_cost": 541.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 137,
+          "HOLD": 111,
+          "SELL": 138
+        }
+      },
+      {
+        "seed": 41,
+        "total_reward": 6.576666666666643,
+        "final_m2m": 953256.0,
+        "final_pnl": -46744.0,
+        "episode_length": 386,
+        "max_drawdown": 0.04738698941603286,
+        "transaction_cost": 261.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 133,
+          "HOLD": 115,
+          "SELL": 138
+        }
+      },
+      {
+        "seed": 42,
+        "total_reward": 11.303076923076922,
+        "final_m2m": 997338.0,
+        "final_pnl": -2662.0,
+        "episode_length": 386,
+        "max_drawdown": 0.018603474196573436,
+        "transaction_cost": 353.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 154,
+          "HOLD": 77,
+          "SELL": 155
+        }
+      },
+      {
+        "seed": 43,
+        "total_reward": -26.0620512820513,
+        "final_m2m": 895696.0,
+        "final_pnl": -104304.0,
+        "episode_length": 386,
+        "max_drawdown": 0.104304,
+        "transaction_cost": 221.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 115,
+          "HOLD": 151,
+          "SELL": 120
+        }
+      },
+      {
+        "seed": 44,
+        "total_reward": 16.665641025641033,
+        "final_m2m": 960692.0,
+        "final_pnl": -39308.0,
+        "episode_length": 386,
+        "max_drawdown": 0.046654532072131216,
+        "transaction_cost": 278.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 141,
+          "HOLD": 107,
+          "SELL": 138
+        }
+      },
+      {
+        "seed": 45,
+        "total_reward": 4.024615384615378,
+        "final_m2m": 976388.0,
+        "final_pnl": -23612.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0319870422171323,
+        "transaction_cost": 810.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 157,
+          "HOLD": 81,
+          "SELL": 148
+        }
+      },
+      {
+        "seed": 46,
+        "total_reward": -8.866923076923078,
+        "final_m2m": 941807.0,
+        "final_pnl": -58193.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06321417203787698,
+        "transaction_cost": 250.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 136,
+          "HOLD": 118,
+          "SELL": 132
+        }
+      },
+      {
+        "seed": 47,
+        "total_reward": -5.871025641025636,
+        "final_m2m": 918910.0,
+        "final_pnl": -81090.0,
+        "episode_length": 386,
+        "max_drawdown": 0.08278,
+        "transaction_cost": 256.5,
+        "won": false,
+        "action_counts": {
+          "BUY": 122,
+          "HOLD": 142,
+          "SELL": 122
+        }
+      },
+      {
+        "seed": 48,
+        "total_reward": 6.40307692307692,
+        "final_m2m": 943882.0,
+        "final_pnl": -56118.0,
+        "episode_length": 386,
+        "max_drawdown": 0.0646352118829183,
+        "transaction_cost": 294.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 138,
+          "HOLD": 112,
+          "SELL": 136
+        }
+      },
+      {
+        "seed": 49,
+        "total_reward": 1.3233333333333381,
+        "final_m2m": 949043.0,
+        "final_pnl": -50957.0,
+        "episode_length": 386,
+        "max_drawdown": 0.06078147468044342,
+        "transaction_cost": 559.0,
+        "won": false,
+        "action_counts": {
+          "BUY": 161,
+          "HOLD": 74,
+          "SELL": 151
+        }
+      }
+    ]
+  }
+}
