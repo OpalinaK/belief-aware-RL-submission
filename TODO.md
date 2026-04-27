@@ -28,6 +28,6 @@
 - [x] Save to `abides-gym/scripts/plots/sweep_*.png`
 
 ### Chunk 4 — Smoke / regression test
-- [ ] Write `abides-markets/tests/test_sweep_smoke.py`
-- [ ] Test: HOLD P&L == 0 across all param values (BUG 1 invariant)
-- [ ] Test: `run_param()` produces correct result shape (N_EPISODES rows per strategy)
+- [x] Write `abides-markets/tests/test_sweep_smoke.py`
+- [x] Test: HOLD P&L == 0 across all param values (BUG 1 invariant)
+- [x] Test: `run_param()` produces correct result shape (N_EPISODES rows per strategy)
