@@ -13,11 +13,14 @@ Usage
   python sweep.py --params mm_wake_up_freq num_value_agents   # subset of params
   python sweep.py --strategies HOLD MR MR_INV                 # subset of strategies
   python sweep.py --out results.json       # custom output file
+  python sweep.py --no-plots               # skip plots, save JSON only
 
 Output
 ------
-  sweep_results.json   — one row per (param, value, strategy, seed)
-  stdout               — progress lines + final summary table
+  sweep_results.json              — one row per (param, value, strategy, seed)
+  plots/sweep_<param>.png         — mean P&L bar chart per swept parameter
+  plots/sweep_crossover.png       — MR vs MOMENTUM as num_value_agents varies
+  stdout                          — progress lines + final summary table
 """
 
 import argparse
@@ -30,11 +33,20 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 # ── import shared pieces from test.py without duplication ────────────────────
 _here = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _here)
 _test = importlib.import_module("test")
+
+# plot helpers from test.py
+_style   = _test._style
+_save    = _test._save
+_c       = _test._c
+PALETTE  = _test.PALETTE
 
 HoldBaseline                = _test.HoldBaseline
 BuyAndHoldBaseline          = _test.BuyAndHoldBaseline
@@ -196,6 +208,103 @@ def print_summary(results, strategies):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PLOTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def plot_param(df, param, out_dir):
+    """
+    Bar chart of mean P&L ± 1 std per strategy, one group per sweep value.
+    One figure per swept parameter.
+    """
+    import pandas as pd
+
+    data = df[df["param"] == param]
+    values   = list(data["value"].unique())
+    strats   = list(data["strategy"].unique())
+    n_vals   = len(values)
+    n_strats = len(strats)
+
+    x      = np.arange(n_vals)
+    width  = 0.8 / n_strats
+    offset = np.linspace(-(0.8 - width) / 2, (0.8 - width) / 2, n_strats)
+
+    _style()
+    fig, ax = plt.subplots(figsize=(max(8, n_vals * 2.2), 5))
+
+    for i, strat in enumerate(strats):
+        grp   = data[data["strategy"] == strat]
+        means = [grp[grp["value"] == v]["final_pnl"].mean() for v in values]
+        stds  = [grp[grp["value"] == v]["final_pnl"].std()  for v in values]
+        ax.bar(x + offset[i], means, width, yerr=stds,
+               label=strat, color=_c(i), alpha=0.75,
+               error_kw=dict(ecolor="white", elinewidth=1.2, capsize=3))
+
+    ax.axhline(0, color="#ff4444", lw=1.2, ls="--", label="Break-even")
+    ax.set_xticks(x)
+    ax.set_xticklabels([str(v) for v in values], fontsize=9)
+    ax.set_xlabel(param)
+    ax.set_ylabel("Mean Final P&L  (cents)")
+    ax.set_title(f"Strategy P&L vs {param}\n(bars = mean ± 1 std across episodes)")
+    ax.legend(fontsize=8, loc="upper right")
+    ax.grid(axis="y")
+    _save(fig, f"sweep_{param}", out_dir)
+
+
+def plot_crossover(df, out_dir):
+    """
+    Line chart: MR vs MOMENTUM mean P&L as num_value_agents varies.
+    Highlights the regime crossover point most relevant for RL training.
+    """
+    data = df[df["param"] == "num_value_agents"]
+    if data.empty:
+        return
+
+    strats  = ["MR", "MOMENTUM"]
+    present = [s for s in strats if s in data["strategy"].unique()]
+    if not present:
+        return
+
+    values = sorted(data["value"].unique(), key=lambda v: float(v))
+
+    _style()
+    fig, ax = plt.subplots(figsize=(7, 4))
+
+    for i, strat in enumerate(present):
+        grp   = data[data["strategy"] == strat]
+        means = [grp[grp["value"] == v]["final_pnl"].mean() for v in values]
+        stds  = [grp[grp["value"] == v]["final_pnl"].std()  for v in values]
+        ax.plot(values, means, marker="o", color=_c(i), lw=2, label=strat)
+        lo = [m - s for m, s in zip(means, stds)]
+        hi = [m + s for m, s in zip(means, stds)]
+        ax.fill_between(values, lo, hi, color=_c(i), alpha=0.15)
+
+    ax.axhline(0, color="#ff4444", lw=1.2, ls="--", label="Break-even")
+    ax.set_xlabel("num_value_agents  (fundamental anchoring strength)")
+    ax.set_ylabel("Mean Final P&L  (cents)")
+    ax.set_title("MR vs MOMENTUM crossover\nas value-agent count varies")
+    ax.legend(fontsize=9)
+    ax.grid()
+    _save(fig, "sweep_crossover", out_dir)
+
+
+def plot_all(results, out_dir):
+    try:
+        import pandas as pd
+    except ImportError:
+        print("(pandas not available — skipping plots)")
+        return
+
+    os.makedirs(out_dir, exist_ok=True)
+    df = pd.DataFrame(results)
+
+    params = df["param"].unique()
+    for param in params:
+        plot_param(df, param, out_dir)
+
+    plot_crossover(df, out_dir)
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # CLI
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -213,6 +322,8 @@ def parse_args():
     p.add_argument("--fast",       action="store_true",
                    help="Quick mode: 10 episodes, 300s timestep")
     p.add_argument("--out",        type=str, default="sweep_results.json")
+    p.add_argument("--plots-dir",  type=str, default="plots")
+    p.add_argument("--no-plots",   action="store_true")
     return p.parse_args()
 
 
@@ -271,6 +382,12 @@ def main():
     print(f"\nResults → {args.out}  ({len(results)} rows, {time.time()-t_start:.0f}s total)")
 
     print_summary(results, strategies)
+
+    # ── plots ─────────────────────────────────────────────────────────────────
+    if not args.no_plots:
+        print(f"\nPlots   → {args.plots_dir}/")
+        plot_all(results, args.plots_dir)
+        print("Done.")
 
 
 if __name__ == "__main__":

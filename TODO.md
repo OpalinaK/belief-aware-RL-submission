@@ -18,14 +18,14 @@
 - [x] Print summary table to stdout
 
 ### Chunk 2 — CLI and fast-run mode
-- [ ] Add `argparse`: `--episodes`, `--strategies`, `--fast` (300s timestep, 10 eps),
+- [x] Add `argparse`: `--episodes`, `--strategies`, `--fast` (300s timestep, 10 eps),
       `--params` (subset of sweep keys), `--out` (output file)
-- [ ] Print progress: param / value / strategy / episode as it runs
+- [x] Print progress: param / value / strategy / episode as it runs
 
 ### Chunk 3 — Plots
-- [ ] Bar chart: mean P&L by strategy, faceted by param value (one figure per param)
-- [ ] Crossover plot: MR vs MOMENTUM P&L as `num_value_agents` varies
-- [ ] Save to `abides-gym/scripts/plots/sweep_*.png`
+- [x] Bar chart: mean P&L by strategy, faceted by param value (one figure per param)
+- [x] Crossover plot: MR vs MOMENTUM P&L as `num_value_agents` varies
+- [x] Save to `abides-gym/scripts/plots/sweep_*.png`
 
 ### Chunk 4 — Smoke / regression test
 - [ ] Write `abides-markets/tests/test_sweep_smoke.py`
