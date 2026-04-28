@@ -108,6 +108,8 @@ sections show which policies work under the default calibration and how those
 rankings shift under parameter sweeps. The conclusion translates those findings
 into the next belief-aware RL implementation plan.
 
+\textbf{We will then expand this to a multi-agent setting, where the agent is trading against a pool of other agents, each with their own unique strategy.}
+
 \section{Experimental Setup}
 
 The experiment evaluates the \texttt{markets-daily\_investor-v0} ABIDES-Gym
@@ -424,6 +426,40 @@ has materially lower drawdown than \texttt{MR}, but its P\&L remains negative.}
 \label{fig:baseline-drawdown}
 \end{figure}
 
+\subsection{Quick Guide to the Baseline Figures}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{p{0.22\linewidth}p{0.34\linewidth}p{0.34\linewidth}}
+\toprule
+Figure & What it shows & How to read it \\
+\midrule
+Figure~\ref{fig:baseline-pnl} &
+The distribution of final P\&L for each strategy across all episodes. &
+Look for strategies whose dots and mean diamond sit mostly above the red
+break-even line. \texttt{MOMENTUM} is the only strategy with a clearly positive
+mean and many winning episodes. \\
+Figure~\ref{fig:baseline-sharpe-win} &
+Two summary measures: Sharpe ratio and win rate. &
+Sharpe measures risk-adjusted performance; win rate measures how often P\&L is
+non-negative. This figure is the fastest ranking of the policies:
+\texttt{MOMENTUM} is best, while \texttt{MR} and \texttt{MR\_INV} are poor. \\
+Figure~\ref{fig:baseline-reward-length} &
+Reward distribution and episode length. &
+The episode-length plot confirms the strategies usually run for the full day,
+so the results are not mainly caused by early termination. The reward plot
+tracks the same story as P\&L because reward is based on mark-to-market changes. \\
+Figure~\ref{fig:baseline-drawdown} &
+The distribution of worst within-episode losses. &
+Curves farther left are safer. \texttt{MR\_INV} controls drawdown better than
+plain \texttt{MR}, but that risk control does not make it profitable. \\
+\bottomrule
+\end{tabular}
+\caption{Reader's guide for the baseline figures.}
+\label{tab:baseline-figure-guide}
+\end{table}
+
 \section{Parameter Sweep Results}
 
 The sweep varies one parameter at a time and compares the same baseline
@@ -577,18 +613,105 @@ toward a mean-reverting regime.}
 \label{fig:sweep-env}
 \end{figure}
 
+\subsection{Quick Guide to the Sweep Figures}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{p{0.22\linewidth}p{0.34\linewidth}p{0.34\linewidth}}
+\toprule
+Figure & What it varies & What to take away \\
+\midrule
+Figure~\ref{fig:sweep-crossover} &
+Only the number of value agents, comparing \texttt{MR} against
+\texttt{MOMENTUM}. &
+This is the most important sweep figure. More value agents make the market more
+fundamentally anchored, which improves \texttt{MR} and weakens
+\texttt{MOMENTUM}. \\
+Figure~\ref{fig:sweep-agent-populations} &
+The number of value agents and momentum agents. &
+These plots ask whether changing the hidden trader population changes which
+strategy works. The value-agent trend is the cleanest evidence that regime
+composition matters. \\
+Figure~\ref{fig:sweep-value-beliefs} &
+Value-agent arrival rate \texttt{lambda\_a} and value-agent belief strength
+\texttt{kappa}. &
+These parameters control how aggressively value agents react to deviations from
+fundamental value. The plots are noisy, but they help identify candidate
+mean-reverting regimes for future RL training. \\
+Figure~\ref{fig:sweep-oracle} &
+The true fundamental process: \texttt{kappa\_oracle} and \texttt{fund\_vol}. &
+These change how the underlying fundamental value moves. Larger changes can
+create more opportunity, but also more risk; wide error bars mean the current
+sweep is not decisive. \\
+Figure~\ref{fig:sweep-mm-timing} &
+Market-maker wake-up frequency and spread adaptation. &
+These parameters control liquidity refresh and spread behavior. They matter
+because every active policy crosses the spread when it buys or sells. \\
+Figure~\ref{fig:sweep-liquidity-noise} &
+Market-maker window size and the number of noise agents. &
+These plots probe liquidity and noisy order flow. They mostly show high
+variance, so they should be treated as diagnostic rather than conclusive. \\
+Figure~\ref{fig:sweep-env} &
+Order size and timestep duration. &
+These are environment-level controls. They change how often the agent trades
+and how large each trade is, so they affect transaction costs and signal
+granularity. \\
+\bottomrule
+\end{tabular}
+\caption{Reader's guide for the parameter sweep figures.}
+\label{tab:sweep-figure-guide}
+\end{table}
+
 \section{Takeaways}
 
-The default AAPL-calibrated \texttt{rmsc04} regime rewards short-horizon
-momentum more than mean reversion. This matters for belief-aware RL training:
-if the goal is to test whether an agent can infer and exploit fundamental
-anchoring, the environment should likely be shifted toward stronger value-agent
-activity, for example by increasing \texttt{num\_value\_agents} or
-\texttt{lambda\_a}. If the goal is to learn robust trading under the current
-default market, \texttt{MOMENTUM} is the benchmark to beat, not \texttt{MR}.
+The results should be read as a chain of evidence:
 
-The sweep figures are useful for selecting candidate regimes, but most
-parameter effects need more episodes or the raw sweep table before they should
-be treated as statistically reliable.
+\begin{enumerate}
+    \item \textbf{First, the default market has a clear winner.}
+    In the baseline table, \texttt{MOMENTUM} has the highest mean P\&L, the
+    best Sharpe ratio, and the highest non-trivial win rate. The
+    mean-reversion strategies, \texttt{MR} and \texttt{MR\_INV}, lose money on
+    average. This tells us that the default AAPL-calibrated market rewards
+    short-horizon momentum more than mean reversion.
+
+    \item \textbf{Second, this is not just because all active trading works.}
+    \texttt{RANDOM} trades actively but performs much worse than
+    \texttt{MOMENTUM}. That means the momentum strategy is using a useful
+    signal, not merely benefiting from taking more trades.
+
+    \item \textbf{Third, changing the market composition changes the story.}
+    In the value-agent sweep, increasing \texttt{num\_value\_agents} makes
+    \texttt{MR} improve and makes \texttt{MOMENTUM} weaken. This is important:
+    it suggests that different hidden market regimes favor different trading
+    behavior.
+
+    \item \textbf{That is exactly why belief estimation is useful.}
+    If the best action depends on whether the market is momentum-heavy or
+    value-agent-heavy, then an RL trader should not use one fixed policy for
+    every regime. It should estimate the current regime from public market
+    history and condition its policy on that belief.
+
+    \item \textbf{The immediate next step is to build those regimes explicitly.}
+    We should train and evaluate two agents across several known ABIDES market
+    compositions: a standard RL trader that sees only market observations, and
+    a belief-aware trader that also receives an estimated regime vector. The
+    belief-aware trader should be judged by both trading performance and how
+    well its inferred beliefs match the known simulated market composition.
+\end{enumerate}
+
+The main caveat is that the sweep plots are still noisy. They are strong enough
+to motivate the next experiment, especially the value-agent result, but most
+individual parameter effects need more episodes or the raw sweep table before
+they should be treated as final statistical claims.
+
+This also translates to the main multi-agent experiment. The trading agent is
+not trying to identify one named opponent. Instead, it observes the public
+footprint of many hidden agents acting together: prices, spreads, imbalance,
+and returns. The belief module should therefore estimate the current
+multi-agent market composition, such as ``mostly momentum,'' ``mostly value,''
+or ``mixed.'' If different compositions favor different trading behavior, as
+the sweep suggests, then conditioning the RL policy on that belief is the right
+multi-agent analogue of estimating a partner type in a cooperative game.
 
 \end{document}
