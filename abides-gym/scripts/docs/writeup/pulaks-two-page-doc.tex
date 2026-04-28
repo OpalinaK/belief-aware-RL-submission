@@ -1,0 +1,217 @@
+\documentclass[8pt, a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{microtype}
+
+% Colors
+\definecolor{accentblue}{RGB}{31, 78, 147}
+\definecolor{lightgray}{RGB}{245, 245, 245}
+\definecolor{darkgray}{RGB}{80, 80, 80}
+\definecolor{rulecolor}{RGB}{31, 78, 147}
+\definecolor{rowgray}{RGB}{242, 245, 250}
+
+% Section formatting
+\titleformat{\section}
+  {\small\bfseries\color{accentblue}}
+  {\thesection.}{0.5em}{}[\color{rulecolor}\titlerule]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{darkgray}}
+  {\thesubsection.}{0.5em}{}
+
+\titlespacing{\section}{0pt}{18pt}{8pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+
+% Header/Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{darkgray}EECS 6892 - Final Project Proposal}
+\fancyhead[R]{\small\color{darkgray} ok2373 \textbar \space pm3371 \textbar \space vg2651}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\hypersetup{colorlinks=true, linkcolor=accentblue, urlcolor=accentblue}
+
+% Table row colors
+\usepackage{colortbl}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\begin{document}
+
+% ---------------------------------------------------------------
+% Title Block
+% ---------------------------------------------------------------
+\begin{center}
+    {\large\bfseries\color{accentblue} \textbf{A Study of Inference and Conditioning in Belief-Aware RL}}\\[3pt]
+    % {\normalsize\color{darkgray} Final Project Proposal --- Reinforcement Learning Course}\\[4pt]
+    % {\normalsize\color{darkgray} Duration: 6 Weeks}
+\end{center}
+
+% \vspace{4pt}
+% \noindent\color{rulecolor}\rule{\linewidth}{1.5pt}
+% \vspace{8pt}
+
+% ---------------------------------------------------------------
+\small{
+\section{Motivation}
+
+In standard multi-agent RL, agents trained through "self-play" get very good at cooperative games with identically trained agents. This happens when these agents quietly develop shared habits and signals that work between them but mean nothing to an outsider (similar to a "code" language). Thus, in belief modeling for cooperative games like Hanabi, it has been observed that while these agents achieve near-perfect scores while playing one another, their performance declines sharply when paired with a stranger. 
+
+This study challenges this underlying assumption of agent uniformity by decomposing belief-aware RL into two sequential, independently measurable problems and characterizing how quality at the first propagates into behavior at the second.
+
+Multi-agent market simulation research demonstrates that even accurate type classifiers (88\% accuracy in ABIDES~\cite{amrouni2024abides}) fail to resolve macro-level behavioral archetypes within short observation windows, causing belief collapse to a noise-trader prior~\cite{jasss2024hft}. Neither failure mode has been cleanly characterized in terms of its downstream effect on policy behavior. That gap is this project's entry point.
+
+\vspace{-10pt}
+
+\section{Research Questions}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{Q\arabic*.}]
+    \item \textbf{Inference.} Under what conditions does a belief module accurately infer trader type from order flow, and how does accuracy degrade as observation history is shortened?
+    \item \textbf{Conditioning.} How does inference quality propagate into policy behavior? Specifically, does a partially correct belief improve decisions, leave them unchanged, or actively harm them relative to no belief at all?
+    \item \textbf{Oracle.} Does perfect belief (oracle trader-type input) meaningfully change the policy's decisions? 
+\end{enumerate}
+
+\vspace{-10pt}
+\section{Methodology}
+
+\subsection{Stage 1: Oracle Baseline}
+
+Using the ABIDES-MARL simulator~\cite{abides2019}\textemdash which provides heterogeneous background agents (Momentum, Mean Reversion, Noise, Market Maker) within a realistic continuous double auction\textemdash we first feed the agent the \textit{true} trader-type label as a privileged oracle input. This answers whether perfect belief helps at all before asking whether imperfect inference can match it. If the oracle agent does not outperform the belief-agnostic baseline, the conditioning mechanism is broken and the study's finding is the null result itself, which is informative.
+
+\vspace{}
+
+\subsection{Stage 2: Inference Quality Ablation}
+
+Train a belief module (small MLP or LSTM conditioned on order flow features) and systematically vary the quality of its input by corrupting the oracle signal with controlled noise---ranging from perfect oracle to uniform random. This gives a handle on belief quality as an independent variable, avoiding the confound of simultaneously changing both information availability and model capacity. We measure belief accuracy (KL divergence) and trading performance (Sharpe ratio, PnL, maximum drawdown) at each noise level, producing a \textit{transfer function} between inference quality and decision quality.
+
+\subsection{Stage 3: Realistic Inference}
+
+We replace the corrupted oracle with a learned belief module operating on realistic order flow features: signed order flow, Level-2 book depth, and trade size distribution. Aggregated flow alone is insufficient to distinguish institutional meta-orders from retail noise due to the square-root law of market impact~\cite{bershova2013}; we test this directly by comparing a flow-only belief module against one with full book depth. The resulting inference accuracy is then mapped onto the transfer function from Stage 2, producing a predicted performance gap that we verify empirically.
+
+\vspace{-10pt}
+
+\section{Environment and Baselines}
+
+{\footnotesize
+\renewcommand{\arraystretch}{0.85}
+\begin{center}
+\resizebox{\textwidth}{}{%
+\begin{tabular}{L{3.2cm} L{4.0cm} L{8.0cm}}
+\toprule
+\rowcolor{accentblue}
+\color{white}\textbf{Component} & \color{white}\textbf{Choice} & \color{white}\textbf{Rationale} \\
+\midrule
+\rowcolor{rowgray}
+Simulator & ABIDES-MARL & Open-source, calibrated to stylized market facts, heterogeneous agent types built in~\cite{abides2019} \\
+RL Framework & Stable-Baselines3 PPO & Standard continuous control baseline; universally reproducible~\cite{sb3} \\
+\rowcolor{rowgray}
+Belief Module & LSTM over rolling window & Handles partial observability; consistent with recurrent architectures in cooperative MARL~\cite{anyplay2022}; \\
+Primary Metrics & Sharpe, PnL, KL divergence & Separates belief quality from trading quality; RL Premium for normalized comparison~\cite{rlreview2024} \\
+\rowcolor{rowgray}
+Baselines & Belief-agnostic PPO, Oracle PPO & Isolates belief contribution; Oracle sets the performance ceiling \\
+\bottomrule
+\end{tabular}%
+}
+\end{center}
+}
+
+% ---------------------------------------------------------------
+% \section{Timeline}
+
+% \vspace{6pt}
+% \begin{center}
+% \begin{tabular}{>{\bfseries}p{1.4cm} p{2.0cm} p{9.0cm}}
+% \toprule
+% \textbf{Week} & \textbf{Owner} & \textbf{Milestone} \\
+% \midrule
+% \rowcolor{rowgray}
+% 1 & All & Environment setup; ABIDES-MARL integration; confirm baseline RL agent replicates published Sharpe benchmarks \\
+% 2 & Person A & Oracle input channel implemented; oracle vs.\ baseline experiment complete \\
+% \rowcolor{rowgray}
+% 3 & Person B & Belief module trained; noise-corruption ablation across 5 signal degradation levels \\
+% 4 & Person C & Flow-only vs.\ book-depth belief module comparison; Stage 2 transfer function plotted \\
+% \rowcolor{rowgray}
+% 5 & All & Stage 3 realistic inference; full results across all four market compositions \\
+% 6 & All & Analysis, report writing, repository cleanup, submission \\
+% \bottomrule
+% \end{tabular}
+% \end{center}
+
+\section{Risk and Scope Protection}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{\arabic*.}]
+    \item \textbf{If the oracle does not help.} The null result is the finding. The report characterizes why conditioning fails and what that implies for belief-aware RL architectures more broadly.
+    \item \textbf{If belief module accuracy is low.} The transfer function from Stage 2 predicts the performance gap; we report whether the empirical gap matches the prediction.
+    \item \textbf{If ABIDES setup overruns.} Hanabi (\texttt{hanabi\_v5}, PettingZoo) serves as a backup environment where partner types are fully observable and the oracle experiment is trivially implementable; established Inter-XP benchmarks~\cite{anyplay2022, charakorn2024diversity} and open tooling~\cite{zsceval2024} make evaluation straightforward.
+    \item \textbf{Framing protection.} This is a diagnostic study, not a benchmark-beating exercise. All outcomes - positive, negative, and partial - constitute reportable findings.
+\end{enumerate}
+
+% ---------------------------------------------------------------
+\section*{References}
+\begingroup
+\renewcommand{\section}[2]{}
+\begin{thebibliography}{9}
+
+\bibitem{he2016opponent}
+He, H., Boyd-Graber, J., Kwok, K., \& Daum\'{e} III, H. (2016).
+\textit{Opponent Modeling in Deep Reinforcement Learning}.
+Proceedings of the 33rd International Conference on Machine Learning (ICML). \url{http://proceedings.mlr.press/v48/he16.pdf}
+
+\bibitem{amrouni2024abides}
+Amrouni, S., et al. (2024).
+\textit{ABIDES-MARL: A Multi-Agent Reinforcement Learning Environment for Endogenous Price Formation and Execution in a Limit Order Book}.
+arXiv:2511.02016. \url{https://arxiv.org/pdf/2511.02016}
+
+\bibitem{jasss2024hft}
+Paddrik, M., et al. (2024).
+\textit{High-Frequency Financial Market Simulation and Flash Crash Scenarios Analysis: An Agent-Based Modelling Approach}.
+Journal of Artificial Societies and Social Simulation, 27(2). \url{https://www.jasss.org/27/2/8.html}
+
+\bibitem{abides2019}
+Byrd, D., et al. (2019).
+\textit{ABIDES: Towards High-Fidelity Market Simulation for AI Research}.
+arXiv. \url{https://www.semanticscholar.org/paper/ABIDES\%3A-Towards-High-Fidelity-Market-Simulation-for-Byrd-Hybinette/44a7f1b4cb157a1621d5a6cf462458ff005e2339}
+
+\bibitem{bershova2013}
+Bershova, N., \& Rakhlin, D. (2013).
+\textit{The Non-Linear Market Impact of Large Trades: Evidence from Buy-Side Order Flow}.
+Quantitative Finance. (Referenced via square-root law discussion in: \url{https://strangematters.coop/how-financial-markets-work-market-microstructure-order-flow-theorists/})
+
+\bibitem{sb3}
+Raffin, A., et al. (2021).
+\textit{Stable-Baselines3: Reliable Reinforcement Learning Implementations}.
+Journal of Machine Learning Research, 22(268). \url{https://jmlr.org/papers/v22/20-1364.html}
+
+\bibitem{anyplay2022}
+Zhao, R., et al. (2022).
+\textit{Any-Play: An Intrinsic Augmentation for Zero-Shot Coordination}.
+Proceedings of AAMAS 2022. \url{https://arxiv.org/pdf/2201.12436}
+
+\bibitem{rlreview2024}
+A Review of Reinforcement Learning in Financial Applications. (2024).
+arXiv:2411.12746. \url{https://arxiv.org/html/2411.12746v1}
+
+\bibitem{charakorn2024diversity}
+Charakorn, R., Manoonpong, P., \& Dilokthanakul, N. (2024).
+\textit{Diversity Is Not All You Need: Training A Robust Cooperative Agent Needs Specialist Partners}.
+Advances in Neural Information Processing Systems (NeurIPS). 
+\url{https://proceedings.neurips.cc/paper_files/paper/2024/file/66b35d2e8d524706f39cc21f5337b002-Paper-Conference.pdf}
+
+\bibitem{zsceval2024}
+ZSC-Eval: An Evaluation Toolkit and Benchmark for Multi-agent Zero-shot Coordination. (2024).
+NeurIPS 2024. \url{https://neurips.cc/virtual/2024/poster/97826}
+
+\end{thebibliography}
+\endgroup
+}
+\end{document}
