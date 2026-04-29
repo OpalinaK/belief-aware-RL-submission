@@ -7,54 +7,62 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.2}What Experiments Are We Running?}{1}{subsection.1.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.3}How Do These Results Help?}{1}{subsection.1.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.4}What Are The Next Steps?}{2}{subsection.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2}Experimental Setup}{2}{section.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Experimental design. The baseline benchmark evaluates six fixed heuristics under the default AAPL calibration. The sweep keeps the same policy set but changes one environment or background-market parameter at a time to identify which market regimes favor momentum or mean reversion.}}{3}{figure.caption.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Metrics and Sweep Parameters}{2}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Performance Metrics}{3}{subsection.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Metrics used to compare baseline strategies and sweep results.}}{3}{table.caption.1}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:experiment-design}{{1}{3}{Experimental design. The baseline benchmark evaluates six fixed heuristics under the default AAPL calibration. The sweep keeps the same policy set but changes one environment or background-market parameter at a time to identify which market regimes favor momentum or mean reversion}{figure.caption.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Setup Context}{3}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Background Market Agents}{4}{subsection.3.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Background agents in the \texttt  {rmsc04} market configuration.}}{4}{table.caption.2}\protected@file@percent }
-\newlabel{tab:background-agents}{{1}{4}{Background agents in the \texttt {rmsc04} market configuration}{table.caption.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Daily Investor Interface}{4}{subsection.3.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Observation features used by the daily investor environment.}}{4}{table.caption.3}\protected@file@percent }
-\newlabel{tab:observation-context}{{2}{4}{Observation features used by the daily investor environment}{table.caption.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Baseline Policies}{4}{subsection.3.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Hand-coded baseline policies evaluated in both the fixed benchmark and the parameter sweep.}}{5}{table.caption.4}\protected@file@percent }
-\newlabel{tab:baseline-policy-context}{{3}{5}{Hand-coded baseline policies evaluated in both the fixed benchmark and the parameter sweep}{table.caption.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}How To Interpret the Sweep}{5}{subsection.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4}Baseline Strategy Results}{5}{section.4}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Baseline performance over 50 episodes. Sharpe is computed as mean final P\&L divided by standard deviation of final P\&L across episodes.}}{5}{table.caption.5}\protected@file@percent }
-\newlabel{tab:baseline-results}{{4}{5}{Baseline performance over 50 episodes. Sharpe is computed as mean final P\&L divided by standard deviation of final P\&L across episodes}{table.caption.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Final mark-to-market P\&L distribution. Diamonds denote means, median lines show central tendency, and dots are individual episodes.}}{6}{figure.caption.6}\protected@file@percent }
-\newlabel{fig:baseline-pnl}{{2}{6}{Final mark-to-market P\&L distribution. Diamonds denote means, median lines show central tendency, and dots are individual episodes}{figure.caption.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Risk-adjusted and directional success metrics.}}{6}{figure.caption.7}\protected@file@percent }
-\newlabel{fig:baseline-sharpe-win}{{3}{6}{Risk-adjusted and directional success metrics}{figure.caption.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Reward and termination behavior. All strategies run for the full day, so the drawdown kill switch is not the main driver of the results.}}{7}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:baseline-reward-length}{{4}{7}{Reward and termination behavior. All strategies run for the full day, so the drawdown kill switch is not the main driver of the results}{figure.caption.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Maximum drawdown CDF. Curves farther left are safer. \texttt  {MR\_INV} has materially lower drawdown than \texttt  {MR}, but its P\&L remains negative.}}{7}{figure.caption.9}\protected@file@percent }
-\newlabel{fig:baseline-drawdown}{{5}{7}{Maximum drawdown CDF. Curves farther left are safer. \texttt {MR\_INV} has materially lower drawdown than \texttt {MR}, but its P\&L remains negative}{figure.caption.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Quick Guide to the Baseline Figures}{8}{subsection.4.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Reader's guide for the baseline figures.}}{8}{table.caption.10}\protected@file@percent }
-\newlabel{tab:baseline-figure-guide}{{5}{8}{Reader's guide for the baseline figures}{table.caption.10}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Parameter Sweep Results}{8}{section.5}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Qualitative interpretation of the one-at-a-time parameter sweep plots.}}{9}{table.caption.11}\protected@file@percent }
-\newlabel{tab:sweep-interpretation}{{6}{9}{Qualitative interpretation of the one-at-a-time parameter sweep plots}{table.caption.11}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \texttt  {MR} versus \texttt  {MOMENTUM} as value-agent count varies. This is the most important sweep figure: more value agents move the market toward a mean-reverting regime.}}{9}{figure.caption.12}\protected@file@percent }
-\newlabel{fig:sweep-crossover}{{6}{9}{\texttt {MR} versus \texttt {MOMENTUM} as value-agent count varies. This is the most important sweep figure: more value agents move the market toward a mean-reverting regime}{figure.caption.12}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Agent-population sweeps.}}{10}{figure.caption.13}\protected@file@percent }
-\newlabel{fig:sweep-agent-populations}{{7}{10}{Agent-population sweeps}{figure.caption.13}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Value-agent belief and arrival sweeps.}}{10}{figure.caption.14}\protected@file@percent }
-\newlabel{fig:sweep-value-beliefs}{{8}{10}{Value-agent belief and arrival sweeps}{figure.caption.14}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Oracle fundamental-process sweeps.}}{10}{figure.caption.15}\protected@file@percent }
-\newlabel{fig:sweep-oracle}{{9}{10}{Oracle fundamental-process sweeps}{figure.caption.15}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Market-maker timing and spread-adaptation sweeps.}}{11}{figure.caption.16}\protected@file@percent }
-\newlabel{fig:sweep-mm-timing}{{10}{11}{Market-maker timing and spread-adaptation sweeps}{figure.caption.16}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Liquidity and noise sweeps.}}{11}{figure.caption.17}\protected@file@percent }
-\newlabel{fig:sweep-liquidity-noise}{{11}{11}{Liquidity and noise sweeps}{figure.caption.17}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Environment-level action-frequency and order-size sweeps.}}{11}{figure.caption.18}\protected@file@percent }
-\newlabel{fig:sweep-env}{{12}{11}{Environment-level action-frequency and order-size sweeps}{figure.caption.18}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Quick Guide to the Sweep Figures}{12}{subsection.5.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Reader's guide for the parameter sweep figures.}}{12}{table.caption.19}\protected@file@percent }
-\newlabel{tab:sweep-figure-guide}{{7}{12}{Reader's guide for the parameter sweep figures}{table.caption.19}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Takeaways}{12}{section.6}\protected@file@percent }
-\gdef \@abspage@last{13}
+\newlabel{tab:metric-glossary}{{1}{3}{Metrics used to compare baseline strategies and sweep results}{table.caption.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Sweep Parameters}{3}{subsection.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Parameters varied in the one-at-a-time sweep.}}{4}{table.caption.2}\protected@file@percent }
+\newlabel{tab:sweep-parameter-glossary}{{2}{4}{Parameters varied in the one-at-a-time sweep}{table.caption.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Experimental Setup}{4}{section.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Experimental design. The baseline benchmark evaluates six fixed heuristics under the default AAPL calibration. The sweep keeps the same policy set but changes one environment or background-market parameter at a time to identify which market regimes favor momentum or mean reversion.}}{5}{figure.caption.3}\protected@file@percent }
+\newlabel{fig:experiment-design}{{1}{5}{Experimental design. The baseline benchmark evaluates six fixed heuristics under the default AAPL calibration. The sweep keeps the same policy set but changes one environment or background-market parameter at a time to identify which market regimes favor momentum or mean reversion}{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Setup Context}{5}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Background Market Agents}{6}{subsection.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Background agents in the \texttt  {rmsc04} market configuration.}}{6}{table.caption.4}\protected@file@percent }
+\newlabel{tab:background-agents}{{3}{6}{Background agents in the \texttt {rmsc04} market configuration}{table.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Daily Investor Interface}{6}{subsection.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Observation features used by the daily investor environment.}}{6}{table.caption.5}\protected@file@percent }
+\newlabel{tab:observation-context}{{4}{6}{Observation features used by the daily investor environment}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Baseline Policies}{6}{subsection.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Hand-coded baseline policies evaluated in both the fixed benchmark and the parameter sweep.}}{7}{table.caption.6}\protected@file@percent }
+\newlabel{tab:baseline-policy-context}{{5}{7}{Hand-coded baseline policies evaluated in both the fixed benchmark and the parameter sweep}{table.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}How To Interpret the Sweep}{7}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Baseline Strategy Results}{7}{section.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Baseline performance over 50 episodes. Sharpe is computed as mean final P\&L divided by standard deviation of final P\&L across episodes.}}{7}{table.caption.7}\protected@file@percent }
+\newlabel{tab:baseline-results}{{6}{7}{Baseline performance over 50 episodes. Sharpe is computed as mean final P\&L divided by standard deviation of final P\&L across episodes}{table.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Final mark-to-market P\&L distribution. Diamonds denote means, median lines show central tendency, and dots are individual episodes.}}{8}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:baseline-pnl}{{2}{8}{Final mark-to-market P\&L distribution. Diamonds denote means, median lines show central tendency, and dots are individual episodes}{figure.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Risk-adjusted and directional success metrics.}}{8}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:baseline-sharpe-win}{{3}{8}{Risk-adjusted and directional success metrics}{figure.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Reward and termination behavior. All strategies run for the full day, so the drawdown kill switch is not the main driver of the results.}}{9}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:baseline-reward-length}{{4}{9}{Reward and termination behavior. All strategies run for the full day, so the drawdown kill switch is not the main driver of the results}{figure.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Maximum drawdown CDF. Curves farther left are safer. \texttt  {MR\_INV} has materially lower drawdown than \texttt  {MR}, but its P\&L remains negative.}}{9}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:baseline-drawdown}{{5}{9}{Maximum drawdown CDF. Curves farther left are safer. \texttt {MR\_INV} has materially lower drawdown than \texttt {MR}, but its P\&L remains negative}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Quick Guide to the Baseline Figures}{10}{subsection.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Reader's guide for the baseline figures.}}{10}{table.caption.12}\protected@file@percent }
+\newlabel{tab:baseline-figure-guide}{{7}{10}{Reader's guide for the baseline figures}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Parameter Sweep Results}{10}{section.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Qualitative interpretation of the one-at-a-time parameter sweep plots.}}{11}{table.caption.13}\protected@file@percent }
+\newlabel{tab:sweep-interpretation}{{8}{11}{Qualitative interpretation of the one-at-a-time parameter sweep plots}{table.caption.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \texttt  {MR} versus \texttt  {MOMENTUM} as value-agent count varies. This is the most important sweep figure: more value agents move the market toward a mean-reverting regime.}}{11}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:sweep-crossover}{{6}{11}{\texttt {MR} versus \texttt {MOMENTUM} as value-agent count varies. This is the most important sweep figure: more value agents move the market toward a mean-reverting regime}{figure.caption.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Agent-population sweeps.}}{12}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:sweep-agent-populations}{{7}{12}{Agent-population sweeps}{figure.caption.15}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Value-agent belief and arrival sweeps.}}{12}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:sweep-value-beliefs}{{8}{12}{Value-agent belief and arrival sweeps}{figure.caption.16}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Oracle fundamental-process sweeps.}}{12}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:sweep-oracle}{{9}{12}{Oracle fundamental-process sweeps}{figure.caption.17}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Market-maker timing and spread-adaptation sweeps.}}{13}{figure.caption.18}\protected@file@percent }
+\newlabel{fig:sweep-mm-timing}{{10}{13}{Market-maker timing and spread-adaptation sweeps}{figure.caption.18}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Liquidity and noise sweeps.}}{13}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:sweep-liquidity-noise}{{11}{13}{Liquidity and noise sweeps}{figure.caption.19}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Environment-level action-frequency and order-size sweeps.}}{13}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:sweep-env}{{12}{13}{Environment-level action-frequency and order-size sweeps}{figure.caption.20}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Quick Guide to the Sweep Figures}{14}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Reader's guide for the parameter sweep figures.}}{14}{table.caption.21}\protected@file@percent }
+\newlabel{tab:sweep-figure-guide}{{9}{14}{Reader's guide for the parameter sweep figures}{table.caption.21}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Takeaways}{14}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Next Steps}{15}{section.8}\protected@file@percent }
+\gdef \@abspage@last{16}

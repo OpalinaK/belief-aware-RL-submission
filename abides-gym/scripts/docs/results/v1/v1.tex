@@ -110,6 +110,115 @@ into the next belief-aware RL implementation plan.
 
 \textbf{We will then expand this to a multi-agent setting, where the agent is trading against a pool of other agents, each with their own unique strategy.}
 
+\section{Metrics and Sweep Parameters}
+
+Before looking at the results, it helps to separate two kinds of quantities in
+this report. The \textbf{metrics} are what we measure after an episode finishes.
+The \textbf{sweep parameters} are the knobs we change in the simulator to create
+different market regimes.
+
+\subsection{Performance Metrics}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{p{0.24\linewidth}p{0.66\linewidth}}
+\toprule
+Metric & Meaning \\
+\midrule
+Final P\&L &
+The final mark-to-market value minus the starting cash account. Positive P\&L
+means the strategy ended the episode with more value than it started with. All
+P\&L values in this report are measured in cents. \\
+Total reward &
+The sum of per-step rewards over one episode. In this environment, reward is
+based on changes in mark-to-market value, so it should tell a similar story to
+P\&L. \\
+Sharpe ratio &
+A simple risk-adjusted score: mean final P\&L divided by the standard deviation
+of final P\&L across episodes. A higher Sharpe means the strategy earns more
+per unit of variability. \\
+Win rate &
+The fraction of episodes where final P\&L is non-negative. This is useful
+because a strategy can have a high average P\&L but still lose often if its
+returns are very skewed. \\
+Maximum drawdown &
+The largest peak-to-trough loss during an episode, measured as a fraction of
+peak mark-to-market value. Lower drawdown means the strategy is safer during
+the day. \\
+Transaction-cost proxy &
+The sum of roughly half the spread paid on non-hold actions. It is not an exact
+exchange fee; it is a simple measure of how much active trading pays to cross
+the bid-ask spread. \\
+Episode length &
+How many environment steps the episode lasts. Short episodes would indicate
+early termination from the drawdown kill switch; full-length episodes mean the
+strategy survived the whole simulated day. \\
+\bottomrule
+\end{tabular}
+\caption{Metrics used to compare baseline strategies and sweep results.}
+\label{tab:metric-glossary}
+\end{table}
+
+\subsection{Sweep Parameters}
+
+The sweep changes one parameter at a time. Each row below explains what that
+parameter controls and why it matters for belief-aware trading.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{p{0.26\linewidth}p{0.64\linewidth}}
+\toprule
+Parameter & What it changes \\
+\midrule
+\texttt{num\_value\_agents} &
+The number of value agents in the background market. More value agents should
+create stronger fundamental anchoring and make mean reversion more plausible. \\
+\texttt{lambda\_a} &
+The arrival rate of value-agent trading opportunities. Higher values mean value
+agents show up more often, so the market should react more quickly when price
+deviates from fundamental value. \\
+\texttt{kappa} &
+The mean-reversion strength assumed by value agents in their belief model.
+Larger values make value agents believe deviations from fundamental value close
+more quickly. \\
+\texttt{kappa\_oracle} &
+The true mean-reversion strength of the underlying fundamental-value process.
+This changes the actual environment dynamics, not just what value agents
+believe. \\
+\texttt{fund\_vol} &
+The volatility of the fundamental-value process. Higher volatility creates
+larger price opportunities but also more risk. \\
+\texttt{num\_momentum\_agents} &
+The number of trend-following agents. More momentum agents should increase
+trend persistence and make momentum-style trading more attractive. \\
+\texttt{num\_noise\_agents} &
+The number of random order-flow agents. Noise agents add volume and price
+jitter; they can also affect book depth because market makers size orders based
+on recent volume. \\
+\texttt{mm\_wake\_up\_freq} &
+How often adaptive market makers refresh their quotes. Slower refresh can leave
+stale quotes in the book; faster refresh can remove stale-quote opportunities. \\
+\texttt{mm\_spread\_alpha} &
+How quickly the market-maker spread estimate adapts to recent market
+conditions. This affects the spread cost paid by active strategies. \\
+\texttt{mm\_window\_size} &
+The market-maker lookback window for estimating spread and liquidity. This
+changes how stable or reactive the quoted market is. \\
+\texttt{order\_fixed\_size} &
+The number of shares the daily investor buys or sells per market order. Larger
+orders increase exposure but can also increase slippage and spread cost. \\
+\texttt{timestep\_duration} &
+How much simulated time passes between the daily investor's decisions. Shorter
+timesteps allow more frequent reactions; longer timesteps produce coarser
+observations and fewer trading opportunities. \\
+\bottomrule
+\end{tabular}
+\caption{Parameters varied in the one-at-a-time sweep.}
+\label{tab:sweep-parameter-glossary}
+\end{table}
+
 \section{Experimental Setup}
 
 The experiment evaluates the \texttt{markets-daily\_investor-v0} ABIDES-Gym
@@ -713,5 +822,54 @@ multi-agent market composition, such as ``mostly momentum,'' ``mostly value,''
 or ``mixed.'' If different compositions favor different trading behavior, as
 the sweep suggests, then conditioning the RL policy on that belief is the right
 multi-agent analogue of estimating a partner type in a cooperative game.
+
+\section{Next Steps}
+
+The next iteration should make the sweep results more signaling. Right now,
+many sweep plots have large error bars that overlap zero and overlap each other.
+Those plots are useful diagnostics, but they are not strong enough to support
+precise claims about every parameter.
+
+\begin{itemize}
+    \item \textbf{Most noisy sweeps.} The least conclusive sweeps are
+    \texttt{num\_momentum\_agents}, \texttt{kappa}, \texttt{kappa\_oracle},
+    \texttt{fund\_vol}, \texttt{num\_noise\_agents}, the market-maker
+    parameters, \texttt{order\_fixed\_size}, and \texttt{timestep\_duration}.
+    Their error bars are wide and the strategy rankings are not stable across
+    parameter values.
+
+    \item \textbf{Most useful sweep so far.} The clearest signal is
+    \texttt{num\_value\_agents}. As value-agent count increases,
+    \texttt{MR} improves while \texttt{MOMENTUM} weakens. This directly
+    supports the idea that hidden market composition changes which trading
+    behavior is best.
+
+    \item \textbf{Improve statistical signal.} Run more episodes per
+    parameter-value-strategy cell, save the raw \texttt{sweep\_results.json},
+    and plot confidence intervals rather than standard deviation bars.
+    Confidence intervals answer the question ``how certain are we about the
+    mean?'' more directly than standard deviations.
+
+    \item \textbf{Use stronger regime definitions.} Instead of only changing
+    one parameter slightly at a time, create explicit regimes: a
+    momentum-heavy regime, a value-agent-heavy regime, a noise-heavy regime,
+    and a mixed regime. This should produce cleaner differences for the belief
+    module to learn.
+
+    \item \textbf{Simplify the diagnostic plots.} For the next sweep, focus on
+    \texttt{MOMENTUM}, \texttt{MR}, \texttt{MR\_INV}, and \texttt{HOLD}. The
+    full six-strategy plots are crowded, while the belief-aware RL question is
+    mainly about whether the market favors momentum or mean reversion.
+
+    \item \textbf{Plot differences from default.} In addition to raw P\&L,
+    plot each strategy's change in mean P\&L relative to the default parameter
+    value. This will make it easier to see whether a parameter actually moves
+    the market regime.
+\end{itemize}
+
+In short, I will keep iterating on this by turning the current broad sweep into
+a smaller, targeted regime-identification experiment. The goal is to produce
+clearer market regimes first, then train the belief-aware RL agent to infer
+those regimes from public observations.
 
 \end{document}
