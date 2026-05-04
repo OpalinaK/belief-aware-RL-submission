@@ -53,10 +53,12 @@ def ignore_mkt_data_buffer_decorator(func):
     def wrapper_mkt_data_buffer_decorator(self, raw_state):
         raw_state_copy = deepcopy(raw_state)
         for i in range(len(raw_state)):
-            raw_state[i]["parsed_mkt_data"] = raw_state_copy[i]["parsed_mkt_data"][-1]
-            raw_state[i]["parsed_volume_data"] = raw_state_copy[i][
-                "parsed_volume_data"
-            ][-1]
+            if raw_state_copy[i]["parsed_mkt_data"]:
+                raw_state[i]["parsed_mkt_data"] = raw_state_copy[i]["parsed_mkt_data"][-1]
+            if raw_state_copy[i]["parsed_volume_data"]:
+                raw_state[i]["parsed_volume_data"] = raw_state_copy[i][
+                    "parsed_volume_data"
+                ][-1]
         raw_state2 = list_dict_flip(raw_state)
         flipped = dict((k, list_dict_flip(v)) for (k, v) in raw_state2.items())
         return func(self, flipped)

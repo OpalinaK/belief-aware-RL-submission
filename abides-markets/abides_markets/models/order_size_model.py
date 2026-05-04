@@ -1,7 +1,11 @@
 import json
 
 import numpy as np
-from pomegranate import GeneralMixtureModel
+
+try:
+    from pomegranate import GeneralMixtureModel  # legacy API
+except Exception:  # pragma: no cover - runtime fallback for newer pomegranate
+    GeneralMixtureModel = None
 
 
 order_size = {
@@ -92,7 +96,22 @@ order_size = {
 
 class OrderSizeModel:
     def __init__(self) -> None:
-        self.model = GeneralMixtureModel.from_json(json.dumps(order_size))
+        self.model = (
+            GeneralMixtureModel.from_json(json.dumps(order_size))
+            if GeneralMixtureModel is not None
+            else None
+        )
 
     def sample(self, random_state: np.random.RandomState) -> float:
-        return round(self.model.sample(random_state=random_state))
+        if self.model is not None:
+            return round(self.model.sample(random_state=random_state))
+
+        # Fallback sampler when pomegranate's legacy GeneralMixtureModel is absent.
+        weights = np.array(order_size["weights"], dtype=float)
+        weights /= weights.sum()
+        idx = random_state.choice(len(weights), p=weights)
+        dist = order_size["distributions"][idx]
+        mu, sigma = dist["parameters"]
+        if dist["name"] == "LogNormalDistribution":
+            return round(float(random_state.lognormal(mean=mu, sigma=sigma)))
+        return round(float(random_state.normal(loc=mu, scale=sigma)))

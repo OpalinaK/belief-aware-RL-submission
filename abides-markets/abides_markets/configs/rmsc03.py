@@ -14,10 +14,8 @@ from abides_markets.agents import (
     ValueAgent,
     AdaptiveMarketMakerAgent,
     MomentumAgent,
-    POVExecutionAgent,
 )
 from abides_markets.oracles import SparseMeanRevertingOracle
-from abides_markets.orders import Side
 from abides_markets.utils import generate_latency_model
 
 
@@ -41,8 +39,8 @@ def build_config(
     num_momentum_agents=25,
     num_noise_agents=5000,
     num_value_agents=100,
-    ## exec agent
-    execution_agents=True,
+    ## exec agent (optional; disabled when class unavailable)
+    execution_agents=False,
     execution_pov=0.1,
     ## market maker
     mm_pov=0.025,
@@ -235,39 +233,8 @@ def build_config(
     agent_types.extend("MomentumAgent")
 
     # 6) Execution Agent
-
-    trade = True if execution_agents else False
-
-    #### Participation of Volume Agent parameters
-
-    pov_agent_start_time = mkt_open + str_to_ns("00:30:00")
-    pov_agent_end_time = mkt_close - str_to_ns("00:30:00")
-    pov_proportion_of_volume = execution_pov
-    pov_quantity = 12e5
-    pov_frequency = str_to_ns("1min")
-    pov_direction = Side.BID
-
-    pov_agent = POVExecutionAgent(
-        id=agent_count,
-        name="POV_EXECUTION_AGENT",
-        type="ExecutionAgent",
-        symbol=symbol,
-        starting_cash=starting_cash,
-        start_time=pov_agent_start_time,
-        end_time=pov_agent_end_time,
-        freq=pov_frequency,
-        lookback_period=pov_frequency,
-        pov=pov_proportion_of_volume,
-        direction=pov_direction,
-        quantity=pov_quantity,
-        trade=trade,
-        log_orders=True,  # needed for plots so conflicts with others
-    )
-
-    execution_agents = [pov_agent]
-    agents.extend(execution_agents)
-    agent_types.extend("ExecutionAgent")
-    agent_count += 1
+    # This project version does not expose POVExecutionAgent in
+    # abides_markets.agents, so skip adding execution agents.
 
     # extract kernel seed here to reproduce the state of random generator in old version
     random_state_kernel = np.random.RandomState(

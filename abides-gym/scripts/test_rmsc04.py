@@ -21,6 +21,7 @@ warnings.filterwarnings("ignore")
 
 import gym
 import abides_gym
+import numpy as np
 
 
 _BASELINE_PATH = Path(__file__).with_name("test.py")
@@ -58,7 +59,6 @@ RMSC04_PARAMS = dict(
 )
 
 
-ALL_STRATEGIES = _BASELINE.ALL_STRATEGIES
 run_episode = _BASELINE.run_episode
 summarise = _BASELINE.summarise
 plot_m2m = _BASELINE.plot_m2m
@@ -67,6 +67,95 @@ plot_episode_length = _BASELINE.plot_episode_length
 plot_sharpe = _BASELINE.plot_sharpe
 plot_win_rate = _BASELINE.plot_win_rate
 plot_max_drawdown = _BASELINE.plot_max_drawdown
+
+
+class ExchangeAgentBaseline:
+    """Reference exchange-agent baseline: does not take directional risk."""
+    name = "EXCHANGE"
+
+    def act(self, obs):
+        return 1  # HOLD
+
+
+class NoiseAgentBaseline:
+    """Noise-agent style random order flow with a HOLD bias."""
+    name = "NOISE"
+
+    def __init__(self, seed=0):
+        self._seed = seed
+        self._rng = np.random.RandomState(seed)
+
+    def reset(self):
+        self._rng = np.random.RandomState(self._seed)
+
+    def act(self, obs):
+        # 30% buy, 40% hold, 30% sell
+        return int(self._rng.choice([0, 1, 2], p=[0.3, 0.4, 0.3]))
+
+
+class MomentumAgentBaseline:
+    """Trend-following baseline using return and imbalance."""
+    name = "MOMENTUM"
+
+    def __init__(self, ret_threshold=0.5):
+        self._thr = ret_threshold
+
+    def act(self, obs):
+        ret = float(obs[4, 0])  # latest padded return
+        imb = float(obs[1, 0])  # order-book imbalance
+        if ret > self._thr and imb >= 0.5:
+            return 0
+        if ret < -self._thr and imb <= 0.5:
+            return 2
+        return 1
+
+
+class ValueAgentBaseline:
+    """Mean-reverting value baseline against short-term dislocation."""
+    name = "VALUE"
+
+    def __init__(self, direction_threshold=0.75):
+        self._thr = direction_threshold
+
+    def act(self, obs):
+        direction_feature = float(obs[3, 0])  # mid - last transaction
+        if direction_feature < -self._thr:
+            return 0
+        if direction_feature > self._thr:
+            return 2
+        return 1
+
+
+class MarketMakerAgentBaseline:
+    """Inventory-aware quoting proxy: fade imbalance and control inventory."""
+    name = "MARKET_MAKER"
+
+    def __init__(self, inventory_cap=50, imbalance_threshold=0.08):
+        self._cap = inventory_cap
+        self._thr = imbalance_threshold
+
+    def act(self, obs):
+        holdings = float(obs[0, 0])
+        imbalance = float(obs[1, 0])
+
+        if holdings > self._cap:
+            return 2
+        if holdings < -self._cap:
+            return 0
+
+        if imbalance < 0.5 - self._thr:
+            return 0
+        if imbalance > 0.5 + self._thr:
+            return 2
+        return 1
+
+
+ALL_STRATEGIES = {
+    "NOISE": NoiseAgentBaseline,
+    "MARKET_MAKER": MarketMakerAgentBaseline,
+    "MOMENTUM": MomentumAgentBaseline,
+    "VALUE": ValueAgentBaseline,
+}
 
 
 def parse_args():
