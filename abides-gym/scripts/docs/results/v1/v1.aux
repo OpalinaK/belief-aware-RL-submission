@@ -1,0 +1,86 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Research Goal and Report Roadmap}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}What Are We Trying To Do?}{1}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}What Experiments Are We Running?}{1}{subsection.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}How Do These Results Help?}{2}{subsection.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.4}What Are The Next Steps?}{2}{subsection.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Metrics and Sweep Parameters}{3}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Performance Metrics}{3}{subsection.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Metrics used to compare baseline strategies and sweep results.}}{3}{table.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:metric-glossary}{{1}{3}{Metrics used to compare baseline strategies and sweep results}{table.caption.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Sweep Parameters}{3}{subsection.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Parameters varied in the one-at-a-time sweep.}}{4}{table.caption.2}\protected@file@percent }
+\newlabel{tab:sweep-parameter-glossary}{{2}{4}{Parameters varied in the one-at-a-time sweep}{table.caption.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Experimental Setup}{4}{section.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Experimental design. The baseline benchmark evaluates six fixed heuristics under the default AAPL calibration. The sweep keeps the same policy set but changes one environment or background-market parameter at a time to identify which market regimes favor momentum or mean reversion.}}{5}{figure.caption.3}\protected@file@percent }
+\newlabel{fig:experiment-design}{{1}{5}{Experimental design. The baseline benchmark evaluates six fixed heuristics under the default AAPL calibration. The sweep keeps the same policy set but changes one environment or background-market parameter at a time to identify which market regimes favor momentum or mean reversion}{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Setup Context}{5}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Background Market Agents}{6}{subsection.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Background agents in the \texttt  {rmsc04} market configuration.}}{6}{table.caption.4}\protected@file@percent }
+\newlabel{tab:background-agents}{{3}{6}{Background agents in the \texttt {rmsc04} market configuration}{table.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Daily Investor Interface}{6}{subsection.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Observation features used by the daily investor environment.}}{6}{table.caption.5}\protected@file@percent }
+\newlabel{tab:observation-context}{{4}{6}{Observation features used by the daily investor environment}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Baseline Policies}{6}{subsection.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Hand-coded baseline policies evaluated in both the fixed benchmark and the parameter sweep.}}{7}{table.caption.6}\protected@file@percent }
+\newlabel{tab:baseline-policy-context}{{5}{7}{Hand-coded baseline policies evaluated in both the fixed benchmark and the parameter sweep}{table.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}How To Interpret the Sweep}{7}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Baseline Strategy Results}{7}{section.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Baseline performance over 50 episodes. Sharpe is computed as mean final P\&L divided by standard deviation of final P\&L across episodes.}}{7}{table.caption.7}\protected@file@percent }
+\newlabel{tab:baseline-results}{{6}{7}{Baseline performance over 50 episodes. Sharpe is computed as mean final P\&L divided by standard deviation of final P\&L across episodes}{table.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Final mark-to-market P\&L distribution. Diamonds denote means, median lines show central tendency, and dots are individual episodes.}}{8}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:baseline-pnl}{{2}{8}{Final mark-to-market P\&L distribution. Diamonds denote means, median lines show central tendency, and dots are individual episodes}{figure.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Risk-adjusted and directional success metrics.}}{8}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:baseline-sharpe-win}{{3}{8}{Risk-adjusted and directional success metrics}{figure.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Reward and termination behavior. All strategies run for the full day, so the drawdown kill switch is not the main driver of the results.}}{9}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:baseline-reward-length}{{4}{9}{Reward and termination behavior. All strategies run for the full day, so the drawdown kill switch is not the main driver of the results}{figure.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Maximum drawdown CDF. Curves farther left are safer. \texttt  {MR\_INV} has materially lower drawdown than \texttt  {MR}, but its P\&L remains negative.}}{9}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:baseline-drawdown}{{5}{9}{Maximum drawdown CDF. Curves farther left are safer. \texttt {MR\_INV} has materially lower drawdown than \texttt {MR}, but its P\&L remains negative}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Quick Guide to the Baseline Figures}{10}{subsection.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Reader's guide for the baseline figures.}}{10}{table.caption.12}\protected@file@percent }
+\newlabel{tab:baseline-figure-guide}{{7}{10}{Reader's guide for the baseline figures}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}RMSC04 Gym Investor Baselines Versus Native ABIDES Agent Baselines}{10}{section.6}\protected@file@percent }
+\newlabel{sec:rm04-native-extra-baselines}{{6}{10}{RMSC04 Gym Investor Baselines Versus Native ABIDES Agent Baselines}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}What differs between tracks?}{11}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Three baseline tracks and what each one actually measures.}}{11}{table.caption.13}\protected@file@percent }
+\newlabel{tab:baseline-tracks}{{8}{11}{Three baseline tracks and what each one actually measures}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}RMSC04 Gym four-strategy summary (50 episodes per policy)}{11}{subsection.6.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces RMSC04 Gym investor-style baselines from \texttt  {test\_rmsc04.py} (50 seeds, default timestep and order size in that script).}}{11}{table.caption.14}\protected@file@percent }
+\newlabel{tab:rmsc04-gym-summary}{{9}{11}{RMSC04 Gym investor-style baselines from \texttt {test\_rmsc04.py} (50 seeds, default timestep and order size in that script)}{table.caption.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces RMSC04 Gym baselines (\texttt  {plots\_rmsc04/}). Interpret together with Table~\ref {tab:rmsc04-gym-summary}.}}{11}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:rmsc04-gym-plots-sample}{{6}{11}{RMSC04 Gym baselines (\texttt {plots\_rmsc04/}). Interpret together with Table~\ref {tab:rmsc04-gym-summary}}{figure.caption.15}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Native ABIDES agent-level summary}{12}{subsection.6.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Representative aggregates from native \texttt  {baselines.py} paired with RMSC04 parameters (counts reflect 50 stochastic seeds \(\times \) population per simulation). Exact totals live in JSON alongside the plots.}}{12}{table.caption.16}\protected@file@percent }
+\newlabel{tab:native-sim-summary}{{10}{12}{Representative aggregates from native \texttt {baselines.py} paired with RMSC04 parameters (counts reflect 50 stochastic seeds \(\times \) population per simulation). Exact totals live in JSON alongside the plots}{table.caption.16}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Native ABIDES baselines (\texttt  {sim\_plots/}). KERNEL \texttt  {VALUE} dominates; KERNEL \texttt  {MOMENTUM} loses heavily---the opposite ranking flavor from heuristic Gym momentum on the RL observation.}}{12}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:native-sim-plots-sample}{{7}{12}{Native ABIDES baselines (\texttt {sim\_plots/}). KERNEL \texttt {VALUE} dominates; KERNEL \texttt {MOMENTUM} loses heavily---the opposite ranking flavor from heuristic Gym momentum on the RL observation}{figure.caption.17}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Caveats when talking to the belief-aware roadmap}{12}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Design directions for a belief-aware daily investor}{13}{subsection.6.5}\protected@file@percent }
+\newlabel{sec:design-directions}{{6.5}{13}{Design directions for a belief-aware daily investor}{subsection.6.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Parameter Sweep Results}{13}{section.7}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Qualitative interpretation of the one-at-a-time parameter sweep plots.}}{14}{table.caption.18}\protected@file@percent }
+\newlabel{tab:sweep-interpretation}{{11}{14}{Qualitative interpretation of the one-at-a-time parameter sweep plots}{table.caption.18}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces \texttt  {MR} versus \texttt  {MOMENTUM} as value-agent count varies. This is the most important sweep figure: more value agents move the market toward a mean-reverting regime.}}{14}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:sweep-crossover}{{8}{14}{\texttt {MR} versus \texttt {MOMENTUM} as value-agent count varies. This is the most important sweep figure: more value agents move the market toward a mean-reverting regime}{figure.caption.19}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Agent-population sweeps.}}{15}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:sweep-agent-populations}{{9}{15}{Agent-population sweeps}{figure.caption.20}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Value-agent belief and arrival sweeps.}}{15}{figure.caption.21}\protected@file@percent }
+\newlabel{fig:sweep-value-beliefs}{{10}{15}{Value-agent belief and arrival sweeps}{figure.caption.21}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Oracle fundamental-process sweeps.}}{16}{figure.caption.22}\protected@file@percent }
+\newlabel{fig:sweep-oracle}{{11}{16}{Oracle fundamental-process sweeps}{figure.caption.22}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Market-maker timing and spread-adaptation sweeps.}}{16}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:sweep-mm-timing}{{12}{16}{Market-maker timing and spread-adaptation sweeps}{figure.caption.23}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Liquidity and noise sweeps.}}{17}{figure.caption.24}\protected@file@percent }
+\newlabel{fig:sweep-liquidity-noise}{{13}{17}{Liquidity and noise sweeps}{figure.caption.24}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Environment-level action-frequency and order-size sweeps.}}{17}{figure.caption.25}\protected@file@percent }
+\newlabel{fig:sweep-env}{{14}{17}{Environment-level action-frequency and order-size sweeps}{figure.caption.25}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Quick Guide to the Sweep Figures}{18}{subsection.7.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Reader's guide for the parameter sweep figures.}}{18}{table.caption.26}\protected@file@percent }
+\newlabel{tab:sweep-figure-guide}{{12}{18}{Reader's guide for the parameter sweep figures}{table.caption.26}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Takeaways}{18}{section.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Next Steps}{19}{section.9}\protected@file@percent }
+\gdef \@abspage@last{20}

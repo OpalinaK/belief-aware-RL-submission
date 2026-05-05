@@ -1,0 +1,112 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+\title{\textbf{Belief-Aware RL Trading in ABIDES} \\ \large A Team Reference Summary}
+\author{}
+\date{May 2026}
+
+\begin{document}
+\maketitle
+
+\section{The Setup}
+
+We run experiments inside \textbf{ABIDES}, an agent-based limit order book simulator calibrated to AAPL market data. The simulated market contains four types of background agents, each with a fixed hardcoded strategy:
+
+\begin{itemize}
+    \item \textbf{Noise agents} --- submit random buy/sell orders, adding uninformed volume and price jitter.
+    \item \textbf{Value agents} --- trade when market price deviates from their estimate of fundamental value. More value agents means stronger price anchoring and more mean-reverting dynamics.
+    \item \textbf{Momentum agents} --- follow short-horizon trends, buying after upward moves and selling after downward moves.
+    \item \textbf{Adaptive market makers} --- continuously post bid and ask quotes, providing liquidity. Their behavior determines how costly it is to trade.
+\end{itemize}
+
+On top of this background market sits a \textbf{daily investor}, which is the slot where our RL agent lives. At each timestep, it observes a compact state vector and chooses one of three actions: \textit{market buy}, \textit{hold}, or \textit{market sell}. Performance is measured by final mark-to-market P\&L relative to starting cash.
+
+The daily investor observes the following at each step:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Signal} & \textbf{Meaning} \\
+\midrule
+Holdings & Current signed share inventory \\
+Imbalance & Bid volume / total visible volume \\
+Spread & Best ask $-$ best bid (cost of trading) \\
+Direction feature & Mid price $-$ last transaction price \\
+Lagged returns (×3) & Recent mid-price return history \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{The Core Idea}
+
+A \textbf{standard RL agent} only sees the observation vector $o_t$ above. It learns one policy and applies it regardless of what is actually happening in the background market.
+
+A \textbf{belief-aware RL agent} sees $o_t$ plus a belief vector $b_t$:
+\[
+b_t = P(\text{market regime} \mid \text{public history up to } t), \qquad a_t = \pi(o_t, b_t)
+\]
+where the regime captures whether the market is currently momentum-heavy, value-heavy, noise-heavy, or mixed.
+
+A standard agent could in principle learn to infer regime implicitly from $o_t$ alone, but explicitly providing $b_t$ gives it a structured signal and acts as a useful inductive bias --- making learning faster and more sample-efficient. The belief module's job is to look at a recent window of observations and output a probability distribution over regimes, without ever directly observing any agent's strategy.
+
+\section{What the Baselines Show}
+
+We evaluated six hand-coded heuristic strategies in the default AAPL-calibrated market (50 episodes each). These are not trained RL agents --- they are fixed rules used to understand what signals the market currently rewards.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Strategy} & \textbf{Mean P\&L (¢)} & \textbf{Sharpe} & \textbf{Win Rate} \\
+\midrule
+HOLD        & 0       & 0.000  & 100\% \\
+BUY HOLD    & $-$643  & $-$0.09 & 46\% \\
+RANDOM      & $+$6,034  & $+$0.10 & 58\% \\
+MOMENTUM    & $+$66,172 & $+$0.50 & 82\% \\
+MR          & $-$57,942 & $-$0.48 & 36\% \\
+MR\_INV     & $-$54,811 & $-$2.03 & 2\%  \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The takeaway is clear: \textbf{the default market rewards momentum and punishes mean reversion}. MOMENTUM has the highest P\&L, best Sharpe, and 82\% win rate. The mean-reversion strategies lose money consistently.
+
+Importantly, RANDOM also loses to MOMENTUM badly --- so momentum isn't just winning because active trading helps. It's using a genuinely useful signal.
+
+\subsection*{A critical caveat: two tracks give opposite rankings}
+
+When we run the \textit{real} ABIDES kernel agents (not Gym heuristics) in native simulation, the rankings flip: kernel \textbf{VALUE agents dominate} (mean P\&L $+$212k, Sharpe $+$0.72) while kernel \textbf{MOMENTUM agents lose heavily} (mean P\&L $-$1.7M, Sharpe $-$1.0). Rankings do not transfer across evaluation tracks. Claims about ``momentum'' or ``value'' must always specify which implementation and which track.
+
+\subsection*{The value-agent sweep: the key motivating result}
+
+We ran a one-at-a-time parameter sweep, varying the number of value agents while keeping everything else fixed. This is the most important result in the report:
+
+\begin{itemize}
+    \item \textbf{Few value agents} $\rightarrow$ MOMENTUM wins, MR loses.
+    \item \textbf{Many value agents} $\rightarrow$ MR becomes more competitive, MOMENTUM weakens.
+\end{itemize}
+
+The intuition: value agents anchor prices toward fundamental value, making short-term moves more likely to reverse. Without that anchoring, trends persist. \textbf{This proves that the optimal strategy depends on who is in the market} --- which is exactly what a belief module should learn to detect.
+
+\section{The Plan}
+
+\subsection*{Step 1: Oracle belief (proof of concept)}
+
+Since ABIDES is a simulator, we know the ground truth regime for every episode. We first give the agent the true regime label directly as $b_t$ (the oracle). If $\pi(o_t, b_t)$ outperforms $\pi(o_t)$ with oracle beliefs, we have proven the concept: regime information is genuinely useful.
+
+\subsection*{Step 2: Train the belief module}
+
+Replace the oracle with a learned classifier. Given a window of recent observations $o_{t-k}, \ldots, o_t$, the belief module predicts the regime distribution. This is a supervised learning problem with ground truth labels from the simulator. The most informative signals for this classification are likely the \textbf{lagged returns} (autocorrelated in momentum regimes, mean-reverting in value regimes) and \textbf{order book imbalance}.
+
+\subsection*{Step 3: Train the full policy}
+
+With the belief module trained, freeze it and train the RL policy $\pi(o_t, b_t)$ using PPO. Optionally fine-tune the belief module jointly later, though this should be done carefully to avoid instability.
+
+\subsection*{Step 4: Evaluate}
+
+Compare $\pi(o_t)$ vs $\pi(o_t, b_t)$ across held-out seeds covering different regime compositions. Report P\&L, Sharpe, win rate, drawdown, and belief accuracy against ground truth regime labels.
+
+\end{document}
