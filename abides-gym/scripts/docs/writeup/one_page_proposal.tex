@@ -1,0 +1,51 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{parskip}
+
+\title{\textbf{Belief-Aware Reinforcement Learning in Cooperative Games and Financial Markets}}
+\author{EECS 6892 Reinforcement Learning --- Project Proposal}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Project Description}
+
+Reinforcement learning agents trained through self-play often perform well when interacting with identical copies of themselves but fail when paired with agents using different strategies. This problem appears in many multi-agent environments where the behavior of other participants is diverse and only partially observable. 
+
+This project studies whether a reinforcement learning agent that maintains a \textit{belief model} about the type of agents it interacts with can outperform a standard RL agent that does not explicitly model others. The belief-aware agent observes the actions of its counterpart and produces a probability distribution over possible agent types. This belief representation is provided as additional input to the policy network so that the agent can adapt its behavior in real time.
+
+We test this idea in two complementary environments. First, we evaluate belief-aware RL in a simulated multi-agent financial market with heterogeneous traders (noise, momentum, and mean-reversion strategies). Second, we test the same architecture in the cooperative card game Hanabi, which is widely used as a benchmark for multi-agent coordination. Using both environments allows us to evaluate whether belief modeling improves performance in both competitive and cooperative settings.
+
+\section*{Research Directions and Expected Outcomes}
+
+The project focuses on the following questions:
+
+\begin{itemize}[leftmargin=*]
+\item Does incorporating a belief model about other agents improve policy performance in partially observable multi-agent environments?
+\item Can a shared belief architecture generalize across different domains such as financial markets and cooperative games?
+\item How quickly can an agent infer the type of its counterpart from early interactions?
+\end{itemize}
+
+We will compare two agents: a baseline RL agent trained without opponent modeling and a belief-aware RL agent that jointly learns a belief module and policy network. Experiments will measure performance using environment-specific metrics such as trading profit (PnL) and Sharpe ratio in the market simulation, and cross-play score in Hanabi. 
+
+We expect that belief-aware agents will achieve higher robustness when interacting with diverse partners or market participants, demonstrating the value of explicit belief inference in multi-agent reinforcement learning.
+
+\section*{Reading List}
+
+The project is based on prior work in multi-agent reinforcement learning, opponent modeling, and cooperative game learning.
+
+\begin{itemize}[leftmargin=*]
+\item Foerster et al., \textit{Learning with Opponent-Learning Awareness}, AAMAS 2018.
+\item Hu and Wellman, \textit{Nash Q-Learning for General-Sum Stochastic Games}, JMLR 2003.
+\item Bard et al., \textit{The Hanabi Challenge: A New Frontier for AI Research}, AI Magazine 2020.
+\item Hu et al., \textit{Other-Play for Zero-Shot Coordination}, ICML 2020.
+\item Carroll et al., \textit{On the Utility of Learning about Humans for Human-AI Coordination}, NeurIPS 2019.
+\item Nevmyvaka et al., \textit{Reinforcement Learning for Optimized Trade Execution}, ICML 2006.
+\end{itemize}
+
+\end{document}

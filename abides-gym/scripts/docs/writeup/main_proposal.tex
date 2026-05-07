@@ -1,0 +1,273 @@
+\documentclass[11pt, a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{microtype}
+
+% Colors
+\definecolor{accentblue}{RGB}{31, 78, 147}
+\definecolor{lightgray}{RGB}{245, 245, 245}
+\definecolor{darkgray}{RGB}{80, 80, 80}
+\definecolor{rulecolor}{RGB}{31, 78, 147}
+
+% Section formatting
+\titleformat{\section}
+  {\large\bfseries\color{accentblue}}
+  {\thesection.}{0.5em}{}[\color{rulecolor}\titlerule]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{darkgray}}
+  {\thesubsection.}{0.5em}{}
+
+\titlespacing{\section}{0pt}{18pt}{8pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+
+% Header/Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{darkgray}EECS 6892 --- Final Project Specification}
+\fancyhead[R]{\small\color{darkgray}\today}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\hypersetup{colorlinks=true, linkcolor=accentblue, urlcolor=accentblue}
+
+\begin{document}
+
+% Title Block
+\begin{center}
+    {\LARGE\bfseries\color{accentblue} Belief-Aware Reinforcement Learning}\\[4pt]
+    {\LARGE\bfseries\color{accentblue} in Cooperative Games and Financial Markets}\\[16pt]
+    {\large\color{darkgray} Final Project Specification --- Reinforcement Learning Course}\\[6pt]
+    {\normalsize\color{darkgray} Duration: 6 Weeks}
+\end{center}
+
+\vspace{4pt}
+\noindent\color{rulecolor}\rule{\linewidth}{1.5pt}
+\vspace{8pt}
+
+% ---------------------------------------------------------------
+\section{Core Research Question}
+
+\textit{\textbf{Can a reinforcement learning agent that maintains a real-time model of its counterpart's type outperform one that does not --- and does this hold across both financial markets and cooperative games?}}
+
+We test this in two complementary environments that stress-test the same mechanism in different ways. \textbf{Part 1} (Financial Markets) applies belief-aware trading to a simulated multi-agent market --- a high-stakes, partially observable setting where diverse participant behaviour is the norm. \textbf{Part 2} (Hanabi) validates the same architecture in a controlled cooperative game where ground-truth partner types are known and convergence can be precisely measured. Together, the two environments make a stronger case than either alone.
+
+% ---------------------------------------------------------------
+\section{Background and Core Problem}
+
+\subsection{Static Strategies Fail in Diverse Environments}
+
+In standard RL, agents trained through self-play get very good at playing with themselves --- but often terrible at playing with anyone else. Two agents training together quietly develop shared habits and signals that work between them but mean nothing to an outsider. Think of two colleagues who have worked together for years and built up their own shorthand: efficient between them, completely opaque to a new team member.
+
+This failure is well-documented in cooperative games. The numbers from the literature make it concrete:
+
+\vspace{8pt}
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Algorithm} & \textbf{Score with itself} & \textbf{Score with a stranger} \\
+\midrule
+Off-Belief Learning (OBL) & 24.2 & 5.2 \\
+SAD + Other-Play          & 15.3 & 12.2 \\
+SAD + Any-Play            & 13.5 & 10.3 \\
+SAD + AUX + Any-Play      & 20.4 & \textbf{14.2} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{8pt}
+
+OBL scores 24.2 (out of a possible 25) when playing with a copy of itself. The same agent scores 5.2 when paired with a stranger. Better self-play training does not fix it; it often makes things worse, because the more specialised an agent becomes at playing with itself, the harder it finds adapting to anyone else.
+
+\subsection{The Same Problem in Financial Markets}
+
+A trading algorithm trained purely in simulation against copies of itself will develop habits tuned to that simulated environment. When deployed into a live market populated by genuinely diverse participants --- institutional algorithms, retail traders, high-frequency market makers --- it encounters the same failure. Its assumptions about counterpart behaviour are wrong, and its performance degrades in exactly the same way.
+
+The structural parallel is precise:
+
+\vspace{8pt}
+\begin{center}
+\begin{tabular}{p{5.5cm} p{5.5cm}}
+\toprule
+\textbf{Financial Markets} & \textbf{Hanabi} \\
+\midrule
+Incoming order (size, timing, direction) & Partner's hint or discard \\
+Trader type (noise, momentum, mean reversion) & Partner type (OBL, SAD, Other-Play) \\
+Estimated trader type distribution & Belief module output \\
+Adjusted trading decision & Adapted hint strategy \\
+PnL and Sharpe ratio & Cross-play score \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{8pt}
+
+In both cases, the agent that adapts based on a real-time model of its counterpart outperforms one playing a fixed strategy.
+
+% ---------------------------------------------------------------
+\section{Shared Architecture: The Belief Module}
+
+The belief module is the common component across both parts of this project. It has one job: watch what the counterpart does over the first few turns and produce a probability distribution over their latent type. That distribution is passed into the main policy network as an extra input, alongside the usual environment observations.
+
+The module learns from the same reward signal as the rest of the agent. No special training objective is needed. The key design decisions --- network size, how many past actions to condition on, how the type embedding is fed into the policy --- are shared between both implementations, with only environment-specific input/output layers differing.
+
+% ---------------------------------------------------------------
+\section{Part 1 --- Financial Markets: Belief-Aware Trading}
+
+\subsection{Objective}
+
+Test whether a belief-aware RL trader outperforms a standard RL trader in a simulated multi-agent market, as measured by PnL, Sharpe ratio, and robustness across different market compositions.
+
+\subsection{Why Static Trading Strategies Fall Short}
+
+Real markets are populated by fundamentally different participant types, each with distinct behavioural signatures. A momentum trader and a mean-reversion trader respond to the same price movement in opposite directions. An agent that cannot distinguish between them will, at best, average across both --- and at worst, be systematically exploited by one. The belief module gives the trading agent the information it needs to adapt its position-taking in real time based on who it is trading against.
+
+\subsection{Market Environment}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Observed State} & \textbf{Action Space} & \textbf{Reward Model} \\
+\midrule
+Current price & Buy & PnL \\
+Recent price change & Hold & Inventory penalty \\
+Order imbalance & Sell & \\
+Agent inventory & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Market Participants}
+
+\textbf{The Noise Trader:} Executes random buy/sell orders to provide liquidity.
+
+\textbf{The Momentum Trader:} Buys when prices trend upward and sells when prices trend downward.
+
+\textbf{The Mean Reversion Trader:} Sells when price is above a moving average and buys when it is below.
+
+\subsection{Experimental Agents}
+
+\textbf{Baseline RL Agent:} Observes market features (price, returns, inventory, order imbalance) and learns a trading policy without modeling other agents.
+
+\textbf{Belief-Aware RL Agent:} Includes the shared belief network, which estimates the probability distribution over trader types in the market. The inferred beliefs are used as inputs to the RL policy network to guide trading decisions.
+
+\subsection{Experimental Design}
+
+Train and evaluate agents in simulated markets with four compositions:
+
+\begin{enumerate}[leftmargin=*, label=\Alph*.]
+    \item Mostly noise traders
+    \item Momentum traders dominate
+    \item Mean reversion traders dominate
+    \item Mixed trader population
+\end{enumerate}
+
+\subsection{Key Metrics for Success}
+
+\textbf{Trading Performance} (benchmark: exceed S\&P 500 growth rate):
+average PnL, Sharpe ratio, maximum drawdown.
+
+\textbf{Belief Accuracy:} KL divergence between the predicted trader type distribution and the true distribution in the environment.
+
+\subsection{Deliverables}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{\arabic*.}]
+    \item \textbf{Performance Table.} Belief-aware vs.\ baseline RL across all four market compositions.
+    \item \textbf{Belief Accuracy Plot.} KL divergence over time as the module adapts to different market populations.
+    \item \textbf{Cross-Composition Analysis.} How much the belief module's advantage varies across different trader populations.
+    \item \textbf{Qualitative Analysis (if time allows).} Side-by-side comparison of the agent's position-taking in the same market situation depending on which trader type it currently believes it is facing --- making the belief module's effect on trading behaviour concrete and interpretable.
+\end{enumerate}
+
+% ---------------------------------------------------------------
+\section{Part 2 --- Hanabi: Controlled Validation}
+
+\subsection{Objective}
+
+Beat the current best cross-play score of \textbf{14.2 out of 25} on the standard benchmark, and demonstrate that the belief module converges on the correct partner type within the first ten turns.
+
+\subsection{Why More Training Makes Things Worse}
+
+As a self-play agent trains longer, its habits become more tightly tuned to its specific training partner. Cross-play performance actually degrades as self-play performance improves. We demonstrate this directly by measuring how the cross-play score changes over a single training run. This is the causal argument for why the belief module is needed, and it provides a clean controlled validation that translates directly back to the markets setting.
+
+\subsection{Components}
+
+\textbf{Component 1 --- Baseline Agent.} Train a standard RL agent in the Hanabi environment. The purpose is purely to validate our setup: if this agent's scores match the published numbers, we know our environment and training loop are correct.
+
+\textbf{Component 2 --- The Belief Module.} Attach the shared belief network alongside the baseline policy. It watches the partner's early moves and produces a type estimate that feeds into the policy. If the agent thinks it is playing with a conservative, logic-driven partner, it should give different hints than if it thinks it is playing with an agent that learned more unconventional habits during training.
+
+\textbf{Component 3 --- Evaluation.} Train three separate partner agents using three different algorithms, one on each GPU. Pair our belief-conditioned agent against each and record the cross-play score.
+
+\subsection{Motivation Experiments}
+
+\textbf{Experiment 1 --- The Cross-Play Collapse.} Train two agents using different algorithms. Pair every combination and record the scores. Confirms our setup matches published results.
+
+\textbf{Experiment 2 --- The Training Curve Diagnostic.} Train one agent and save a snapshot every 50,000 steps. Pair each snapshot against the fully trained version and plot the cross-play score over time. We expect the score to fall as training progresses. Both experiments come from the same training run and cost no additional compute.
+
+\subsection{Deliverables}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{\arabic*.}]
+    \item \textbf{Cross-Play Score Table.} Belief-conditioned agent vs.\ all three partner types, compared against the 14.2 benchmark.
+    \item \textbf{Two Motivation Plots.} Cross-play collapse matrix and training curve showing cross-play score falling as self-play training progresses.
+    \item \textbf{Belief Convergence Plot.} How quickly the belief module settles on the correct partner type across the first ten turns.
+    \item \textbf{Qualitative Analysis (if time allows).} Side-by-side comparison of hints given in the same game situation depending on inferred partner type.
+\end{enumerate}
+
+% ---------------------------------------------------------------
+\section{Timeline}
+
+\begin{center}
+\begin{tabular}{>{\bfseries}p{2.2cm} p{10.5cm}}
+\toprule
+\textbf{Week} & \textbf{Milestone} \\
+\midrule
+1 & Literature review. Environment setup for both parts. Design and agree shared belief module interface. \\
+\addlinespace
+2 & Build market simulator (Part 1). Train Hanabi baseline and run motivation experiments (Part 2). Validate scores against published results. \\
+\addlinespace
+3 & Implement and train standard RL trader (Part 1). Build and attach belief module to Hanabi agent (Part 2). \\
+\addlinespace
+4 & Implement belief network and integrate with trading policy (Part 1). Train belief-conditioned Hanabi agent (Part 2). Monitor convergence in both environments. \\
+\addlinespace
+5 & Run performance experiments across market compositions (Part 1). Run full cross-play evaluation (Part 2). Generate all figures. \\
+\addlinespace
+6 & Analyze results. Write joint report. Clean up shared repository. Submit. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ---------------------------------------------------------------
+\section{Risk Assessment}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{\arabic*.}]
+    \item \textbf{The belief module does not improve scores in either environment.} Still a valid result --- we would be the first to test directly whether real-time counterpart inference helps in both settings. A clear negative finding is a part of research.
+    \item \textbf{The module helps in Hanabi but not in markets.} The most likely asymmetric outcome. Markets are noisier and the counterpart signal is weaker. This would itself be an informative finding about when belief inference is and is not sufficient. This could lead us to test out a slightly varied version of the belief module to work in the markets.
+    \item \textbf{The market simulator is too simple to produce meaningful differentiation between trader types.} If all compositions produce similar PnL curves, the environment is not a fair test. Mitigation: include a sanity check in Week 2 that confirms the baseline RL agent's performance varies meaningfully across compositions before proceeding.
+    \item \textbf{Baseline scores do not match the literature (Part 2).} Stop and diagnose before moving forward. The most common causes are small differences in reward scaling or game state representation between library versions.
+\end{enumerate}
+
+% ---------------------------------------------------------------
+\section{Software Stack}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Part 1 Environment:} Custom Gym-style market simulator in Python
+    \item \textbf{Part 2 Environment:} PettingZoo \texttt{hanabi\_v5} / Hanabi Learning Environment (DeepMind)
+    \item \textbf{RL Framework:} Stable-Baselines3 PPO (Part 1), CleanRL (Part 2) + JAX for speedup on Turing Compute
+    \item \textbf{Belief Module:} Shared small MLP or LSTM network (PyTorch), environment-specific I/O layers
+    \item \textbf{Compute:} 3 $\times$ Titan GPU --- one per partner agent during parallel training, Google Colab
+    \item \textbf{Logging:} Weights \& Biases for training curves and evaluation results
+\end{itemize}
+
+% ---------------------------------------------------------------
+\section{Conclusion}
+
+The goal is not just to beat a number, but to test a simple idea across two very different environments: that watching how your counterpart behaves for a few turns and adjusting accordingly is enough to meaningfully improve performance --- whether that means coordinating on a card game or trading profitably in a diverse market. A positive result in both environments would suggest that real-time counterpart inference is a general-purpose mechanism, not a trick specific to any one domain.
+
+\end{document}

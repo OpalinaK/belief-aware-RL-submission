@@ -1,5 +1,4 @@
 from gym.envs.registration import register
-from ray.tune.registry import register_env
 
 from .envs import *
 
@@ -17,14 +16,18 @@ register(
 )
 
 
-# REGISTER ENVS FOR RAY/RLLIB USE
+# REGISTER ENVS FOR RAY/RLLIB USE (optional — requires ray[rllib])
+try:
+    from ray.tune.registry import register_env
 
-register_env(
-    "markets-daily_investor-v0",
-    lambda config: SubGymMarketsDailyInvestorEnv_v0(**config),
-)
+    register_env(
+        "markets-daily_investor-v0",
+        lambda config: SubGymMarketsDailyInvestorEnv_v0(**config),
+    )
 
-register_env(
-    "markets-execution-v0",
-    lambda config: SubGymMarketsExecutionEnv_v0(**config),
-)
+    register_env(
+        "markets-execution-v0",
+        lambda config: SubGymMarketsExecutionEnv_v0(**config),
+    )
+except ImportError:
+    pass
