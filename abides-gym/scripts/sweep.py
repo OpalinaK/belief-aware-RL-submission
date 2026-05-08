@@ -3,7 +3,7 @@ sweep.py  —  Daily investor parameter sweep
 ============================================
 
 Runs one-at-a-time (OAT) sweeps over background config parameters and env-level
-parameters, measuring each of the six baseline strategies' M2M P&L.
+parameters, measuring agent-type baseline strategies used in baselines.py.
 
 Usage
 -----
@@ -11,7 +11,7 @@ Usage
   python sweep.py --fast                   # 10 eps, 300s timestep, quick pass
   python sweep.py --episodes 5             # custom episode count
   python sweep.py --params mm_wake_up_freq num_value_agents   # subset of params
-  python sweep.py --strategies HOLD MR MR_INV                 # subset of strategies
+  python sweep.py --strategies NOISE VALUE                    # subset of strategies
   python sweep.py --out results.json       # custom output file
   python sweep.py --no-plots               # skip plots, save JSON only
 
@@ -19,12 +19,11 @@ Output
 ------
   sweep_results.json              — one row per (param, value, strategy, seed)
   plots/sweep_<param>.png         — mean P&L bar chart per swept parameter
-  plots/sweep_crossover.png       — MR vs MOMENTUM as num_value_agents varies
+  plots/sweep_crossover.png       — VALUE vs MOMENTUM as num_value_agents varies
   stdout                          — progress lines + final summary table
 """
 
 import argparse
-import importlib
 import json
 import os
 import sys
@@ -37,26 +36,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# ── import shared pieces from test.py without duplication ────────────────────
-_here = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, _here)
-_test = importlib.import_module("test")
-
-# plot helpers from test.py
-_style   = _test._style
-_save    = _test._save
-_c       = _test._c
-PALETTE  = _test.PALETTE
-
-HoldBaseline                = _test.HoldBaseline
-BuyAndHoldBaseline          = _test.BuyAndHoldBaseline
-RandomBaseline              = _test.RandomBaseline
-MomentumBaseline            = _test.MomentumBaseline
-MeanReversionBaseline       = _test.MeanReversionBaseline
-MeanReversionInventoryBaseline = _test.MeanReversionInventoryBaseline
-run_episode                 = _test.run_episode
-summarise                   = _test.summarise
-
 try:
     import gym
     import abides_gym
@@ -67,16 +46,31 @@ except ImportError:
 # CALIBRATION & DEFAULTS
 # ═══════════════════════════════════════════════════════════════════════════════
 
-AAPL_PARAMS = dict(
-    r_bar               = 19_000,
-    kappa               = 1.67e-15,
-    kappa_oracle        = 1.67e-16,
-    fund_vol            = 1.5e-4,
-    sigma_s             = 0,
-    lambda_a            = 5.7e-12,
-    num_value_agents    = 102,
-    num_noise_agents    = 1000,
-    num_momentum_agents = 12,
+RMSC04_PARAMS = dict(
+    starting_cash=10_000_000,
+    num_noise_agents=1000,
+    num_value_agents=102,
+    r_bar=100_000,
+    kappa=1.67e-15,
+    lambda_a=5.7e-12,
+    kappa_oracle=1.67e-16,
+    sigma_s=0,
+    fund_vol=5e-5,
+    megashock_lambda_a=2.77778e-18,
+    megashock_mean=1000,
+    megashock_var=50_000,
+    mm_window_size="adaptive",
+    mm_pov=0.025,
+    mm_num_ticks=10,
+    mm_wake_up_freq="60S",
+    mm_min_order_size=1,
+    mm_skew_beta=0,
+    mm_price_skew=4,
+    mm_level_spacing=5,
+    mm_spread_alpha=0.75,
+    mm_backstop_quantity=0,
+    mm_cancel_limit_delay=50,
+    num_momentum_agents=12,
 )
 
 ENV_DEFAULTS = dict(
@@ -92,14 +86,164 @@ ENV_DEFAULTS = dict(
     debug_mode                = True,
 )
 
+class NoiseAgentBaseline:
+    name = "NOISE"
+
+    def __init__(self, seed=0):
+        self._seed = seed
+        self._rng = np.random.RandomState(seed)
+
+    def reset(self):
+        self._rng = np.random.RandomState(self._seed)
+
+    def act(self, obs):
+        return int(self._rng.choice([0, 1, 2], p=[0.3, 0.4, 0.3]))
+
+
+class MomentumAgentBaseline:
+    name = "MOMENTUM"
+
+    def __init__(self, ret_threshold=0.5):
+        self._thr = ret_threshold
+
+    def act(self, obs):
+        ret = float(obs[4, 0])
+        imb = float(obs[1, 0])
+        if ret > self._thr and imb >= 0.5:
+            return 0
+        if ret < -self._thr and imb <= 0.5:
+            return 2
+        return 1
+
+
+class ValueAgentBaseline:
+    name = "VALUE"
+
+    def __init__(self, direction_threshold=0.75):
+        self._thr = direction_threshold
+
+    def act(self, obs):
+        direction_feature = float(obs[3, 0])
+        if direction_feature < -self._thr:
+            return 0
+        if direction_feature > self._thr:
+            return 2
+        return 1
+
+
+class MarketMakerAgentBaseline:
+    name = "MARKET_MAKER"
+
+    def __init__(self, inventory_cap=50, imbalance_threshold=0.08):
+        self._cap = inventory_cap
+        self._thr = imbalance_threshold
+
+    def act(self, obs):
+        holdings = float(obs[0, 0])
+        imbalance = float(obs[1, 0])
+        if holdings > self._cap:
+            return 2
+        if holdings < -self._cap:
+            return 0
+        if imbalance < 0.5 - self._thr:
+            return 0
+        if imbalance > 0.5 + self._thr:
+            return 2
+        return 1
+
+
 ALL_STRATEGIES = {
-    "HOLD":     HoldBaseline,
-    "BUY_HOLD": BuyAndHoldBaseline,
-    "MR":       MeanReversionBaseline,
-    "MR_INV":   MeanReversionInventoryBaseline,
-    "MOMENTUM": MomentumBaseline,
-    "RANDOM":   RandomBaseline,
+    "NOISE": NoiseAgentBaseline,
+    "VALUE": ValueAgentBaseline,
+    "MOMENTUM": MomentumAgentBaseline,
+    "MARKET_MAKER": MarketMakerAgentBaseline,
 }
+
+AGENT_TYPES = ["NOISE", "VALUE", "MOMENTUM", "MARKET_MAKER"]
+
+PALETTE = ["#2196F3", "#4CAF50", "#FF9800", "#E91E63", "#9C27B0", "#00BCD4"]
+
+
+def _style():
+    plt.rcParams.update({
+        "figure.facecolor": "#1a1a2e", "axes.facecolor":  "#16213e",
+        "axes.edgecolor":   "#444466", "axes.labelcolor": "#ccccee",
+        "axes.titlecolor":  "#ffffff", "xtick.color":     "#aaaacc",
+        "ytick.color":      "#aaaacc", "grid.color":      "#2a2a4a",
+        "grid.linestyle":   "--",      "grid.alpha":       0.5,
+        "text.color":       "#ccccee", "legend.facecolor": "#1a1a2e",
+        "legend.edgecolor": "#444466", "font.size":        11,
+    })
+
+
+def _c(i):
+    return PALETTE[i % len(PALETTE)]
+
+
+def _save(fig, name, out_dir):
+    path = os.path.join(out_dir, f"{name}.png")
+    fig.savefig(path, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
+    plt.close(fig)
+    print(f"  saved -> {path}")
+
+
+def run_episode(env, agent, seed: int) -> dict:
+    env.seed(seed)
+    if hasattr(agent, "reset"):
+        agent.reset()
+
+    obs = env.reset()
+    env.previous_marked_to_market = env.starting_cash
+    starting_cash = env.starting_cash
+    done = False
+    invalid_state = False
+    error = ""
+    total_reward = 0.0
+    step = 0
+
+    step_actions, m2m_trace, spread_trace = [], [], []
+    while not done:
+        action = agent.act(obs)
+        try:
+            obs, reward, done, info = env.step(action)
+        except AssertionError as exc:
+            # Some sweep cells can create numerically unstable market states
+            # (very large mid-prices/returns), which violates the env's
+            # observation_space bounds and raises "INVALID STATE".
+            invalid_state = True
+            error = str(exc)
+            done = True
+            break
+        step += 1
+        total_reward += reward
+        step_actions.append(int(action))
+        m2m_trace.append(float(info.get("marked_to_market", np.nan)))
+        spread_trace.append(float(info.get("spread", np.nan)))
+
+    valid_m2m = [v for v in m2m_trace if not np.isnan(v)]
+    final_m2m = valid_m2m[-1] if valid_m2m else float(starting_cash)
+    final_pnl = final_m2m - starting_cash
+
+    m2m_arr = np.array([starting_cash] + [v if not np.isnan(v) else starting_cash for v in m2m_trace], dtype=float)
+    running_peak = np.maximum.accumulate(m2m_arr)
+    dd_arr = np.where(running_peak > 0, (running_peak - m2m_arr) / running_peak, 0.0)
+    max_dd = float(np.max(dd_arr))
+
+    trade_spreads = [spread_trace[i] for i, a in enumerate(step_actions) if a != 1 and not np.isnan(spread_trace[i])]
+    txn_cost = float(sum(trade_spreads) / 2) if trade_spreads else 0.0
+
+    return {
+        "seed": seed,
+        "total_reward": float(total_reward),
+        "final_m2m": float(final_m2m),
+        "final_pnl": float(final_pnl),
+        "episode_length": int(step),
+        "max_drawdown": max_dd,
+        "transaction_cost": txn_cost,
+        "won": bool(final_pnl >= 0),
+        "invalid_state": invalid_state,
+        "error": error,
+    }
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # SWEEP DEFINITION
@@ -109,7 +253,7 @@ BACKGROUND_SWEEP = {
     # value agent — fundamental anchoring
     "num_value_agents":    [10, 102, 300],
     "lambda_a":            [5.7e-13, 5.7e-12, 5.7e-11],
-    "kappa":               [1.67e-16, 1.67e-15, 1.67e-14],
+    "kappa":               [8.35e-16, 1.67e-15, 3.34e-15],
     # market structure
     "mm_wake_up_freq":     ["10S", "60S", "120S"],
     "mm_spread_alpha":     [0.25, 0.75, 0.95],
@@ -117,7 +261,7 @@ BACKGROUND_SWEEP = {
     "num_noise_agents":    [100, 500, 1000],
     "num_momentum_agents": [0, 12, 50],
     "fund_vol":            [1e-5, 1.5e-4, 5e-4],
-    "kappa_oracle":        [1e-17, 1.67e-16, 1e-15],
+    "kappa_oracle":        [8.35e-17, 1.67e-16, 3.34e-16],
 }
 
 ENV_SWEEP = {
@@ -153,6 +297,8 @@ def run_param(param, val, env_kwargs, bg_kwargs, strategies, n_episodes, results
             elapsed = time.time() - t0
 
             tag = "WIN " if ep["won"] else "LOSS"
+            if ep.get("invalid_state", False):
+                tag = "ERR "
             print(
                 f"  {param}={val!s:<12}  {strat_name:<8}  "
                 f"ep {seed+1:>2}/{n_episodes}  {tag}  "
@@ -171,6 +317,8 @@ def run_param(param, val, env_kwargs, bg_kwargs, strategies, n_episodes, results
                 "max_drawdown":     ep["max_drawdown"],
                 "transaction_cost": ep["transaction_cost"],
                 "won":              ep["won"],
+                "invalid_state":    ep.get("invalid_state", False),
+                "error":            ep.get("error", ""),
                 "episode_length":   ep["episode_length"],
             })
 
@@ -252,14 +400,14 @@ def plot_param(df, param, out_dir):
 
 def plot_crossover(df, out_dir):
     """
-    Line chart: MR vs MOMENTUM mean P&L as num_value_agents varies.
+    Line chart: VALUE vs MOMENTUM mean P&L as num_value_agents varies.
     Highlights the regime crossover point most relevant for RL training.
     """
     data = df[df["param"] == "num_value_agents"]
     if data.empty:
         return
 
-    strats  = ["MR", "MOMENTUM"]
+    strats  = ["VALUE", "MOMENTUM"]
     present = [s for s in strats if s in data["strategy"].unique()]
     if not present:
         return
@@ -281,7 +429,7 @@ def plot_crossover(df, out_dir):
     ax.axhline(0, color="#ff4444", lw=1.2, ls="--", label="Break-even")
     ax.set_xlabel("num_value_agents  (fundamental anchoring strength)")
     ax.set_ylabel("Mean Final P&L  (cents)")
-    ax.set_title("MR vs MOMENTUM crossover\nas value-agent count varies")
+    ax.set_title("VALUE vs MOMENTUM crossover\nas value-agent count varies")
     ax.legend(fontsize=9)
     ax.grid()
     _save(fig, "sweep_crossover", out_dir)
@@ -311,7 +459,7 @@ def plot_all(results, out_dir):
 def parse_args():
     all_bg  = list(BACKGROUND_SWEEP.keys())
     all_env = list(ENV_SWEEP.keys())
-    p = argparse.ArgumentParser(description="Daily investor parameter sweep")
+    p = argparse.ArgumentParser(description="Daily investor agent-type baseline sweep")
     p.add_argument("--episodes",   type=int, default=20,
                    help="Episodes per (param, value, strategy) cell (default: 20)")
     p.add_argument("--strategies", nargs="+", default=list(ALL_STRATEGIES.keys()),
@@ -333,7 +481,12 @@ def main():
     n_episodes = 10 if args.fast else args.episodes
     fast_timestep = "300s" if args.fast else None
 
-    strategies = {k: v for k, v in ALL_STRATEGIES.items() if k in args.strategies}
+    baseline_order = [s for s in AGENT_TYPES if s in ALL_STRATEGIES]
+    strategies = {
+        k: ALL_STRATEGIES[k]
+        for k in baseline_order
+        if k in args.strategies
+    }
     bg_params  = {k: v for k, v in BACKGROUND_SWEEP.items() if k in args.params}
     env_params = {k: v for k, v in ENV_SWEEP.items()        if k in args.params}
 
@@ -364,7 +517,7 @@ def main():
         for val in values:
             print(f"{'─'*70}")
             print(f"  param={param}  val={val}")
-            bg = {**AAPL_PARAMS, param: val}
+            bg = {**RMSC04_PARAMS, param: val}
             run_param(param, val, env_kw, bg, strategies, n_episodes, results)
 
     # ── env-level sweeps ──────────────────────────────────────────────────────
@@ -374,7 +527,7 @@ def main():
             print(f"  param={param}  val={val}")
             kw = {k: v for k, v in env_kw.items() if k != param}
             kw[param] = val
-            run_param(param, val, kw, AAPL_PARAMS, strategies, n_episodes, results)
+            run_param(param, val, kw, RMSC04_PARAMS, strategies, n_episodes, results)
 
     # ── save ──────────────────────────────────────────────────────────────────
     with open(args.out, "w") as f:
