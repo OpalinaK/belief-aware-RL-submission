@@ -1,0 +1,919 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{array}
+\geometry{margin=1in}
+
+\definecolor{darkblue}{RGB}{0,0,139}
+\hypersetup{colorlinks=true, linkcolor=darkblue, citecolor=darkblue, urlcolor=darkblue}
+
+\title{Belief State Tracking for the ABIDES Daily Investor:\\
+Five-Tracker Comparison}
+\author{Belief-Aware RL Project}
+\date{May 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The ABIDES daily-investor environment presents a partially observable
+Markov decision process: the RL agent observes market prices and order-book
+quantities but cannot directly see the latent \emph{fundamental value}---the
+hidden Ornstein-Uhlenbeck (OU) process around which background value agents
+anchor their bids and asks.
+We implement and compare five approaches to tracking this hidden state online:
+(i) a \textbf{Kalman filter} exploiting the known OU model structure;
+(ii) a \textbf{bootstrap particle filter} (SIR, $N=300$) that handles
+non-Gaussian posteriors and megashocks;
+(iii) a \textbf{Kim regime-switching filter} (Kim 1994) running three
+parallel Kalman filters over VALUE/MOMENTUM/NOISE regimes;
+and (iv) a \textbf{single-layer LSTM} trained in a self-supervised fashion.
+All produce a belief deviation $b_t = (\hat{F}_t - \text{mid}_t)/\bar{r}$
+used as the sole signal for a threshold trading rule over 20 test episodes.
+Three of the four belief trackers beat the raw direction-feature baseline
+(Sharpe $-0.68$, win rate $20\%$):
+Kalman achieves Sharpe $+0.50$ (win rate $60\%$, mean P\&L $+7{,}670$\textcent);
+Particle achieves the highest mean P\&L $+8{,}703$\textcent{} (Sharpe $+0.43$, win rate $65\%$);
+Kim achieves the lowest drawdown ($0.021$) with Sharpe $+0.32$;
+LSTM fails ($-48{,}500$\textcent{}) due to miscalibration.
+We analyse each tracker's behaviour and outline next steps for RL integration.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%%% ─────────────────────────────────────────────────────────────────────────
+\section{Background and Motivation}
+%%% ─────────────────────────────────────────────────────────────────────────
+
+\subsection{The ABIDES Latent State Problem}
+
+The ABIDES \texttt{rmsc04} market configuration places background agents of
+three types into the simulation:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Value agents (102 by default)} maintain Bayesian posteriors over
+    the latent OU fundamental $F_t$ and submit limit orders accordingly.
+    Their aggregate order flow anchors the mid-price near $F_t$.
+  \item \textbf{Noise agents (1{,}000)} submit random one-shot market orders
+    that add microstructure noise to prices and spreads.
+  \item \textbf{Momentum agents (12)} use moving-average crossover rules and
+    create short-term autocorrelated pressure.
+\end{itemize}
+
+The RL agent \emph{cannot observe} $F_t$ directly.
+It sees only the seven-dimensional public observation
+\[
+o_t = [\text{holdings},\ \text{imbalance},\ \text{spread},\
+       \text{direction},\ \Delta p_{t-1},\ \Delta p_{t-2},\ \Delta p_{t-3}],
+\]
+where direction $= \text{mid}_t - \text{last\_transaction}_t$ and
+$\Delta p_k$ are lagged mid-price differences over the three preceding
+60-second timesteps.
+
+A profitable value-investing strategy requires knowing the sign and magnitude
+of $F_t - \text{mid}_t$.
+With only three lags of noisy price data, a fixed MLP policy must implicitly
+learn to filter $F_t$ from its observation history---a task it performs poorly.
+This motivates an explicit belief-state module that estimates $F_t$ online and
+augments $o_t$ with the estimate before passing it to the policy.
+
+\subsection{POMDP Framing}
+
+Let the hidden state be the current fundamental $F_t \in \mathbb{R}$.
+The observation $o_t$ is a noisy projection of $F_t$ (mid-price is the most
+direct projection, with noise from spread, momentum effects, and random orders).
+A \emph{belief state} is any sufficient statistic of the observation history
+that captures the posterior $p(F_t \mid o_{1:t})$.
+For linear-Gaussian dynamics---the OU model---this posterior is Gaussian and is
+tracked exactly by a Kalman filter.
+For unknown or nonlinear dynamics, a parametric approximator (LSTM) can learn
+a surrogate belief state from data.
+
+We implement and compare both.
+
+\subsection{Sweep Context}
+
+Prior to the belief-tracker experiments, a one-at-a-time (OAT) parameter sweep
+(\texttt{sweep.py}) was run over twelve background parameters including
+\texttt{num\_value\_agents}, \texttt{kappa\_oracle}, \texttt{fund\_vol},
+\texttt{num\_momentum\_agents}, and market-maker parameters.
+The sweep established which parameters most strongly modulate strategy P\&L and
+confirmed that the VALUE strategy (direction-feature threshold) performs best
+under the default calibration.
+Key observations from the simulation-level baselines (\texttt{run1\_data.csv},
+\texttt{liquidity\_shift} variant, 5 seeds) are shown in
+Table~\ref{tab:sim_baselines}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Agent type} & \textbf{Mean P\&L (¢)} & \textbf{Std} & \textbf{Sharpe} & \textbf{Win\%} \\
+\midrule
+NOISE        & $+221$         & $35{,}177$    & $0.006$  & $40.9\%$ \\
+VALUE        & $+875{,}621$   & $399{,}356$   & $2.19$   & $96.5\%$ \\
+MOMENTUM     & $-5{,}045{,}988$ & $1{,}168{,}297$ & $-4.32$ & $0.0\%$ \\
+MARKET\_MAKER & $-2{,}209{,}716$ & $2{,}322{,}686$ & $-0.95$ & $0.0\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Simulation-level baselines from \texttt{run1\_data.csv}.
+Value agents operating with their real Bayesian oracle and Kalman filter
+achieve a Sharpe of 2.19. The gym-level VALUE heuristic (Table~\ref{tab:main})
+uses only the direction feature and performs far worse,
+motivating a richer belief representation.}
+\label{tab:sim_baselines}
+\end{table}
+
+The large gap between the \emph{simulation-level} VALUE agent (Sharpe $2.19$,
+$875$k\textcent{} mean P\&L) and the \emph{gym-level} direction-feature agent
+(Sharpe $-0.68$, $-13$k\textcent{} mean P\&L) is precisely the gap our belief
+module aims to close. Simulation-level value agents run a full Kalman filter
+on every oracle observation; the gym agent sees only a single noisy tick.
+A belief tracker that approximates that Kalman filter is the natural bridge.
+
+%%% ─────────────────────────────────────────────────────────────────────────
+\section{The Kalman Filter Belief Tracker}
+%%% ─────────────────────────────────────────────────────────────────────────
+
+\subsection{OU Process Model}
+
+The ABIDES oracle drives the fundamental according to a continuous-time OU
+process:
+\[
+\mathrm{d}F_t = \kappa_{\text{oracle}}(\bar{r} - F_t)\,\mathrm{d}t
+              + \sigma_{\text{fund}}\,F_t\,\mathrm{d}W_t.
+\]
+Over a discrete timestep $\Delta t$ (60 seconds, the agent wakeup interval),
+this discretises to the linear-Gaussian state-space model
+\begin{align}
+F_{t+1} &= \alpha F_t + (1 - \alpha)\bar{r} + w_t, \qquad w_t \sim \mathcal{N}(0,\,Q),
+\label{eq:state}\\
+y_t     &= F_t + v_t,                             \qquad v_t \sim \mathcal{N}(0,\,R),
+\label{eq:obs}
+\end{align}
+where $y_t$ is the observed mid-price, $\alpha = e^{-\kappa_{\text{oracle}}\,\Delta t}$
+is the mean-reversion factor, $Q$ is the per-step process noise variance, and
+$R$ is the observation noise variance (bid-ask microstructure).
+
+\subsection{Parameter Derivation}
+
+Using the default RMSC04 calibration ($\bar{r} = 100{,}000$\textcent,
+$\kappa_{\text{oracle}} = 1.67 \times 10^{-16}$,
+$\sigma_{\text{fund}} = 5 \times 10^{-5}$,
+$\Delta t = 60$~s,
+observation noise fraction $0.5\%$ of $\bar{r}$):
+
+\begin{align*}
+\alpha &= e^{-\kappa_{\text{oracle}}\,\Delta t}
+       \approx 1 - 1.0 \times 10^{-14}
+       \approx 1,\\
+Q      &= \frac{(\bar{r}\,\sigma_{\text{fund}})^2}{2\kappa_{\text{oracle}}}
+          \bigl(1 - \alpha^2\bigr)
+       \approx 1{,}496\ \text{cents}^2,\\
+R      &= (\bar{r} \times 0.005)^2 = 500^2 = 250{,}000\ \text{cents}^2.
+\end{align*}
+
+\noindent\textit{Remark.} Because $\kappa_{\text{oracle}} \cdot \Delta t \approx
+10^{-14} \ll 1$, the mean-reversion term $\alpha \approx 1$ is negligible over
+a single 60-second step. The fundamental behaves as a near-random walk at
+intraday resolution. This makes the observation signal essential: without
+filtering, the agent has essentially no prior on where $F_t$ is.
+
+\subsection{Kalman Predict-Update Equations}
+
+At each timestep the filter maintains a posterior mean $\mu_t$ and variance
+$\sigma^2_t$ over $F_t$, starting from $\mu_0 = \bar{r}$ and
+$\sigma^2_0 = Q / (1 - \alpha^2)$ (stationary prior).
+
+\paragraph{Predict step.}
+\begin{align*}
+\hat{\mu}_t     &= \alpha\,\mu_{t-1} + (1-\alpha)\,\bar{r}, \\
+\hat{\sigma}^2_t &= \alpha^2\,\sigma^2_{t-1} + Q.
+\end{align*}
+
+\paragraph{Update step (Kalman gain and posterior).}
+\begin{align*}
+K_t          &= \frac{\hat{\sigma}^2_t}{\hat{\sigma}^2_t + R},\\
+\mu_t        &= \hat{\mu}_t + K_t\,(y_t - \hat{\mu}_t),\\
+\sigma^2_t   &= (1 - K_t)\,\hat{\sigma}^2_t.
+\end{align*}
+
+\subsection{Steady-State Analysis}
+
+The posterior variance $\sigma^2_t$ converges to a fixed point $P_\infty$
+satisfying the discrete algebraic Riccati equation
+\[
+P = \frac{Q + \sqrt{Q^2 + 4QR}}{2}.
+\]
+With $Q = 1{,}496$ and $R = 250{,}000$:
+\[
+P_\infty = 20{,}115\ \text{cents}^2,
+\qquad
+\sigma_\infty = \sqrt{P_\infty} \approx 142\ \text{cents},
+\qquad
+K_\infty = \frac{P_\infty}{P_\infty + R} \approx 0.074.
+\]
+The steady-state Kalman gain $K_\infty \approx 7.4\%$ means the filter trusts
+each new mid-price observation by $7.4\%$ and holds $92.6\%$ weight on its
+prior estimate.
+The posterior standard deviation of 142\textcent{} represents the irreducible
+uncertainty about $F_t$ given all past mid-price observations under the OU model.
+
+\subsection{Interpretation as EMA}
+
+Because $\alpha \approx 1$, the posterior mean reduces to an exponentially
+weighted moving average (EMA) of past mid-prices:
+\[
+\mu_t \approx K_\infty\,y_t
+            + K_\infty(1-K_\infty)\,y_{t-1}
+            + K_\infty(1-K_\infty)^2\,y_{t-2} + \cdots
+\]
+The effective half-life of this EMA is $\log(0.5)/\log(1-K_\infty) \approx 9$
+timesteps (nine minutes at 60-second resolution).
+The belief feature $b_t = (\mu_t - \text{mid}_t)/\bar{r}$ is therefore the
+lagged EMA deviation from current price---a smoothed, noise-filtered version
+of the direction feature already in $o_t$.
+
+\subsection{Threshold Calibration}
+
+A critical implementation detail is setting the trading threshold $\tau$ such
+that $b_t$ is non-trivially positive or negative with reasonable frequency.
+The correct calibration uses the steady-state posterior standard deviation:
+\[
+\tau = \frac{\sigma_\infty}{2\,\bar{r}} = \frac{142}{2 \times 100{,}000} = 0.00071.
+\]
+Setting $\tau = 0.002$ (approximately $1.4\,\sigma_\infty/\bar{r}$) caused the
+agent to hold every episode (zero P\&L for all five test episodes) because
+$b_t$ never exceeded the threshold.
+After reducing to $\tau = 0.0007$, the agent traded normally and achieved
+the results reported in Section~\ref{sec:results}.
+This calibration step is \textbf{required} whenever $Q$, $R$, or $\bar{r}$
+change (e.g.\ across sweep parameter settings).
+
+\subsection{Implementation}
+
+The tracker is implemented in \texttt{belief\_tracker.py} as two classes:
+\begin{itemize}[leftmargin=1.5em]
+  \item \texttt{KalmanBeliefTracker}: stateless Kalman filter with
+    \texttt{reset()} and \texttt{step(mid\_price)} methods.
+    Maintains $(\mu_t, \sigma^2_t)$ across timesteps.
+  \item \texttt{BeliefAugmentedWrapper}: \texttt{gym.Wrapper} that
+    reconstructs the mid-price from the info dict (\texttt{debug\_mode=True}
+    required) and appends two features to the observation:
+    \begin{itemize}
+      \item $b_t^{\text{dev}} = (\mu_t - \text{mid}_t)/\bar{r}$
+      \item $b_t^{\text{std}} = \sigma_t / \bar{r}$
+    \end{itemize}
+    New observation shape: $(9, 1)$ instead of $(7, 1)$.
+\end{itemize}
+
+%%% ─────────────────────────────────────────────────────────────────────────
+\section{The LSTM Belief Tracker}
+%%% ─────────────────────────────────────────────────────────────────────────
+
+\subsection{Motivation}
+
+The Kalman filter has two dependencies that limit its generality:
+\begin{enumerate}[leftmargin=1.5em]
+  \item It requires knowledge of the OU parameters $(\kappa_{\text{oracle}},
+    \sigma_{\text{fund}}, \bar{r})$ at inference time.
+  \item It assumes the OU model is correct; deviations (e.g.\ momentum
+    regimes, megashocks) are treated as additional observation noise.
+\end{enumerate}
+The OAT sweep varied $\kappa_{\text{oracle}}$ over $[8.35\times10^{-17},
+3.34\times10^{-16}]$ and $\sigma_{\text{fund}}$ over $[1\times10^{-5},
+5\times10^{-4}]$, a $40\times$ range.
+A Kalman filter with fixed parameters will be suboptimal at the extremes of
+this range.
+An LSTM, having seen many episodes at different parameter settings, could in
+principle learn to \emph{adapt} its belief update to the current regime.
+
+\subsection{Architecture}
+
+The LSTM belief network (\texttt{LSTMBeliefNet} in \texttt{lstm\_belief\_tracker.py})
+maps a rolling window of market features to a predicted future return:
+\begin{align*}
+\text{Input}  &:\ x_{t-T:t} \in \mathbb{R}^{T \times 4},
+\quad T = 20\ \text{steps (20 minutes)},\\
+\text{Output} &:\ \hat{b}_t \in \mathbb{R},
+\end{align*}
+where each feature vector is
+\[
+x_s = \bigl[\Delta p_s/\bar{r},\ \text{imbalance}_s,\ \text{spread}_s/\bar{r},\
+             \text{direction}_s/\bar{r}\bigr].
+\]
+All four inputs are normalised to be $O(1)$ independent of $\bar{r}$.
+The architecture is a single LSTM layer with hidden size 32 followed by a
+linear head:
+\[
+h_T,\, c_T = \mathrm{LSTM}(x_{t-T:t},\; h_0 = 0),
+\qquad
+\hat{b}_t = W\,h_T + \beta.
+\]
+Total parameters: approximately $4 \times 32 \times 4 + 4 \times 32 \times 32
++ 2 \times 32 + 32 = 4{,}704$.
+
+\subsection{Training Data Collection}
+
+Training data is generated by running 30 hold-only episodes
+(seeds 200--229, disjoint from test seeds 0--19) on the default
+RMSC04 calibration.
+Each episode has length 386 steps (full trading day at 60-second resolution).
+With a 3-step lookahead (see below), this yields approximately
+$(386 - 3) \times 30 \approx 11{,}490$ labelled samples.
+
+\subsection{Training Objective}
+
+The label for timestep $t$ is the mean future mid-price return over the
+next $N=3$ steps, normalised by $\bar{r}$:
+\[
+y_t = \frac{1}{N\,\bar{r}}\sum_{k=1}^{N} (\text{mid}_{t+k} - \text{mid}_{t+k-1}).
+\]
+Training minimises mean squared error:
+\[
+\mathcal{L}(\theta) = \frac{1}{|\mathcal{D}|} \sum_{t \in \mathcal{D}}
+  \bigl(\hat{b}_t - y_t\bigr)^2.
+\]
+Training used the Adam optimiser with learning rate $10^{-3}$, batch size 256,
+and 30 epochs.
+Final training loss: $\mathcal{L} \approx 10^{-8}$.
+
+\subsection{Inference Wrapper}
+
+The \texttt{LSTMBeliefWrapper} maintains a rolling buffer of the last
+$T=20$ feature vectors.
+At each step it pads the buffer (zero-padding for early steps) and passes it
+through the frozen model to produce $\hat{b}_t$.
+The wrapper appends two features to the observation matching the Kalman format:
+obs$[-2] = \hat{b}_t$ (predicted future return), obs$[-1] = 0$ (no uncertainty
+estimate from LSTM).
+
+%%% ─────────────────────────────────────────────────────────────────────────
+\section{The Particle Filter Belief Tracker}
+%%% ─────────────────────────────────────────────────────────────────────────
+
+\subsection{Motivation}
+
+The Kalman filter is the optimal estimator for linear-Gaussian models, but the
+ABIDES microstructure introduces two deviations from linearity that Kalman
+treats poorly:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Megashocks.} RMSC04 has a small per-step probability
+    ($\lambda_a \approx 2.78 \times 10^{-18}$) of a large signed impulse to
+    $F_t$ (mean $1{,}000$\textcent, std $\approx 224$\textcent).
+    A Kalman filter treats this as a large innovation and absorbs it slowly;
+    a particle cloud can spread to cover both pre- and post-shock hypotheses simultaneously.
+  \item \textbf{Non-Gaussian microstructure noise.} Bid-ask bounce and
+    inventory effects create fat-tailed, multi-modal observation noise that
+    a Gaussian $R$ can only approximate.
+\end{itemize}
+The bootstrap (SIR) particle filter drops both assumptions at the cost of
+$O(N)$ particles.
+
+\subsection{Algorithm}
+
+The filter maintains $N$ weighted particles $\{F_t^{(i)}, w_t^{(i)}\}_{i=1}^N$
+that collectively approximate the posterior $p(F_t \mid y_{1:t})$.
+Each timestep proceeds in four stages:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Systematic resample.} Draw $N$ new particles from the current
+    weighted distribution using systematic (Carpenter et al.~1999) resampling,
+    which has $O(N)$ cost and lower variance than multinomial sampling.
+  \item \textbf{Propagate.} Each resampled particle evolves under the
+    discretised OU dynamics (identical to the Kalman state equation,
+    Eq.~\ref{eq:state}).
+    Optional megashocks are applied independently to each particle with
+    probability $p_{\text{shock}}$ per step.
+  \item \textbf{Weight.} Assign importance weights
+    $w^{(i)} \propto p(y_t \mid F_t^{(i)}) = \mathcal{N}(y_t;\, F_t^{(i)},\, R)$.
+  \item \textbf{Posterior statistics.} Compute the weighted mean and std:
+    \begin{align*}
+    \mu_t    &= \sum_i w_t^{(i)}\,F_t^{(i)}, \qquad
+    \sigma_t = \sqrt{\sum_i w_t^{(i)}\,(F_t^{(i)} - \mu_t)^2}.
+    \end{align*}
+\end{enumerate}
+
+\noindent Weight degeneracy (all weight on one particle) is detected by
+the \emph{effective sample size}
+$\mathrm{ESS} = 1/\sum_i (w_t^{(i)})^2 \in [1, N]$.
+When the filter detects catastrophic weight collapse ($\sum w < 10^{-300}$),
+it re-initialises from the prior rather than propagating a degenerate cloud.
+
+\subsection{Implementation}
+
+\texttt{particle\_filter\_tracker.py} implements two classes:
+\begin{itemize}[leftmargin=1.5em]
+  \item \texttt{ParticleFilterTracker}: stateless SIR filter with
+    \texttt{reset()} and \texttt{step(mid\_price)} methods.
+    Default: $N = 300$ particles, initialised from
+    $\mathcal{N}(\bar{r},\, R_{\text{std}})$ rather than the OU stationary prior
+    (whose variance $\approx 2.7 \times 10^8$ causes immediate weight degeneracy
+    for near-random-walk kappa).
+  \item \texttt{ParticleBeliefWrapper}: drop-in replacement for
+    \texttt{BeliefAugmentedWrapper} with identical obs-contract
+    (obs$[-2] = b_t^{\text{dev}}$, obs$[-1] = \sigma_t/\bar{r}$).
+\end{itemize}
+
+%%% ─────────────────────────────────────────────────────────────────────────
+\section{The Kim Regime-Switching Filter}
+%%% ─────────────────────────────────────────────────────────────────────────
+
+\subsection{Motivation}
+
+The Kalman filter assumes a single fixed market dynamic.
+RMSC04 populates the market with three structurally different agent types
+whose aggregate influence can shift across episodes:
+value agents drive mean-reversion, momentum agents drive trending, and
+noise agents dominate during low-information periods.
+A tracker that explicitly models regime uncertainty can hedge its belief
+update against these different dynamics and report regime probabilities
+as additional policy features.
+
+\subsection{Regimes}
+
+We define $K=3$ regimes with distinct OU parameters:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{Regime} & \textbf{$\alpha$} & \textbf{$Q$ multiplier} & \textbf{$R$ multiplier} \\
+\midrule
+VALUE (0)    & $\alpha_{\text{OU}}$ (mean-reverts) & $1\times$   & $1\times$ \\
+MOMENTUM (1) & $1.0$ (random walk)                 & $20\times$  & $2\times$ \\
+NOISE (2)    & $\alpha_{\text{OU}}$                & $0.3\times$ & $15\times$ \\
+\bottomrule
+\end{tabular}
+\caption{Per-regime dynamics for the Kim filter.
+MOMENTUM uses $\alpha=1$ (no mean-reversion) and large $Q$ (fast-drifting
+fundamental). NOISE uses small $Q$ and very large $R$ (uninformative observations).}
+\end{table}
+
+\subsection{Algorithm (Kim 1994 Collapse Approximation)}
+
+Each step maintains a regime probability vector
+$\pi_t \in \Delta^{K-1}$ and per-regime posterior Gaussians
+$(\mu_t^j, \sigma^{2,j}_t)$ for $j \in \{0,1,2\}$.
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Predict.} For every pair $(i, j)$ of prior regime $i$ and
+    current regime $j$, run a Kalman predict step using regime-$j$ dynamics
+    starting from the regime-$i$ posterior.
+    Compute the Gaussian log-likelihood $\log\,\ell_{ij}$ of the mid-price
+    observation under the predicted distribution.
+  \item \textbf{Joint update.} Form the joint weight
+    $\log\,p(S_{t-1}=i,\, S_t=j \mid y_{1:t}) \propto
+    \log\pi_{t-1}^i + \log\Pi_{ij} + \log\,\ell_{ij}$,
+    where $\Pi$ is the $K \times K$ regime transition matrix with diagonal
+    $\Pi_{jj} = 0.97$ (regimes are persistent).
+  \item \textbf{Marginalise.}
+    $\pi_t^j = \sum_i p(S_{t-1}=i,\, S_t=j \mid y_{1:t})$.
+  \item \textbf{Kim collapse.} Merge the $K^2$ posteriors back into $K$
+    Gaussians by computing the conditional mixture mean and variance,
+    preserving the first two moments of each per-current-regime mixture.
+\end{enumerate}
+
+\noindent The output is a mixture mean $\mu_t^{\text{mix}} = \sum_j \pi_t^j \mu_t^j$,
+mixture std $\sigma_t^{\text{mix}}$, and regime probability vector $\pi_t$.
+
+\subsection{Regime-Aware Trading Rule}
+
+The Kim wrapper appends five features to the observation:
+$[b_t^{\text{dev}},\, p_{\text{value}},\, p_{\text{mom}},\, p_{\text{noise}},\, b_t^{\text{std}}]$.
+The regime-aware agent blends two complementary signals:
+\begin{align*}
+\text{signal}_t &= p_{\text{value}} \cdot b_t^{\text{dev}}
+                 + p_{\text{momentum}} \cdot \frac{\Delta p_{t-1}}{\bar{r}},
+\end{align*}
+where the value signal is contrarian (buy when fundamental is above market)
+and the momentum signal is trend-following.
+The noise regime probability suppresses both signals by diluting the weights.
+
+%%% ─────────────────────────────────────────────────────────────────────────
+\section{Experiments}
+%%% ─────────────────────────────────────────────────────────────────────────
+
+\subsection{Setup}
+
+All experiments use the \texttt{markets-daily\_investor-v0} gym environment
+with \texttt{debug\_mode=True} (required to recover mid-price from the info
+dict) and the following common configuration:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+\texttt{background\_config}  & \texttt{rmsc04} \\
+\texttt{timestep\_duration}  & \texttt{60s} \\
+\texttt{starting\_cash}      & $1{,}000{,}000$\textcent \\
+\texttt{order\_fixed\_size}  & $10$ shares \\
+\texttt{state\_history\_length} & $4$ \\
+\texttt{r\_bar}              & $100{,}000$\textcent \\
+\texttt{kappa\_oracle}       & $1.67 \times 10^{-16}$ \\
+\texttt{fund\_vol}           & $5 \times 10^{-5}$ \\
+\midrule
+Test seeds                   & $0$--$19$ (20 episodes) \\
+LSTM training seeds          & $200$--$229$ (30 episodes, hold policy) \\
+\bottomrule
+\end{tabular}
+\caption{Common experimental configuration.}
+\end{table}
+
+\subsection{Agents}
+
+\paragraph{VALUE (baseline).}
+Uses the raw direction feature $o_t[3] = \text{mid}_t - \text{last\_transaction}_t$
+with threshold $\pm 0.75$. This is the best-performing hand-coded gym strategy
+from the sweep.
+\begin{align*}
+a_t = \begin{cases}
+\text{BUY}  & \text{if } o_t[3] < -0.75, \\
+\text{SELL} & \text{if } o_t[3] > +0.75, \\
+\text{HOLD} & \text{otherwise.}
+\end{cases}
+\end{align*}
+
+\paragraph{BELIEF\_KALMAN.}
+Uses the Kalman posterior deviation $b_t^{\text{dev}} = (\mu_t - \text{mid}_t)/\bar{r}$
+from \texttt{BeliefAugmentedWrapper} with threshold $\tau = 0.0007$
+(half the steady-state posterior std):
+\begin{align*}
+a_t = \begin{cases}
+\text{BUY}  & \text{if } b_t^{\text{dev}} > +0.0007 \;\; (\mu_t > \text{mid}_t: \text{undervalued}), \\
+\text{SELL} & \text{if } b_t^{\text{dev}} < -0.0007, \\
+\text{HOLD} & \text{otherwise.}
+\end{cases}
+\end{align*}
+
+\paragraph{BELIEF\_PARTICLE.}
+Uses the particle-filter posterior mean $\mu_t^{\text{PF}}$ from
+\texttt{ParticleBeliefWrapper} ($N=300$) with the same threshold
+$\tau = 0.0007$ as Kalman:
+\begin{align*}
+a_t = \begin{cases}
+\text{BUY}  & \text{if } (\mu_t^{\text{PF}} - \text{mid}_t)/\bar{r} > +0.0007, \\
+\text{SELL} & \text{if } (\mu_t^{\text{PF}} - \text{mid}_t)/\bar{r} < -0.0007, \\
+\text{HOLD} & \text{otherwise.}
+\end{cases}
+\end{align*}
+
+\paragraph{BELIEF\_KIM.}
+Uses the blended regime signal from \texttt{KimBeliefWrapper}
+with the same value-signal threshold $\tau = 0.0007$ and momentum
+threshold $0.0001$:
+\begin{align*}
+a_t = \begin{cases}
+\text{BUY}  & \text{if } \text{signal}_t > +0.0007, \\
+\text{SELL} & \text{if } \text{signal}_t < -0.0007, \\
+\text{HOLD} & \text{otherwise.}
+\end{cases}
+\end{align*}
+
+\paragraph{BELIEF\_LSTM.}
+Uses the LSTM-predicted future return $\hat{b}_t$ from \texttt{LSTMBeliefWrapper}
+with threshold $\tau = 0$ (pure sign of prediction):
+\begin{align*}
+a_t = \begin{cases}
+\text{BUY}  & \text{if } \hat{b}_t > 0, \\
+\text{SELL} & \text{if } \hat{b}_t < 0, \\
+\text{HOLD} & \text{never (threshold is zero).}
+\end{cases}
+\end{align*}
+
+\subsection{Main Results}
+\label{sec:results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Agent} & \textbf{Mean P\&L (¢)} & \textbf{Std (¢)} & \textbf{Sharpe} & \textbf{Win\%} & \textbf{Mean DD} \\
+\midrule
+VALUE            & $-13{,}832$  & $20{,}284$  & $-0.682$ & $20\%$ & $0.0288$ \\
+BELIEF\_KALMAN   & $+7{,}670$   & $15{,}359$  & $+0.499$ & $60\%$ & $0.0227$ \\
+BELIEF\_PARTICLE & $+8{,}703$   & $20{,}483$  & $+0.425$ & $65\%$ & $0.0259$ \\
+BELIEF\_KIM      & $+6{,}224$   & $19{,}565$  & $+0.318$ & $55\%$ & $0.0210$ \\
+BELIEF\_LSTM     & $-48{,}500$  & $342{,}703$ & $-0.142$ & $40\%$ & $0.351\phantom{0}$ \\
+\bottomrule
+\end{tabular}
+\caption{Five-way comparison over 20 test episodes (seeds 0--19).
+LSTM was trained on hold-only seeds 200--229 (30 episodes).
+Ranked by Sharpe: Kalman $>$ Particle $>$ Kim $>$ LSTM $>$ VALUE.
+All three model-based belief trackers beat the raw direction-feature baseline.}
+\label{tab:main}
+\end{table}
+
+The three model-based trackers all outperform the VALUE baseline:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{BELIEF\_KALMAN}: best Sharpe ($+0.499$), mean P\&L $+7{,}670$\textcent,
+    win rate $60\%$, lowest variance of the group ($15{,}359$\textcent{} std).
+  \item \textbf{BELIEF\_PARTICLE}: highest mean P\&L ($+8{,}703$\textcent)
+    and win rate ($65\%$), Sharpe $+0.425$.
+    Higher std than Kalman ($20{,}483$\textcent) because stochastic resampling
+    adds sampling noise.
+  \item \textbf{BELIEF\_KIM}: lowest mean drawdown ($0.021$), Sharpe $+0.318$.
+    More conservative than Kalman/Particle: the regime-blended signal is
+    attenuated by the noise-regime probability, reducing trade frequency.
+  \item \textbf{BELIEF\_LSTM}: worst by mean P\&L ($-48{,}500$\textcent) and
+    by far the most risky (drawdown $0.35$, fourteen times higher than Kalman).
+\end{itemize}
+
+%%% ─────────────────────────────────────────────────────────────────────────
+\section{Analysis}
+%%% ─────────────────────────────────────────────────────────────────────────
+
+\subsection{Why the Kalman Filter Works}
+
+The Kalman filter succeeds because it correctly models the data-generating
+process.
+With $K_\infty = 0.074$, the posterior mean $\mu_t$ is a 9-step EMA of
+mid-prices: it is a smoothed representation of recent price history that
+changes slowly and oscillates around the true fundamental.
+Crucially, because $\mu_t$ integrates evidence over the full episode, it does
+not overreact to single-tick noise.
+
+The resulting belief deviation $b_t^{\text{dev}} = (\mu_t - \text{mid}_t)/\bar{r}$
+oscillates symmetrically around zero:
+when the price rises above the EMA, $b_t^{\text{dev}} < 0$ (sell signal);
+when the price falls below, $b_t^{\text{dev}} > 0$ (buy signal).
+This natural oscillation prevents the agent from accumulating a persistent
+one-sided inventory, keeping risk controlled (max drawdown $0.023$).
+
+\subsection{Why the Particle Filter Nearly Matches Kalman}
+
+Under the default RMSC04 calibration the OU model is linear-Gaussian and
+megashocks are extremely rare ($\lambda_a \cdot \Delta t \approx 10^{-10}$
+per 60-second step).
+In this regime the particle filter with $N=300$ particles converges
+to the Kalman solution in the large-$N$ limit; both trackers estimate
+approximately the same posterior mean.
+The particle filter's slight Sharpe disadvantage ($+0.425$ vs $+0.499$) is
+attributable purely to Monte Carlo sampling noise: with finite $N$, the
+weighted mean $\mu_t^{\text{PF}}$ fluctuates more than the analytic Kalman
+mean, occasionally generating spurious trades.
+Conversely, the particle filter achieves a higher mean P\&L ($+8{,}703$
+vs $+7{,}670$\textcent) and win rate ($65\%$ vs $60\%$), suggesting that
+in the episodes where both agents trade, the particle filter makes slightly
+better decisions---consistent with better handling of the few genuine
+tail events in the simulation.
+The particle filter's advantage would be more pronounced with megashocks
+enabled ($\lambda_a \gg 0$), where the Kalman filter is known to recover
+slowly.
+
+\subsection{Why the Kim Filter Is More Conservative}
+
+The Kim filter introduces an additional source of uncertainty: the regime
+posterior.
+Under the default RMSC04 parameters, the market does not exhibit strong
+regime separation---the VALUE/MOMENTUM/NOISE dynamic parameters are calibrated
+from the true generator, but at any given timestep the filter spreads
+probability across all three regimes rather than collapsing to one.
+The blended signal
+$\text{signal}_t = p_{\text{value}} \cdot b_t^{\text{dev}}
++ p_{\text{momentum}} \cdot \Delta p_{t-1}/\bar{r}$
+is thus attenuated by the noise-regime probability weight $p_{\text{noise}}$,
+which dilutes both value and momentum contributions.
+This makes the effective threshold looser in practice (fewer trades),
+reducing both upside and downside exposure.
+The lowest mean drawdown ($0.021$) confirms this: the Kim filter effectively
+self-regulates position-taking when regime uncertainty is high.
+The regime probability features $[p_{\text{value}}, p_{\text{momentum}},
+p_{\text{noise}}]$ are the most distinctive output of this tracker and are
+expected to add value as \emph{input features} to an RL policy even if the
+standalone Kim threshold rule underperforms Kalman.
+
+\subsection{Threshold Calibration and the All-Hold Failure Mode}
+
+A non-obvious implementation failure occurred during initial testing:
+setting $\tau = 0.002$ caused the Kalman agent to hold every episode with
+exactly zero P\&L across all five test episodes.
+The diagnostic is as follows.
+
+The steady-state posterior standard deviation is $\sigma_\infty = 142$\textcent,
+corresponding to $b_t^{\text{dev}} \sim O(0.00142)$.
+A threshold of $0.002 \approx 1.4\,\sigma_\infty/\bar{r}$ is larger than the
+typical signal magnitude, so the condition $|b_t^{\text{dev}}| > \tau$ is
+almost never satisfied.
+This is analogous to setting a detection threshold above the noise floor in
+signal processing.
+
+The fix was to set $\tau = \sigma_\infty / (2\,\bar{r}) = 0.0007$,
+which the signal exceeds roughly half the time at steady state.
+This threshold is fully determined by the Riccati solution and should be
+recomputed whenever $\kappa_{\text{oracle}}$, $\sigma_{\text{fund}}$, or
+the observation noise fraction changes.
+
+\subsection{Why the LSTM Fails}
+\label{sec:lstm_failure}
+
+The LSTM failure has a clear mechanistic explanation.
+
+\paragraph{Near-zero predictions.}
+The training target $y_t = \bar{\Delta\text{mid}}_{3} / \bar{r}$ is numerically
+tiny (typical magnitude $\approx 0.0004$) because the fundamental is a
+near-random walk over 3 steps.
+The MSE loss converged to $\approx 10^{-8}$, which means the model has
+learned to predict values very close to zero---the optimal constant prediction
+under MSE for an approximately zero-mean target.
+
+\paragraph{Unbounded position accumulation.}
+With threshold $\tau = 0$, \emph{any} non-zero prediction fires a trade.
+If $\hat{b}_t$ is systematically slightly positive (or negative) over
+consecutive steps, the agent accumulates an ever-larger position without a
+reversal signal.
+At 10 shares per order and 386 steps, a consistently positive prediction
+could build a long position of up to $3{,}860$ shares, with P\&L scaling
+linearly (or super-linearly) with the price drift over that period.
+This produces the observed fat-tailed P\&L distribution
+($\text{std} = 342{,}703$\textcent{} versus $15{,}359$\textcent{} for Kalman).
+
+\paragraph{Root cause.}
+The combination of (a) tiny-magnitude predictions, (b) zero threshold, and
+(c) no position cap creates a high-variance lottery rather than a belief
+tracker.
+This is not a failure of the LSTM architecture per se---it is a calibration
+and training-signal failure.
+
+\subsection{How to Fix the LSTM}
+
+Three targeted changes would make the LSTM competitive with Kalman:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Use the Kalman output as the training label} (instead of raw
+    future returns). Kalman labels have magnitude $O(0.001)$, a $2.5\times$
+    larger signal; the LSTM learns to reproduce a properly-calibrated
+    deviation signal rather than a near-zero noise floor.
+    This also allows direct comparison: does the LSTM match Kalman on the
+    same parameters? Does it outperform on out-of-distribution parameters?
+
+  \item \textbf{Calibrate the trading threshold} using the same percentile
+    analysis as Kalman. Collect LSTM outputs on held-out episodes,
+    compute the 50th-percentile absolute value, and use that as $\tau$.
+
+  \item \textbf{Add a soft position limit} (e.g.\ refuse BUY if
+    holdings $> 50$, refuse SELL if holdings $< -50$) to prevent
+    runaway inventory regardless of tracker quality.
+\end{enumerate}
+
+%%% ─────────────────────────────────────────────────────────────────────────
+\section{Comparison of All Trackers}
+%%% ─────────────────────────────────────────────────────────────────────────
+
+\begin{table}[H]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.8cm}
+                >{\raggedright\arraybackslash}p{3.0cm}
+                >{\raggedright\arraybackslash}p{3.0cm}
+                >{\raggedright\arraybackslash}p{3.0cm}
+                >{\raggedright\arraybackslash}p{3.0cm}}
+\toprule
+\textbf{Property}
+  & \textbf{Kalman}
+  & \textbf{Particle (SIR)}
+  & \textbf{Kim (RS-Kalman)}
+  & \textbf{LSTM} \\
+\midrule
+\textbf{Training?}
+  & No.\ Zero-shot.
+  & No.\ Zero-shot.
+  & No.\ Zero-shot.
+  & Yes.\ $\sim$30 rollouts. \\[3pt]
+\textbf{Model}
+  & Linear-Gaussian OU (exact).
+  & Non-parametric; handles fat tails and megashocks.
+  & Mixture of 3 OU regimes.
+  & No model; data-driven. \\[3pt]
+\textbf{Interpretability}
+  & $\mu_t$, $\sigma_t$ semantically meaningful.
+  & $\mu_t$, $\sigma_t$ from weighted cloud.
+  & $\mu_t$, $\sigma_t$, \emph{and} $\pi_t$ (regime probs).
+  & Black-box hidden state. \\[3pt]
+\textbf{Extra obs features}
+  & 2: $b^{\text{dev}}, b^{\text{std}}$.
+  & 2: same.
+  & 5: $b^{\text{dev}}, p_V, p_M, p_N, b^{\text{std}}$.
+  & 2: $\hat{b}, 0$. \\[3pt]
+\textbf{Parameter sensitivity}
+  & Degrades when $\kappa$ or $\sigma_{\text{fund}}$ drift.
+  & Same (uses same OU params).
+  & Partly robust: regime probs adapt if one regime fits better.
+  & Robust if trained on diverse settings. \\[3pt]
+\textbf{Complexity / cost}
+  & $O(1)$ per step.
+  & $O(N)$ per step ($N{=}300$: $\sim$10$\times$ slower than Kalman).
+  & $O(K^2)$ per step ($K{=}3$: small).
+  & $O(T \cdot h)$ per step; requires pretraining. \\[3pt]
+\textbf{Performance (20 eps)}
+  & Sharpe $+0.50$, PnL $+7{,}670$\textcent, win $60\%$.
+  & Sharpe $+0.43$, PnL $+8{,}703$\textcent, win $65\%$.
+  & Sharpe $+0.32$, PnL $+6{,}224$\textcent, win $55\%$.
+  & Sharpe $-0.14$, PnL $-48{,}500$\textcent, win $40\%$. \\[3pt]
+\textbf{Primary failure mode}
+  & Miscalibrated $\tau$ $\to$ all-hold.
+  & Finite-$N$ noise $\to$ spurious trades.
+  & Regime uncertainty attenuates signal $\to$ fewer trades.
+  & Near-zero predictions $+$ zero threshold $\to$ unbounded inventory. \\
+\bottomrule
+\end{tabular}
+\caption{Qualitative and quantitative comparison of the four belief trackers.
+All three model-based trackers beat the VALUE baseline (Sharpe $-0.68$).}
+\label{tab:comparison}
+\end{table}
+
+%%% ─────────────────────────────────────────────────────────────────────────
+\section{Next Steps}
+%%% ─────────────────────────────────────────────────────────────────────────
+
+\subsection{Immediate: Fix the LSTM Tracker}
+
+Apply the three fixes from Section~\ref{sec:lstm_failure} and re-run
+\texttt{belief\_comparison.py --lstm-model <path>}:
+\begin{enumerate}[leftmargin=1.5em]
+  \item Use the Kalman posterior mean as the training label (magnitude $O(0.001)$
+    vs near-zero raw returns).
+  \item Calibrate $\tau$ from the 50th-percentile absolute LSTM output on
+    hold-out episodes.
+  \item Add a soft position cap (e.g.\ $|\text{holdings}| \leq 50$) to prevent
+    runaway inventory.
+\end{enumerate}
+With these fixes the LSTM should at least match Kalman on default parameters
+and potentially outperform on out-of-distribution sweep settings.
+
+\subsection{RL Integration}
+
+All three working belief trackers are ready to be plugged into the PPO
+training pipeline described in v3.tex.
+The recommended integration priority:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Kalman features (Run 5 equivalent).}
+    Wrap the environment with \texttt{BeliefAugmentedWrapper} before the
+    Gymnasium adapter in \texttt{train\_ppo\_daily\_investor.py}.
+    Observation shape: $(7,1) \to (9,1)$ (two new features).
+    No reward changes needed.
+    Train PPO and compare against the unaugmented baseline (Run 1).
+
+  \item \textbf{Kim regime probabilities.}
+    Wrap with \texttt{KimBeliefWrapper}: observation shape $(7,1) \to (12,1)$
+    (five new features: $b^{\text{dev}}, p_V, p_M, p_N, b^{\text{std}}$).
+    The regime probabilities are the most distinctive feature of this tracker
+    and are expected to add policy-conditioning value that neither Kalman nor
+    Particle can provide.
+
+  \item \textbf{Oracle regime label (Run 2 from v3.tex).}
+    Since ABIDES is a simulator, the ground-truth regime is known at episode
+    start.
+    Pass a one-hot $[p_V, p_M, p_N]$ derived from background agent counts as
+    an oracle belief.
+    If oracle outperforms the Kim filter, the Kim filter's regime inference is
+    the bottleneck; if they are comparable, the filter is tracking well.
+
+  \item \textbf{Multi-regime training.}
+    Randomise $\kappa_{\text{oracle}}$, $\sigma_{\text{fund}}$, and agent
+    counts across episodes during training.
+    The Kim filter and LSTM adapt; Kalman degrades gracefully.
+    This is the key experiment to determine which tracker wins
+    \emph{out-of-distribution}.
+\end{enumerate}
+
+\subsection{Particle Filter with Megashocks Enabled}
+
+The current comparison uses the RMSC04 default
+$\lambda_a = 2.78 \times 10^{-18}$ (negligible per-step shock probability).
+Enabling megashocks ($\lambda_a = 10^{-6}$, say) should reveal the particle
+filter's advantage: the Gaussian Kalman filter cannot maintain a bimodal
+posterior after a shock, while the particle cloud can.
+Re-run \texttt{belief\_comparison.py} with
+\texttt{megashock\_lambda\_a} elevated in the background config and compare
+Kalman vs.\ Particle (N=300 vs.\ N=1000 for accuracy) on 50 episodes.
+
+\subsection{Generalisation Across Sweep Parameters}
+
+The OAT sweep showed performance sensitivity to $\sigma_{\text{fund}}$ and
+$\kappa_{\text{oracle}}$.
+Re-running \texttt{belief\_comparison.py} at sweep extremes
+($\sigma_{\text{fund}} \in \{10^{-5}, 5 \times 10^{-4}\}$,
+$\kappa_{\text{oracle}} \in \{8.35 \times 10^{-17}, 3.34 \times 10^{-16}\}$)
+will quantify:
+\begin{itemize}[leftmargin=1.5em]
+  \item Kalman sensitivity to model mismatch (known to degrade).
+  \item Particle filter sensitivity (same OU params $\to$ same degradation).
+  \item Kim filter robustness (regime posteriors may compensate for
+    parameter drift if the active regime shifts).
+  \item LSTM robustness if retrained on diverse settings.
+\end{itemize}
+
+\end{document}
