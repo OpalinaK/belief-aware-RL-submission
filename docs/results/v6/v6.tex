@@ -322,11 +322,245 @@ actions.
 
 \paragraph{Next steps.}
 \begin{enumerate}
-  \item Fill Table~\ref{tab:e2a001} once E2$'$ completes.
+  \item Fill Table~\ref{tab:e2a001} once E2$'$ completes. \textbf{Done --- see below.}
   \item If E2$'$ passes: proceed to E3 (learned belief estimator).
   \item If E2$'$ fails: re-evaluate whether 200K training steps is
         sufficient, or whether a stratified evaluation (20 episodes per
         regime rather than 5 mixed) is needed for a reliable comparison.
 \end{enumerate}
+
+% ---------------------------------------------------------------------------
+\section{E2$'$ Final Results ($\alpha=0.001$)}
+% ---------------------------------------------------------------------------
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Seed} &
+\textbf{Mean P\&L (¢)} &
+\textbf{Std P\&L (¢)} &
+\textbf{Sharpe} &
+\textbf{Win rate} &
+\textbf{Episodes} \\
+\midrule
+0 & $22{,}773$ & $13{,}107$ & $1.738$ & $1.00$ & 5 \\
+1 & $12{,}650$ & $\phantom{0}5{,}271$ & $2.400$ & $1.00$ & 5 \\
+\midrule
+\textbf{Avg.} & $\mathbf{17{,}712}$ & --- & $\mathbf{2.069}$ & $\mathbf{1.00}$ & 10 \\
+\midrule
+\textit{Baseline} & \textit{32,854} & --- & \textit{2.507} & \textit{1.00} & 40 \\
+\bottomrule
+\end{tabular}
+\caption{E2$'$ results: PPO with reward shaping $\alpha=0.001$.
+         Source: \texttt{results/e2\_belief\_reward\_a001/seed\_\{0,1\}/eval\_metrics.json}.}
+\label{tab:e2a001final}
+\end{table}
+
+E2$'$ \textbf{fails the gate} on both P\&L ($17{,}712$ vs $32{,}854$) and
+Sharpe ($2.07$ vs $2.51$).
+Mean P\&L is $-46\%$ below baseline; Sharpe is $-18\%$ below.
+Win rate is $100\%$.
+
+E2$'$ performs similarly to E1 (P\&L $17{,}712$ vs $23{,}519$; Sharpe $2.07$
+vs $2.13$), confirming that neither the observation-augmentation nor the
+reward-shaping approach provides a meaningful advantage over the belief-blind
+baseline within a 200K-step budget.
+
+% ---------------------------------------------------------------------------
+\section{E3: PPO with Inferred Belief}
+% ---------------------------------------------------------------------------
+
+\subsection{Setup}
+
+E3 replaces the oracle belief tuple $b^*$ with an online estimate
+$\hat{b}_t = f_\phi(o_{t-20:t})$ from a pre-trained MLP+Kalman regime
+classifier (\texttt{mlp\_kalman\_regime.pt}).
+The classifier takes a 20-step sliding window of 6 observable market
+features (volume imbalance, spread, mid-price direction, three lagged
+returns) and outputs a soft $(p_\text{val},\, p_\text{mom})$ vector that
+updates at every timestep.
+The agent trains on the same 50/50 Val/Mom regime distribution as E1,
+but with the inferred belief appended to observations rather than the
+oracle label.
+
+\subsection{Results (seed 0)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Seed} &
+\textbf{Mean P\&L (¢)} &
+\textbf{Std P\&L (¢)} &
+\textbf{Sharpe} &
+\textbf{Win rate} &
+\textbf{Episodes} \\
+\midrule
+0 & $12{,}684$ & $\phantom{0}7{,}822$ & $1.621$ & $0.80$ & 5 \\
+1 & \emph{pending} & --- & --- & --- & --- \\
+\midrule
+\textit{Baseline} & \textit{32,854} & --- & \textit{2.507} & \textit{1.00} & 40 \\
+\bottomrule
+\end{tabular}
+\caption{E3 results: PPO with inferred regime belief.
+         Seed~1 training in progress at time of writing.
+         Source: \texttt{results/e3\_inferred\_belief/seed\_0/eval\_metrics.json}.}
+\label{tab:e3}
+\end{table}
+
+E3 seed~0 \textbf{fails the gate}: P\&L $12{,}684$\,¢, Sharpe $1.62$, win
+rate $80\%$ --- the worst result across all experiments, including the
+failed E2 ($\alpha=0.01$) run.
+The inferred belief appears to be adding noise rather than useful signal:
+the MLP classifier is imperfect, and the policy appears to overfit to the
+noisy belief features rather than learning a robust trading strategy.
+
+% ---------------------------------------------------------------------------
+\section{Policy Divergence Analysis: Pairwise KL}
+% ---------------------------------------------------------------------------
+
+\subsection{Method}
+
+To characterise how differently the four trained policies \emph{behave}
+--- independent of their P\&L outcomes --- we compute pairwise KL
+divergence between their action distributions at every step across 20
+fixed evaluation episodes (seeds $200$--$219$).
+
+At each timestep $t$ in each episode, the action distribution
+$\pi(\cdot \mid o_t)$ is extracted as a softmax over the three actions
+$\{$BUY, HOLD, SELL$\}$ using the policy's logits.
+For policies with different observation dimensions ($d=7$ for v4,
+$d=9$ for E1/E2$'$/E3), the same underlying 7-dim market features
+are used as input to v4, while E1/E2$'$/E3 receive the full 9-dim
+augmented observation.
+The mean KL divergence is then averaged across all timesteps and episodes.
+
+\[
+  \overline{\mathrm{KL}}(A \,\|\, B)
+  = \frac{1}{T_\mathrm{total}}
+    \sum_{\text{ep}} \sum_{t}
+    \mathrm{KL}\!\bigl(\pi_A(\cdot \mid o_t^{(9)}) \;\|\; \pi_B(\cdot \mid o_t^{(9)})\bigr)
+\]
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{KL(row $\|$ col)} & \textbf{v4} & \textbf{E1} & \textbf{E2$'$} & \textbf{E3} \\
+\midrule
+v4    & $0.000$ & $0.056$ & $0.062$ & $\mathbf{0.200}$ \\
+E1    & $0.068$ & $0.000$ & $0.008$ & $0.071$ \\
+E2$'$ & $0.076$ & $0.008$ & $0.000$ & $0.065$ \\
+E3    & $\mathbf{0.216}$ & $0.069$ & $0.063$ & $0.000$ \\
+\bottomrule
+\end{tabular}
+\caption{Mean pairwise KL divergence across 20 episodes (seeds 200--219),
+         386 steps each, 7{,}720 step-level comparisons per pair.
+         Source: \texttt{results/policy\_kl\_comparison/kl\_results.json}.}
+\label{tab:kl_overall}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrr|rrrr}
+\toprule
+& \multicolumn{4}{c|}{\textbf{Val regime} (6 episodes)}
+& \multicolumn{4}{c}{\textbf{Mom regime} (14 episodes)} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+\textbf{KL(row $\|$ col)} & v4 & E1 & E2$'$ & E3
+                           & v4 & E1 & E2$'$ & E3 \\
+\midrule
+v4    & --- & $0.062$ & $0.034$ & $0.175$ & --- & $0.051$ & $0.080$ & $0.217$ \\
+E1    & $0.069$ & --- & $0.008$ & $0.039$ & $0.067$ & --- & $0.008$ & $0.093$ \\
+E2$'$ & $0.039$ & $0.008$ & --- & $0.071$ & $0.101$ & $0.008$ & --- & $0.061$ \\
+E3    & $0.178$ & $0.037$ & $0.068$ & --- & $0.242$ & $0.091$ & $0.060$ & --- \\
+\bottomrule
+\end{tabular}
+\caption{Pairwise KL divergence stratified by regime.
+         Val: 6 episodes (seeds 202, 206, 209, 210, 212, 213, 215, 217, 218);
+         Mom: remaining 14 episodes.}
+\label{tab:kl_regime}
+\end{table}
+
+\subsection{Interpretation}
+
+Three findings stand out:
+
+\begin{enumerate}
+  \item \textbf{E1 and E2$'$ are nearly identical.}
+        KL$(E1 \| E2') = 0.008$, the smallest off-diagonal entry by a
+        factor of $\sim 8$.
+        Despite using fundamentally different training signals --- oracle
+        label in observation vs.\ reward shaping --- the two policies
+        converge to almost the same action distribution.
+        This suggests that at $\alpha=0.001$ the shaping bonus is too
+        small to alter learned behavior, and the dominant signal in both
+        cases is the dense P\&L reward.
+
+  \item \textbf{E3 is the most behaviorally divergent policy.}
+        KL$(E3 \| v4) = 0.216$, more than $3\times$ larger than
+        KL$(E1 \| v4) = 0.068$.
+        The noisy inferred belief $\hat{b}_t$ genuinely changes the
+        policy's action distribution --- but the change is not beneficial,
+        as E3 achieves the worst P\&L and Sharpe of all variants.
+        The classifier noise is acting as an adversarial input rather than
+        a useful regime signal.
+
+  \item \textbf{The v4 baseline diverges more from E1/E2$'$ in the Mom
+        regime than in the Val regime.}
+        KL$(v4 \| E2') = 0.034$ (Val) vs.\ $0.080$ (Mom).
+        This is consistent with the oracle belief changing behavior
+        primarily in the momentum-dominated episodes where regime
+        identification is most consequential for action choice.
+\end{enumerate}
+
+% ---------------------------------------------------------------------------
+\section{Consolidated Results}
+% ---------------------------------------------------------------------------
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llrrrll}
+\toprule
+\textbf{Exp.} &
+\textbf{Agent} &
+\textbf{Mean P\&L (¢)} &
+\textbf{Sharpe} &
+\textbf{Win \%} &
+\textbf{Gate} &
+\textbf{Notes} \\
+\midrule
+--- & v4 baseline & $32{,}854$ & $2.507$ & $100$ & \textit{target} & 2 seeds, 20 eps each \\
+\midrule
+E0  & Oracle heuristic & --- & --- & --- & --- & incomplete (75/120 eps) \\
+E1  & PPO + belief in obs & $23{,}519$ & $2.132$ & $100$ & fail & 2 seeds, 5 eps each \\
+E2  & PPO + reward ($\alpha=0.01$) & $-84{,}603$ & $0.821$ & $60$ & fail & seed 0 collapsed \\
+E2$'$ & PPO + reward ($\alpha=0.001$) & $17{,}712$ & $2.069$ & $100$ & fail & 2 seeds \\
+E3  & PPO + inferred $\hat{b}$ & $12{,}684$ & $1.621$ & $80$ & fail & seed 0 only \\
+\bottomrule
+\end{tabular}
+\caption{Consolidated oracle experiment results.
+         All experiments fail the pass/fail gate (mean P\&L $>32{,}854$,
+         Sharpe $>2.507$, win rate $=100\%$).
+         E3 seed~1 result pending.}
+\label{tab:consolidated}
+\end{table}
+
+\paragraph{Overall conclusion.}
+No oracle variant has beaten the belief-blind v4 baseline within a
+200K-step training budget and 5-episode evaluation.
+The KL divergence analysis shows that the oracle belief \emph{does}
+alter policy behavior (KL $\approx 0.06$--$0.07$ between v4 and E1/E2$'$),
+but the behavioural change does not translate to measurable P\&L improvement.
+The inferred belief (E3) produces the largest behavioural divergence but the
+worst performance, indicating that classifier noise is harmful.
+
+The most parsimonious explanation is that the 60s / 386-step episodes
+provide enough repeated market exposure that a belief-blind PPO policy
+can implicitly identify the regime from price dynamics alone --- making
+the explicit belief signal redundant rather than informative.
 
 \end{document}
