@@ -2,3 +2,4 @@ from .markets_daily_investor_environment_v0 import SubGymMarketsDailyInvestorEnv
 from .markets_execution_environment_v0 import SubGymMarketsExecutionEnv_v0
 from .regime_adapter import RegimeAdapter
 from .regime_reward_wrapper import RegimeRewardWrapper, RegimeRewardEnv
+from .belief_estimator_wrapper import BeliefEstimatorEnv
