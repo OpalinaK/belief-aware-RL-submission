@@ -97,3 +97,39 @@ Key params for the sweep:
 - For Ray 2.55+, avoid deprecated policy inference calls in eval (`compute_single_action`);
   use RLModule inference path.
 - Do not run duplicate sweeps while optimizing PPO throughput.
+
+## plan-v2 Experiments (belief-aware RL)
+
+See `plan-v2.md` for full spec. Execution order: E0 → E1+E2a → E2 → (gate) → E3.
+
+**Action encoding** (source of truth from env code — plan-v2 had this wrong):
+- `0` = BUY, `1` = HOLD, `2` = SELL
+
+**Regime design** (ρ = num_momentum_agents / num_value_agents, threshold ρ* = 0.06):
+- Val regime: ρ < 0.06 → `num_momentum_agents=0`, belief b* = (1, 0)
+- Mom regime: ρ ≥ 0.06 → `num_momentum_agents=12`, belief b* = (0, 1)
+
+**RegimeAdapter design**: standalone `gymnasium.Env` (same pattern as `GymnasiumDailyInvestorAdapter`), not a wrapper. Holds two internal `SubGymMarketsDailyInvestorEnv_v0` instances (one per regime). On each `reset()`, samples regime and resets the matching inner env. This avoids env_config patching issues.
+
+**E0 obs shape**: Heuristic agents (`MomentumAgentBaseline`, `ValueAgentBaseline`) from `sweep.py` expect `(7,1)` shaped obs — do NOT flatten before calling `agent.act(obs)`.
+
+**v4 baseline**: mean P&L = 32,854 cents, Sharpe = 2.507, win rate = 100% (60s/386-step episodes, 2 seeds).
+
+**New scripts** (plan-v2):
+```bash
+# E0 — oracle heuristic benchmark (no training)
+.venv/bin/python abides-gym/scripts/run_oracle_heuristic.py --episodes 20 --seeds 0 1 2
+
+# E1 — PPO + belief in obs
+.venv/bin/python abides-gym/scripts/train_ppo_oracle_obs.py --seed 0 --timestep 60s
+
+# E2a — alpha sweep for reward shaping (run before E2)
+.venv/bin/python abides-gym/scripts/sweep_alpha_e2.py --alphas 1e-4 1e-3 1e-2
+
+# E2 — PPO + reward shaping
+.venv/bin/python abides-gym/scripts/train_ppo_oracle_reward.py --seed 0 --alpha 0.001
+
+# E3 — inferred belief (gated on E1 or E2 beating v4)
+.venv/bin/python abides-gym/scripts/belief_estimator_train.py
+.venv/bin/python abides-gym/scripts/train_ppo_inferred_belief.py --seed 0
+```

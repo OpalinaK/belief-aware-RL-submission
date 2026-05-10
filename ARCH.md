@@ -92,3 +92,65 @@ Sparse: `(M2M_final - starting_cash) / order_fixed_size / num_steps_per_episode`
 - **Baseline PPO first:** v1 trains a belief-blind PPO policy before oracle or learned-belief variants
 - **Sweep separation:** targeted fast sweep results are used for regime selection and should not be duplicated by PPO training
 - **Speed plan:** optimize env-side throughput first (debug/info path, worker reliability, profiling), then scale timesteps
+
+---
+
+## plan-v2 Extensions (Belief-Aware RL)
+
+### New Components
+
+```
+abides-gym/envs/regime_adapter.py
+  RegimeAdapter (gymnasium.Env)
+    — standalone env (not a wrapper); holds TWO SubGymMarketsDailyInvestorEnv_v0 instances
+    — one per regime (val: n_mom=0, mom: n_mom=12)
+    — on reset(): samples regime, seeds+resets the matching inner env
+    — appends b* = (1,0) or (0,1) to flattened obs → 9-dim obs
+    — RLlib sees: RegimeAdapter as env class, env_config includes regime_mode
+
+abides-gym/envs/regime_reward_wrapper.py
+  RegimeRewardWrapper (gymnasium.Wrapper)
+    — wraps RegimeAdapter; adds α*align(action, regime) to reward during training
+    — stripped at eval time (eval uses RegimeAdapter only)
+    — align: Val → BUY (action=0); Mom → follow return sign (BUY=0 if ret>0, SELL=2 if ret<0)
+    — α = 0.001 default; swept over {1e-4, 1e-3, 1e-2} in E2a before full E2
+
+abides-gym/envs/belief_estimator_wrapper.py (E3, gated)
+  BeliefEstimatorWrapper (gymnasium.Env)
+    — no oracle; uses trained MLP to estimate regime from sliding window of obs
+    — appends ĥ (2-dim softmax) instead of b* → same 9-dim obs shape as E1/E2
+
+Scripts:
+  run_oracle_heuristic.py   — E0: no training, oracle regime → best heuristic
+  sweep_alpha_e2.py         — E2a: short PPO runs per α value; outputs alpha_sweep.json
+  train_ppo_oracle_obs.py   — E1: PPO on 9-dim obs with oracle b*
+  train_ppo_oracle_reward.py— E2: PPO on 9-dim obs with α-shaped reward during training
+  belief_estimator_train.py — E3: trains MLP regime classifier on labelled trajectories
+  train_ppo_inferred_belief.py — E3: PPO with BeliefEstimatorWrapper
+```
+
+### plan-v2 Training Data Flow (E1 example)
+
+```
+RegimeAdapter.reset()
+  └─ sample regime ∈ {val, mom}
+  └─ seed + reset matching SubGymMarketsDailyInvestorEnv_v0
+  └─ flatten obs (7,1)→(7,) + append b* (2,) → obs (9,)
+
+RegimeAdapter.step(action)
+  └─ delegate to current inner env
+  └─ flatten obs + append b* → obs (9,)
+
+PPO trains on 9-dim obs; at eval, same RegimeAdapter with regime_mode="random"
+```
+
+### Regime Definition
+
+- ρ = num_momentum_agents / num_value_agents
+- ρ* = 0.06 (threshold derived from sweep: VALUE wins at ρ=0, MOMENTUM wins at ρ=0.118)
+- Val: ρ < ρ*, b* = (1, 0)
+- Mom: ρ ≥ ρ*, b* = (0, 1)
+
+### Success Gate
+
+E3 is only run if E1 or E2 beats v4 on ALL three: mean P&L > 32,854, Sharpe > 2.507, win ≥ 100%.

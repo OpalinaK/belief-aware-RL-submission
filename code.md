@@ -1,3 +1,152 @@
+## Code Review — commit b8bb55df25ac11067cf4d9c96d0de42366677498 (2026-05-10)
+
+---
+
+## Phase 1: Repo Overview
+
+**Purpose**: ABIDES-Gym market simulation wrapped as an OpenAI Gym environment. Goal is to train belief-aware RL agents that trade a single equity over a simulated day.
+
+**Directory structure**:
+- `abides-core/` — Kernel, agent base class, latency model, time utilities
+- `abides-markets/` — Market agents (value, momentum, noise, MM), configs (rmsc03/04), order book, OU oracle
+- `abides-gym/` — Gym env wrappers (`abides_gym/envs/`), scripts (training, sweep, eval)
+- `results/` — Output dirs per experiment (ppo_baseline, bench_*)
+- `docs/` — LaTeX reports
+
+**Entry points**:
+- `abides-gym/scripts/train_ppo_daily_investor.py` — Main PPO training (v4 baseline)
+- `abides-gym/scripts/sweep.py` — Heuristic parameter sweep
+- `abides-gym/scripts/test.py` — Baseline strategy benchmark
+
+**Key data flow**:
+1. `SubGymMarketsDailyInvestorEnv_v0` (gym.Env) — wraps ABIDES simulation
+2. `ResetMarkedToMarketWrapper` — gym.Wrapper that applies BUG 1 fix
+3. `GymnasiumDailyInvestorAdapter` (gymnasium.Env) — converts old gym API to gymnasium for RLlib, flattens obs (7,1)→(7,)
+4. RLlib `PPOConfig` trains on `GymnasiumDailyInvestorAdapter`
+
+**Architectural pattern**: Deep wrapper stack. Raw simulation → gym.Env → gym.Wrapper (BUG fix) → gymnasium.Env (API conversion + flatten). New wrappers for plan-v2 must go outside `GymnasiumDailyInvestorAdapter` or be re-implemented as standalone gymnasium.Envs.
+
+---
+
+## Phase 2: File-by-File Drill Down
+
+### `abides-gym/abides_gym/envs/markets_daily_investor_environment_v0.py`
+
+**Responsibility**: Define the daily investor MDP — obs, action, reward, done, info.
+
+**Action space** (CRITICAL — plan-v2 has this wrong):
+- `0` → MKT BUY
+- `1` → Hold
+- `2` → MKT SELL
+
+**Obs space**: `Box(shape=(7, 1), dtype=float32)`. Features:
+- `obs[0,0]`: Holdings
+- `obs[1,0]`: Imbalance [0,1]
+- `obs[2,0]`: Spread
+- `obs[3,0]`: DirectionFeature (mid_price - last_transaction)
+- `obs[4,0]`: padded_return[0] (state_history_length=4 → 3 return slots)
+- `obs[5,0]`: padded_return[1]
+- `obs[6,0]`: padded_return[2]
+
+Reward: dense ΔM2M per step, normalized by order_fixed_size and num_steps_per_episode.
+
+BUG 1: `previous_marked_to_market` is set in `__init__` but NOT reset by `reset()`. Must be manually reset to `starting_cash` after every reset call.
+
+### `abides-gym/abides_gym/envs/core_environment.py`
+
+**Responsibility**: Base ABIDES gym env. Stores `self.background_config_pair = (build_fn, args_dict)`. On `reset()`, mutates `args_dict` in-place (adds `seed`), then calls `build_fn(**args_dict)` to reconstruct the full ABIDES simulation. This means `num_momentum_agents` in `args_dict` can be patched between resets to change the regime.
+
+**Key insight for RegimeAdapter**: `env.background_config_pair[1]` is the mutable args dict. Patching `num_momentum_agents` there before calling `reset()` changes the next episode's market composition.
+
+### `abides-gym/scripts/train_ppo_daily_investor.py`
+
+**Responsibility**: Full PPO training pipeline.
+
+**Key classes**:
+- `ResetMarkedToMarketWrapper`: gym.Wrapper, applies BUG 1 fix in `reset()`
+- `GymnasiumDailyInvestorAdapter(gymnasium.Env)`: Takes `env_config: Dict`, pops `adapter_info_mode` and `per_episode_seed_base`, passes remaining to `SubGymMarketsDailyInvestorEnv_v0(**cfg)`. Flattens obs to (7,). Does NOT store `env_config` as attribute.
+- `run_evaluation(algo, env_config, seeds)`: Creates `GymnasiumDailyInvestorAdapter` per seed. Accesses `env._env.unwrapped.starting_cash` and `info.get("marked_to_market")`.
+
+**Critical**: `build_env_config()` sets `timestep_duration = args.timestep` (default `"300s"` in this script). To match v4 protocol, must pass `--timestep 60s`.
+
+### `abides-gym/scripts/sweep.py`
+
+**Responsibility**: One-at-a-time heuristic sweeps.
+
+**Key classes**:
+- `MomentumAgentBaseline.act(obs)`: Expects `(7,1)` shaped obs. Uses `obs[4,0]` (oldest padded return) and `obs[1,0]` (imbalance). Returns 0=BUY on strong uptrend, 2=SELL on strong downtrend, 1=HOLD otherwise.
+- `ValueAgentBaseline.act(obs)`: Expects `(7,1)` shaped obs. Uses `obs[3,0]` (direction_feature). Returns 0=BUY if direction<-0.75, 2=SELL if direction>0.75, 1=HOLD otherwise.
+
+**These agents expect (7,1) shaped obs, NOT flattened. plan-v2 E0 pseudocode incorrectly calls `obs.flatten()` before `agent.act(obs)`.**
+
+### `abides-gym/scripts/belief_tracker.py`
+
+**Responsibility**: Kalman filter for OU fundamental + `BeliefAugmentedWrapper` (old gym.Wrapper). This tracks the fundamental value process, NOT the market regime. E3 needs a new MLP-based regime classifier, not this file.
+
+---
+
+## Phase 3: Cross-Cutting Issues
+
+### Critical Bugs in plan-v2 (must fix before implementing)
+
+**BUG A — Action encoding reversed in RegimeRewardWrapper**:
+```
+Plan says: Val → reward action==2 (BUY). WRONG — 2=SELL.
+Plan says: Mom → preferred=2 if ret>0 else 0. WRONG — should be 0 if ret>0 else 2.
+Correct:
+  Val → reward action==0 (BUY)
+  Mom → preferred = 0 if ret > 0 else 2
+```
+
+**BUG B — E0 obs flattening**:
+```
+Plan pseudocode: obs = obs.flatten() before agent.act(obs)
+MomentumAgentBaseline.act uses obs[4, 0] → fails on 1D array.
+Fix: Do NOT flatten. Use raw gym env directly (same as sweep.py run_episode).
+```
+
+**BUG C — RegimeAdapter env_config access**:
+```
+Plan: self.env.env_config["background_config_extra_kvargs"]
+GymnasiumDailyInvestorAdapter does NOT store env_config attribute.
+Fix: Make RegimeAdapter a standalone gymnasium.Env (same pattern as GymnasiumDailyInvestorAdapter)
+     with two internal SubGymMarketsDailyInvestorEnv_v0 instances (one per regime).
+     On reset, select regime and reset the appropriate inner env.
+     This avoids all env_config patching issues.
+```
+
+### Design gaps
+
+- `run_evaluation()` in train_ppo_daily_investor.py hardcodes `GymnasiumDailyInvestorAdapter`. E1/E2 training scripts need their own eval function using `RegimeAdapter`.
+- `results/e0_oracle_heuristic/eval_metrics.json` format should match `ppo_baseline/eval_metrics.json` schema for comparability.
+- No CI. All testing is local. The existing `abides-markets/tests/test_sweep_smoke.py` is the most relevant smoke test.
+- E2a (alpha sweep) not in plan-v2 yet — user requested it be added before E2.
+
+### Most likely failure point
+`RegimeAdapter` regime sampling — must verify via logging that both val and mom episodes actually occur during training. If only one regime is ever sampled, the belief signal provides zero information.
+
+---
+
+## Cross-reference: plan-v2 vs codebase (2026-05-10)
+
+**Note (updated 2026-05-10):** E0/E1 code was implemented after the review above ran. Current filesystem state:
+
+| Plan item | Status | Notes |
+|-----------|--------|-------|
+| E0: run_oracle_heuristic.py | ✅ Implemented | BUG B fixed (agents get raw (7,1) obs) |
+| E0: run results | ⚠️ Partial | 12/120 episodes (val_seed0 only); run crashed; no eval_metrics.json |
+| E1: regime_adapter.py | ✅ Implemented | Standalone gymnasium.Env; BUG C fixed; dual inner envs |
+| E1: train_ppo_oracle_obs.py | ✅ Implemented | Uses RegimeAdapter; 9-dim obs; custom run_evaluation |
+| E1: run results | ❌ Not started | |
+| E2a: sweep_alpha_e2.py | ❌ Not created | User requested; must precede E2 |
+| E2: regime_reward_wrapper.py | ❌ Not created | BUG A fix required: align val→action==0 (BUY), mom→0 if ret>0 else 2 |
+| E2: train_ppo_oracle_reward.py | ❌ Not created | |
+| E3: belief_estimator_train.py | ❌ Not created | Gated on E1/E2 gate |
+| E3: belief_estimator_wrapper.py | ❌ Not created | Gated |
+| E3: train_ppo_inferred_belief.py | ❌ Not created | Gated |
+| envs/__init__.py update | ❌ Not done | Needs RegimeAdapter + RegimeRewardWrapper exports |
+| v4 baseline seed 2 | ❌ Failed (disk quota, now resolved) | Re-run needed |
+
 ## Code Review — commit 29a520897e23c9d6011a1b98c58b32ae389775d8 (2026-04-27)
 
 ---
