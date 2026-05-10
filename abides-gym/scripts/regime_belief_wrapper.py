@@ -2,23 +2,29 @@
 regime_belief_wrapper.py — Regime belief wrappers for v5 oracle experiments
 ============================================================================
 
-Three drop-in components for the PPO training pipeline:
+Four drop-in components for the PPO training pipeline:
 
   OracleRegimeWrapper (E1: belief in observation)
     Appends the hard one-hot oracle label b* = (p_val, p_mom) to every
     observation in the episode.  The label is set at reset() from the
     environment's background parameters and is constant for the episode.
 
-  KimRegimeBeliefWrapper (E3: inferred belief)
+  KimRegimeBeliefWrapper (E3 attempt — NOTE: does not distinguish regimes)
     Appends a live soft 2-vector (p_val_t, p_mom_t) produced by the Kim
-    regime-switching Kalman filter at every timestep.  Zero-shot — no
-    training required.  Kim's VALUE regime maps to v5 Val, MOMENTUM to Mom.
+    regime-switching Kalman filter at every timestep.  Found to produce
+    identical output in both Val and Mom regimes; kept for reference only.
+
+  TrainedRegimeBeliefWrapper (E3: learned inferred belief)
+    Appends (p_val_t, p_mom_t) from a trained MLP or LSTM classifier.
+    The classifier learns regime signatures from autocorrelation patterns
+    and order-flow imbalance.  MLP+Kalman achieves 100% episode accuracy.
+    Model is loaded from a checkpoint saved by regime_classifier.py.
 
   RegimeRandomizedGymnasiumEnv
     Gymnasium-compatible adapter that randomises the market regime (Val or
     Mom) independently at every reset().  Combines regime randomisation,
     belief augmentation, and the Gymnasium API conversion needed by RLlib.
-    Accepts belief_mode in {"oracle", "kim", "none"} to select the wrapper.
+    Accepts belief_mode in {"oracle", "kim", "trained", "none"}.
 
 Regime definitions (from v5 sweep data)
 ----------------------------------------
@@ -27,13 +33,17 @@ Regime definitions (from v5 sweep data)
 
 Observation layout after augmentation
 --------------------------------------
-  belief_mode="none"   : obs shape (7,) — unchanged
-  belief_mode="oracle" : obs shape (9,) — [...o_t, p_val, p_mom]
-  belief_mode="kim"    : obs shape (9,) — [...o_t, p_val_t, p_mom_t]
+  belief_mode="none"    : obs shape (7,) — unchanged
+  belief_mode="oracle"  : obs shape (9,) — [...o_t, p_val, p_mom]
+  belief_mode="kim"     : obs shape (9,) — [...o_t, p_val_t, p_mom_t]
+  belief_mode="trained" : obs shape (9,) — [...o_t, p_val_t, p_mom_t]
 
 Usage (standalone)
 ------------------
-  env = RegimeRandomizedGymnasiumEnv({"belief_mode": "kim", ...})
+  env = RegimeRandomizedGymnasiumEnv({
+      "belief_mode": "trained",
+      "trained_model_path": "models/mlp_kalman_regime.pt",
+  })
   obs, info = env.reset()   # obs shape (9,)
   obs, r, term, trunc, info = env.step(1)
 
@@ -62,6 +72,7 @@ from abides_gym.envs.markets_daily_investor_environment_v0 import (
     SubGymMarketsDailyInvestorEnv_v0,
 )
 from kim_filter_tracker import KimFilterTracker
+from regime_classifier import TrainedRegimeBeliefWrapper, load_classifier
 from abides_core.utils import str_to_ns
 
 
@@ -261,20 +272,24 @@ class RegimeRandomizedGymnasiumEnv(gymnasium.Env):
     """
     Gymnasium-compatible env that:
       1. Randomly picks Val or Mom regime on every reset().
-      2. Applies OracleRegimeWrapper or KimRegimeBeliefWrapper (or neither).
+      2. Applies a belief wrapper (oracle / kim / trained / none).
       3. Converts the legacy gym API to gymnasium's (reset/step return values).
 
     Required env_config keys
     ------------------------
     belief_mode : str
-        "oracle" — hard one-hot per episode (E1).
-        "kim"    — soft Kim filter per step (E3).
-        "none"   — no belief augmentation (baseline).
+        "oracle"  — hard one-hot per episode (E1).
+        "kim"     — soft Kim filter per step (reference; does not work well).
+        "trained" — MLP/LSTM classifier loaded from trained_model_path (E3).
+        "none"    — no belief augmentation (baseline).
 
     Optional env_config keys
     ------------------------
     val_prob : float (default 0.5)
         Probability of drawing a Val episode.  0.5 = balanced training.
+    trained_model_path : str
+        Path to a .pt checkpoint saved by regime_classifier.py.
+        Required when belief_mode="trained".
     r_bar, kappa_oracle, fund_vol, timestep_duration, obs_noise_frac,
     regime_stay_prob, kim_normalize : forwarded to KimRegimeBeliefWrapper.
     starting_cash, order_fixed_size, state_history_length,
@@ -366,17 +381,34 @@ class RegimeRandomizedGymnasiumEnv(gymnasium.Env):
             if k in self._bg_kwargs:
                 self._bg_kwargs[k] = cfg.pop(k)
 
+        # Trained classifier (loaded once, shared across all envs)
+        trained_model_path = str(cfg.pop("trained_model_path", ""))
+        self._trained_model      = None
+        self._trained_model_type = "mlp"
+        self._trained_use_kalman = True
+        self._trained_seq_len    = 20
+        if self._belief_mode == "trained":
+            if not trained_model_path:
+                raise ValueError("belief_mode='trained' requires trained_model_path in env_config")
+            (self._trained_model,
+             self._trained_model_type,
+             self._trained_use_kalman,
+             self._trained_seq_len) = load_classifier(trained_model_path)
+
         self._regime: str           = "mom"
         self._belief: np.ndarray    = ORACLE_BELIEF["mom"].copy()
         self._wrapped_env: Optional[gym.Env] = None
 
-        # Build a probe env to get spaces
-        probe = self._make_env("mom")
-        raw_obs_space = probe.observation_space
-        probe.close()
+        # Probe the BASE env (no belief wrapper) to get raw obs dimension, then add belief features.
+        # Using _make_env() here would double-count because wrappers expand the obs space.
+        _probe_kw = dict(self._env_kwargs)
+        _probe_kw["background_config_extra_kvargs"] = {**self._bg_kwargs, **REGIME_MOM}
+        _probe_base = SubGymMarketsDailyInvestorEnv_v0(**_probe_kw)
+        raw_obs_dim = int(np.prod(_probe_base.observation_space.shape))
+        _probe_base.close()
 
-        obs_dim = int(np.prod(raw_obs_space.shape))
-        if self._belief_mode in ("oracle", "kim"):
+        obs_dim = raw_obs_dim
+        if self._belief_mode in ("oracle", "kim", "trained"):
             obs_dim += N_BELIEF_FEATURES
 
         self.observation_space = gymnasium.spaces.Box(
@@ -408,6 +440,14 @@ class RegimeRandomizedGymnasiumEnv(gymnasium.Env):
                 obs_noise_frac     = self._obs_noise_frac,
                 regime_stay_prob   = self._regime_stay_prob,
                 normalize          = self._kim_normalize,
+            )
+        elif self._belief_mode == "trained":
+            return TrainedRegimeBeliefWrapper(
+                base,
+                model       = self._trained_model,
+                model_type  = self._trained_model_type,
+                seq_len     = self._trained_seq_len,
+                use_kalman  = self._trained_use_kalman,
             )
         else:
             return base   # belief_mode="none"
@@ -467,7 +507,7 @@ class RegimeRandomizedGymnasiumEnv(gymnasium.Env):
 
     def _extract_belief(self, obs: np.ndarray) -> np.ndarray:
         """Pull the last 2 rows from obs as the current belief vector."""
-        if self._belief_mode in ("oracle", "kim"):
+        if self._belief_mode in ("oracle", "kim", "trained"):
             flat = np.asarray(obs, dtype=np.float32).reshape(-1)
             return flat[-N_BELIEF_FEATURES:].copy()
         return np.zeros(N_BELIEF_FEATURES, dtype=np.float32)
@@ -484,20 +524,20 @@ class RegimeRandomizedGymnasiumEnv(gymnasium.Env):
 # Quick smoke test
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _smoke_test(belief_mode: str = "kim", n_steps: int = 5):
+def _smoke_test(belief_mode: str = "oracle", n_steps: int = 5,
+                trained_model_path: str = ""):
     print(f"\n── smoke test: belief_mode={belief_mode!r} ──")
-    env = RegimeRandomizedGymnasiumEnv({
-        "belief_mode": belief_mode,
-        "val_prob":    0.5,
-        "debug_mode":  True,
-    })
+    cfg: Dict[str, Any] = {"belief_mode": belief_mode, "val_prob": 0.5, "debug_mode": True}
+    if belief_mode == "trained":
+        cfg["trained_model_path"] = trained_model_path
+    env = RegimeRandomizedGymnasiumEnv(cfg)
     obs, _ = env.reset(seed=42)
     print(f"  regime={env._regime}  obs shape={obs.shape}")
-    if belief_mode in ("oracle", "kim"):
+    if belief_mode in ("oracle", "kim", "trained"):
         print(f"  initial belief=(p_val={obs[-2]:.3f}, p_mom={obs[-1]:.3f})")
     for i in range(n_steps):
         obs, r, term, trunc, info = env.step(1)  # hold
-        if belief_mode in ("oracle", "kim"):
+        if belief_mode in ("oracle", "kim", "trained"):
             b = info["belief"]
             print(f"  step {i+1}  regime={info['regime']}  "
                   f"p_val={b[0]:.3f}  p_mom={b[1]:.3f}  reward={r:.4f}")
@@ -508,6 +548,12 @@ def _smoke_test(belief_mode: str = "kim", n_steps: int = 5):
 
 
 if __name__ == "__main__":
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--trained-model", default="models/mlp_kalman_regime.pt",
+                    help="Path to trained classifier checkpoint")
+    ns = ap.parse_args()
+
     _smoke_test("none")
     _smoke_test("oracle")
-    _smoke_test("kim")
+    _smoke_test("trained", trained_model_path=ns.trained_model)
