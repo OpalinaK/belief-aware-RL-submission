@@ -4,13 +4,19 @@ Baseline PPO trainer for markets-daily_investor-v0.
 This script trains a belief-blind PPO policy on standard daily-investor observations only.
 It includes a reset-safe wrapper for BUG 1 (`previous_marked_to_market` reset), checkpointing,
 and timing metrics for smoke/full run planning.
+
+Training metrics are written to ``train_metrics.json`` (full per-iter rows),
+``training_iterations.jsonl`` (one JSON object per line, flushed each iter),
+and ``training_curve.csv`` (wide table for spreadsheets / pandas).
 """
 
 import argparse
+import csv
 import json
+import os
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Set, Union
 
 import gym
 import gymnasium as gymnasium
@@ -28,6 +34,12 @@ from abides_gym.envs.markets_daily_investor_environment_v0 import (
 )
 
 ENV_ID = "markets-daily_investor-v0"
+_SEED_MOD = (1 << 31) - 1  # keep gym seeds in signed 32-bit range
+
+
+def _ts_log(msg: str) -> None:
+    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {msg}", flush=True)
+
 
 RMSC04_PARAMS = dict(
     starting_cash=10_000_000,
@@ -100,6 +112,11 @@ class GymnasiumDailyInvestorAdapter(gymnasium.Env):
     """
     Gymnasium-compatible adapter around the legacy Gym daily investor env.
     Converts reset/step API and applies BUG 1 reset invariant.
+
+    Per-episode seeding (octopus-style): when ``reset(seed=None)``, uses
+    ``per_episode_seed_base + stream_offset + episode_index`` so successive episodes
+    see different ABIDES RNG draws. ``stream_offset`` separates parallel env instances.
+    When ``reset(seed=...)`` is passed (e.g. eval), that seed is used exactly.
     """
 
     metadata = {"render_modes": []}
@@ -109,6 +126,12 @@ class GymnasiumDailyInvestorAdapter(gymnasium.Env):
         self._info_mode = str(cfg.pop("adapter_info_mode", "full")).lower()
         if self._info_mode not in {"minimal", "full"}:
             raise ValueError(f"Unsupported adapter_info_mode={self._info_mode!r}")
+
+        self._episode_seed_base = int(cfg.pop("per_episode_seed_base", 0)) % _SEED_MOD
+        self._episode_index = 0
+        # Parallel Ray runners each construct their own adapter; offset by object id
+        # so workers do not all replay the same day sequence.
+        self._stream_offset = (id(self) * 1_000_003) % _SEED_MOD
 
         # Direct class avoids gym.registry on Ray workers (registry may be empty in worker procs).
         base_env = SubGymMarketsDailyInvestorEnv_v0(**cfg)
@@ -140,7 +163,11 @@ class GymnasiumDailyInvestorAdapter(gymnasium.Env):
 
     def reset(self, *, seed=None, options=None):
         if seed is not None:
-            self._env.seed(seed)
+            ep_seed = int(seed) % _SEED_MOD
+        else:
+            ep_seed = (self._episode_seed_base + self._stream_offset + self._episode_index) % _SEED_MOD
+            self._episode_index += 1
+        self._env.seed(ep_seed)
         obs = self._env.reset()
         return self._flatten_obs(obs), {}
 
@@ -194,6 +221,79 @@ def _extract_reward_mean(result: Dict[str, Any]) -> float:
         if "episode_reward_mean" in env_runners:
             return _safe_float(env_runners["episode_reward_mean"], 0.0)
     return _safe_float(result.get("episode_reward_mean", 0.0), 0.0)
+
+
+def _to_export_scalar(value: Any) -> Optional[Union[int, float, bool, str]]:
+    if value is None or isinstance(value, (bool, str)):
+        return value
+    if isinstance(value, (float, int)) and not isinstance(value, bool):
+        return value
+    if isinstance(value, np.generic):
+        if isinstance(value, np.floating):
+            return float(value)
+        if isinstance(value, np.integer):
+            return int(value)
+        if isinstance(value, np.bool_):
+            return bool(value)
+    return None
+
+
+def _flatten_train_result(result: Dict[str, Any], max_depth: int = 14) -> Dict[str, Any]:
+    """
+    Flatten RLlib `algo.train()` metrics for CSV/JSONL export.
+    Drops `config` and `timers` subtrees to keep files readable.
+    """
+
+    flat: Dict[str, Any] = {}
+
+    def walk(obj: Any, prefix: str, depth: int) -> None:
+        if depth > max_depth:
+            return
+        if isinstance(obj, dict):
+            for key, val in obj.items():
+                ks = str(key)
+                if ks == "config":
+                    continue
+                if ks == "timers":
+                    continue
+                path = f"{prefix}/{ks}" if prefix else ks
+                if isinstance(val, dict):
+                    walk(val, path, depth + 1)
+                elif isinstance(val, (list, tuple)):
+                    if len(val) == 1:
+                        walk(val[0], path, depth + 1)
+                else:
+                    scalar = _to_export_scalar(val)
+                    if scalar is not None:
+                        flat[path] = scalar
+        else:
+            scalar = _to_export_scalar(obj)
+            if scalar is not None and prefix:
+                flat[prefix] = scalar
+
+    walk(result, "", 0)
+    return flat
+
+
+def _write_training_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
+    if not rows:
+        return
+    preferred = [
+        "iteration",
+        "timesteps_total",
+        "episode_reward_mean",
+        "training_iteration",
+        "iter_wall_time_sec",
+    ]
+    keys: Set[str] = set()
+    for r in rows:
+        keys.update(r.keys())
+    fieldnames = [c for c in preferred if c in keys] + sorted(keys - set(preferred))
+    with path.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        w.writeheader()
+        for r in rows:
+            w.writerow({k: r.get(k, "") for k in fieldnames})
 
 
 def _summarize_array(values: List[float]) -> Dict[str, float]:
@@ -366,6 +466,13 @@ def parse_args():
     parser.add_argument("--train-info-mode", choices=["minimal", "full"], default="minimal")
     parser.add_argument("--eval-info-mode", choices=["minimal", "full"], default="full")
     parser.add_argument("--profile-phases", type=str2bool, default=False)
+    parser.add_argument(
+        "--per-episode-seed-base",
+        type=int,
+        default=None,
+        help="When reset(seed=None), env RNG seed is base+offset+episode_idx. "
+        "Defaults to --seed. Ignored when the caller passes an explicit reset seed.",
+    )
     return parser.parse_args()
 
 
@@ -394,6 +501,8 @@ def build_env_config(args, debug_mode: bool, info_mode: str) -> Dict[str, Any]:
     env_config["timestep_duration"] = args.timestep
     env_config["debug_mode"] = bool(debug_mode)
     env_config["adapter_info_mode"] = str(info_mode)
+    base = args.seed if args.per_episode_seed_base is None else args.per_episode_seed_base
+    env_config["per_episode_seed_base"] = int(base)
     env_config["background_config_extra_kvargs"] = dict(RMSC04_PARAMS)
     return env_config
 
@@ -403,6 +512,10 @@ def main():
     if args.checkpoint_freq < 0:
         raise SystemExit("--checkpoint-freq must be >= 0 (0 = only final checkpoint)")
     out_dir = Path(args.out_dir)
+    _ts_log(
+        f"Starting run out_dir={out_dir} timesteps={args.timesteps} timestep={args.timestep} "
+        f"train_seed={args.seed} workers={args.num_workers} num_gpus={args.num_gpus}"
+    )
     checkpoints_dir = out_dir / "checkpoints"
     out_dir.mkdir(parents=True, exist_ok=True)
     checkpoints_dir.mkdir(parents=True, exist_ok=True)
@@ -422,6 +535,9 @@ def main():
     run_config = {
         "timesteps_target": args.timesteps,
         "seed": args.seed,
+        "per_episode_seed_base": args.per_episode_seed_base
+        if args.per_episode_seed_base is not None
+        else args.seed,
         "eval_seeds": args.eval_seeds,
         "env_id": ENV_ID,
         "env_config": {
@@ -454,7 +570,18 @@ def main():
 
     ray.shutdown()
     t_setup = time.time()
-    ray.init(ignore_reinit_error=True, include_dashboard=False, log_to_driver=False)
+    _ray_init: Dict[str, Any] = {
+        "ignore_reinit_error": True,
+        "include_dashboard": False,
+        "log_to_driver": False,
+    }
+    _ray_tmp = os.environ.get("RAY_TMPDIR")
+    if not _ray_tmp and os.environ.get("TMPDIR"):
+        _ray_tmp = str(Path(os.environ["TMPDIR"]) / "ray")
+    if _ray_tmp:
+        Path(_ray_tmp).mkdir(parents=True, exist_ok=True)
+        _ray_init["_temp_dir"] = _ray_tmp
+    ray.init(**_ray_init)
 
     config = (
         PPOConfig()
@@ -489,41 +616,57 @@ def main():
     algo = config.build_algo()
     train_setup_sec = time.time() - t_setup
     train_rows: List[Dict[str, Any]] = []
+    training_jsonl_path = out_dir / "training_iterations.jsonl"
 
     t_start = time.time()
     timesteps_total = 0
     iteration = 0
 
-    while timesteps_total < args.timesteps:
-        iteration += 1
-        t_iter = time.time()
-        result = algo.train()
-        iter_wall_sec = time.time() - t_iter
+    _ts_log(
+        f"Ray+PPO setup done in {train_setup_sec:.1f}s. Starting training loop "
+        f"(first algo.train() can take a long time: batch={args.train_batch_size}, "
+        f"workers={args.num_workers}, per_episode_seed_base="
+        f"{args.per_episode_seed_base if args.per_episode_seed_base is not None else args.seed})."
+    )
 
-        timesteps_total = _extract_timesteps_total(result)
-        episode_reward_mean = _extract_reward_mean(result)
+    with training_jsonl_path.open("w", encoding="utf-8") as jsonl_f:
+        while timesteps_total < args.timesteps:
+            iteration += 1
+            t_iter = time.time()
+            _ts_log(
+                f"PPO iteration {iteration} starting (target batch ~{args.train_batch_size} env steps)..."
+            )
+            result = algo.train()
+            iter_wall_sec = time.time() - t_iter
 
-        row = {
-            "iteration": iteration,
-            "timesteps_total": timesteps_total,
-            "episode_reward_mean": episode_reward_mean,
-            "training_iteration": _safe_int(result.get("training_iteration"), iteration),
-            "iter_wall_time_sec": iter_wall_sec,
-        }
-        train_rows.append(row)
+            timesteps_total = _extract_timesteps_total(result)
+            episode_reward_mean = _extract_reward_mean(result)
 
-        print(
-            f"iter={iteration:>3}  timesteps={timesteps_total:>8}  "
-            f"reward_mean={episode_reward_mean:+.5f}  iter_time={iter_wall_sec:.2f}s"
-        )
+            row = {
+                "iteration": iteration,
+                "timesteps_total": timesteps_total,
+                "episode_reward_mean": episode_reward_mean,
+                "training_iteration": _safe_int(result.get("training_iteration"), iteration),
+                "iter_wall_time_sec": iter_wall_sec,
+            }
+            flat_metrics = _flatten_train_result(result)
+            row.update(flat_metrics)
+            train_rows.append(row)
+            jsonl_f.write(json.dumps(row, default=str) + "\n")
+            jsonl_f.flush()
 
-        if args.checkpoint_freq > 0 and iteration % args.checkpoint_freq == 0:
-            ckpt_dir = algo.save_to_path(checkpoints_path)
-            print(f"  checkpoint -> {ckpt_dir}")
+            _ts_log(
+                f"iter={iteration:>3}  timesteps={timesteps_total:>8}  "
+                f"reward_mean={episode_reward_mean:+.5f}  iter_time={iter_wall_sec:.2f}s"
+            )
+
+            if args.checkpoint_freq > 0 and iteration % args.checkpoint_freq == 0:
+                ckpt_dir = algo.save_to_path(checkpoints_path)
+                _ts_log(f"checkpoint -> {ckpt_dir}")
 
     # Always save a final checkpoint for reproducible eval.
     final_ckpt = algo.save_to_path(checkpoints_path)
-    print(f"final checkpoint -> {final_ckpt}")
+    _ts_log(f"final checkpoint -> {final_ckpt}")
 
     train_loop_sec = time.time() - t_start
     wall_time_sec = train_loop_sec
@@ -538,11 +681,21 @@ def main():
             "env_steps_per_sec": env_steps_per_sec,
             "train_iterations_per_hour": train_iterations_per_hour,
         },
+        "artifacts": {
+            "training_iterations_jsonl": str(training_jsonl_path.resolve()),
+            "training_curve_csv": str((out_dir / "training_curve.csv").resolve()),
+        },
         "iterations": train_rows,
     }
     (out_dir / "train_metrics.json").write_text(json.dumps(train_metrics, indent=2), encoding="utf-8")
+    _write_training_csv(out_dir / "training_curve.csv", train_rows)
+    _ts_log(
+        f"Wrote training data -> {training_jsonl_path.name}, training_curve.csv, train_metrics.json"
+    )
 
+    _ts_log(f"Starting evaluation on {len(args.eval_seeds)} seed(s)...")
     eval_payload = run_evaluation(algo, eval_env_config, args.eval_seeds)
+    _ts_log("Evaluation finished; writing JSON artifacts.")
     (out_dir / "eval_episodes.json").write_text(
         json.dumps(eval_payload["episodes"], indent=2),
         encoding="utf-8",

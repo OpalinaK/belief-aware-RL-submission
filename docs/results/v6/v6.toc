@@ -1,0 +1,19 @@
+\contentsline {section}{\numberline {1}Overview}{1}{section.1}%
+\contentsline {paragraph}{Experimental setup (inherited from v5).}{1}{section*.2}%
+\contentsline {paragraph}{Pass/fail gate (from v5).}{2}{section*.3}%
+\contentsline {section}{\numberline {2}Baseline}{2}{section.2}%
+\contentsline {section}{\numberline {3}E0: Oracle Heuristic (incomplete)}{2}{section.3}%
+\contentsline {section}{\numberline {4}E1: PPO + Belief in Observation}{2}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Setup}{2}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Results}{2}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Analysis}{3}{subsection.4.3}%
+\contentsline {section}{\numberline {5}E2: PPO + Belief in Reward ($\alpha $ Sweep and Final Run)}{3}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Alpha sweep (E2a)}{3}{subsection.5.1}%
+\contentsline {paragraph}{Sweep flaw.}{3}{section*.7}%
+\contentsline {subsection}{\numberline {5.2}E2 results ($\alpha = 0.01$, sweep-selected)}{4}{subsection.5.2}%
+\contentsline {paragraph}{Seed~0 collapse.}{4}{section*.9}%
+\contentsline {paragraph}{Seed~1 recovery.}{4}{section*.10}%
+\contentsline {subsection}{\numberline {5.3}E2 corrected ($\alpha = 0.001$) --- results pending}{4}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Summary and Gate Status}{5}{section.6}%
+\contentsline {paragraph}{Current interpretation.}{5}{section*.13}%
+\contentsline {paragraph}{Next steps.}{5}{section*.14}%

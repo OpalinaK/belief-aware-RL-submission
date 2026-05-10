@@ -25,9 +25,12 @@ Output
 
 import argparse
 import json
+import multiprocessing as mp
 import os
+import signal
 import sys
 import time
+import traceback
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -245,6 +248,125 @@ def run_episode(env, agent, seed: int) -> dict:
         "error": error,
     }
 
+
+class EpisodeTimeout(RuntimeError):
+    pass
+
+
+def _timeout_handler(signum, frame):
+    raise EpisodeTimeout("episode timed out")
+
+
+def run_episode_with_timeout(env, agent, seed: int, timeout_sec: int) -> dict:
+    if timeout_sec <= 0:
+        return run_episode(env, agent, seed)
+
+    prev_handler = signal.getsignal(signal.SIGALRM)
+    signal.signal(signal.SIGALRM, _timeout_handler)
+    signal.setitimer(signal.ITIMER_REAL, float(timeout_sec))
+    try:
+        return run_episode(env, agent, seed)
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0.0)
+        signal.signal(signal.SIGALRM, prev_handler)
+
+
+def _run_episode_worker(conn, env_kwargs, bg_kwargs, strat_name: str, seed: int):
+    env = None
+    try:
+        env = make_env(env_kwargs, bg_kwargs)
+        agent = ALL_STRATEGIES[strat_name]()
+        ep = run_episode(env, agent, seed)
+        conn.send({"ok": True, "ep": ep})
+    except Exception as exc:
+        conn.send({
+            "ok": False,
+            "error": f"{type(exc).__name__}: {exc}",
+            "traceback": traceback.format_exc(),
+        })
+    finally:
+        if env is not None:
+            try:
+                env.close()
+            except Exception:
+                pass
+        conn.close()
+
+
+def run_episode_isolated(env_kwargs, bg_kwargs, strat_name, seed, timeout_sec):
+    parent_conn, child_conn = mp.Pipe(duplex=False)
+    proc = mp.Process(
+        target=_run_episode_worker,
+        args=(child_conn, env_kwargs, bg_kwargs, strat_name, seed),
+        daemon=True,
+    )
+    proc.start()
+    child_conn.close()
+
+    wait_sec = None if timeout_sec <= 0 else timeout_sec
+    proc.join(wait_sec)
+
+    if proc.is_alive():
+        proc.terminate()
+        proc.join(5)
+        if proc.is_alive():
+            proc.kill()
+            proc.join(5)
+        parent_conn.close()
+        return (
+            {
+                "seed": seed,
+                "total_reward": 0.0,
+                "final_m2m": float(env_kwargs.get("starting_cash", ENV_DEFAULTS["starting_cash"])),
+                "final_pnl": 0.0,
+                "episode_length": 0,
+                "max_drawdown": 0.0,
+                "transaction_cost": 0.0,
+                "won": False,
+                "invalid_state": True,
+                "error": f"episode_timeout_{timeout_sec}s",
+            },
+            True,
+        )
+
+    if parent_conn.poll():
+        msg = parent_conn.recv()
+        parent_conn.close()
+        if msg.get("ok"):
+            return msg["ep"], False
+        return (
+            {
+                "seed": seed,
+                "total_reward": 0.0,
+                "final_m2m": float(env_kwargs.get("starting_cash", ENV_DEFAULTS["starting_cash"])),
+                "final_pnl": 0.0,
+                "episode_length": 0,
+                "max_drawdown": 0.0,
+                "transaction_cost": 0.0,
+                "won": False,
+                "invalid_state": True,
+                "error": msg.get("error", "episode_worker_failed"),
+            },
+            False,
+        )
+
+    parent_conn.close()
+    return (
+        {
+            "seed": seed,
+            "total_reward": 0.0,
+            "final_m2m": float(env_kwargs.get("starting_cash", ENV_DEFAULTS["starting_cash"])),
+            "final_pnl": 0.0,
+            "episode_length": 0,
+            "max_drawdown": 0.0,
+            "transaction_cost": 0.0,
+            "won": False,
+            "invalid_state": True,
+            "error": "episode_worker_no_result",
+        },
+        False,
+    )
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # SWEEP DEFINITION
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -282,23 +404,42 @@ def make_env(env_kwargs, bg_kwargs):
     return env
 
 
-def run_param(param, val, env_kwargs, bg_kwargs, strategies, n_episodes, results):
+def run_param(
+    param,
+    val,
+    env_kwargs,
+    bg_kwargs,
+    strategies,
+    n_episodes,
+    results,
+    completed_keys,
+    episode_timeout_sec,
+):
     """
     Run all requested strategies for n_episodes each under a single (param, val) config.
     Appends one row per (strategy, episode) to results.
     """
-    env = make_env(env_kwargs, bg_kwargs)
-
     for strat_name, Strat in strategies.items():
-        agent = Strat()
         for seed in range(n_episodes):
+            row_key = (param, str(val), strat_name, seed)
+            if row_key in completed_keys:
+                print(
+                    f"  {param}={val!s:<12}  {strat_name:<8}  "
+                    f"ep {seed+1:>2}/{n_episodes}  SKIP  (already in resume set)"
+                )
+                continue
+
             t0 = time.time()
-            ep = run_episode(env, agent, seed)
+            ep, timed_out = run_episode_isolated(
+                env_kwargs, bg_kwargs, strat_name, seed, episode_timeout_sec
+            )
             elapsed = time.time() - t0
 
             tag = "WIN " if ep["won"] else "LOSS"
             if ep.get("invalid_state", False):
                 tag = "ERR "
+            if timed_out:
+                tag = "TIME"
             print(
                 f"  {param}={val!s:<12}  {strat_name:<8}  "
                 f"ep {seed+1:>2}/{n_episodes}  {tag}  "
@@ -320,9 +461,9 @@ def run_param(param, val, env_kwargs, bg_kwargs, strategies, n_episodes, results
                 "invalid_state":    ep.get("invalid_state", False),
                 "error":            ep.get("error", ""),
                 "episode_length":   ep["episode_length"],
+                "timed_out":        timed_out,
             })
-
-    env.close()
+            completed_keys.add(row_key)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -470,6 +611,10 @@ def parse_args():
     p.add_argument("--fast",       action="store_true",
                    help="Quick mode: 10 episodes, 300s timestep")
     p.add_argument("--out",        type=str, default="sweep_results.json")
+    p.add_argument("--resume-from", type=str, default=None,
+                   help="JSON file with existing rows to reuse/skip (by param,value,strategy,seed)")
+    p.add_argument("--episode-timeout-sec", type=int, default=900,
+                   help="Max wall-clock seconds per episode before marking timeout (default: 900)")
     p.add_argument("--plots-dir",  type=str, default="plots")
     p.add_argument("--no-plots",   action="store_true")
     return p.parse_args()
@@ -506,6 +651,27 @@ def main():
     print()
 
     results = []
+    completed_keys = set()
+    if args.resume_from:
+        if os.path.exists(args.resume_from):
+            with open(args.resume_from, "r") as f:
+                loaded = json.load(f)
+            if isinstance(loaded, list):
+                results.extend(loaded)
+                for row in loaded:
+                    try:
+                        key = (
+                            row["param"],
+                            str(row["value"]),
+                            row["strategy"],
+                            int(row["seed"]),
+                        )
+                        completed_keys.add(key)
+                    except (KeyError, TypeError, ValueError):
+                        continue
+            print(f"  Resume from: {args.resume_from} ({len(completed_keys)} existing rows)")
+        else:
+            print(f"  Resume file not found, starting fresh: {args.resume_from}")
     t_start = time.time()
 
     # ── background config sweeps ──────────────────────────────────────────────
@@ -518,7 +684,17 @@ def main():
             print(f"{'─'*70}")
             print(f"  param={param}  val={val}")
             bg = {**RMSC04_PARAMS, param: val}
-            run_param(param, val, env_kw, bg, strategies, n_episodes, results)
+            run_param(
+                param,
+                val,
+                env_kw,
+                bg,
+                strategies,
+                n_episodes,
+                results,
+                completed_keys,
+                args.episode_timeout_sec,
+            )
 
     # ── env-level sweeps ──────────────────────────────────────────────────────
     for param, values in env_params.items():
@@ -527,7 +703,17 @@ def main():
             print(f"  param={param}  val={val}")
             kw = {k: v for k, v in env_kw.items() if k != param}
             kw[param] = val
-            run_param(param, val, kw, RMSC04_PARAMS, strategies, n_episodes, results)
+            run_param(
+                param,
+                val,
+                kw,
+                RMSC04_PARAMS,
+                strategies,
+                n_episodes,
+                results,
+                completed_keys,
+                args.episode_timeout_sec,
+            )
 
     # ── save ──────────────────────────────────────────────────────────────────
     with open(args.out, "w") as f:

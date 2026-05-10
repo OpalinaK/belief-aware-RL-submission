@@ -1,0 +1,38 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Overview}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Experimental setup (inherited from v5).}{1}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pass/fail gate (from v5).}{2}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Baseline}{2}{section.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces v4 belief-blind PPO baseline (60\,s / 386-step episodes). Source: \texttt  {results/ppo\_baseline/seed\_\{0,1\}/eval\_metrics.json}.}}{2}{table.caption.4}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:baseline}{{1}{2}{v4 belief-blind PPO baseline (60\,s / 386-step episodes). Source: \texttt {results/ppo\_baseline/seed\_\{0,1\}/eval\_metrics.json}}{table.caption.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}E0: Oracle Heuristic (incomplete)}{2}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}E1: PPO + Belief in Observation}{2}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Setup}{2}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Results}{2}{subsection.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces E1 results: PPO with oracle belief appended to observation. Source: \texttt  {results/e1\_belief\_obs/seed\_\{0,1\}/eval\_metrics.json}.}}{2}{table.caption.5}\protected@file@percent }
+\newlabel{tab:e1}{{2}{2}{E1 results: PPO with oracle belief appended to observation. Source: \texttt {results/e1\_belief\_obs/seed\_\{0,1\}/eval\_metrics.json}}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Analysis}{3}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}E2: PPO + Belief in Reward ($\alpha $ Sweep and Final Run)}{3}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Alpha sweep (E2a)}{3}{subsection.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces E2a alpha sweep results. Best alpha selected by tail reward mean over last 20\% of iterations. Each alpha trained for 10K steps (5 iterations); half of iterations returned \texttt  {NaN} reward, making selection unreliable.}}{3}{table.caption.6}\protected@file@percent }
+\newlabel{tab:alphasweep}{{3}{3}{E2a alpha sweep results. Best alpha selected by tail reward mean over last 20\% of iterations. Each alpha trained for 10K steps (5 iterations); half of iterations returned \texttt {NaN} reward, making selection unreliable}{table.caption.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Sweep flaw.}{3}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}E2 results ($\alpha = 0.01$, sweep-selected)}{4}{subsection.5.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces E2 results with sweep-selected $\alpha =0.01$. Source: \texttt  {results/e2\_belief\_reward/seed\_\{0,1\}/eval\_metrics.json}.}}{4}{table.caption.8}\protected@file@percent }
+\newlabel{tab:e2a01}{{4}{4}{E2 results with sweep-selected $\alpha =0.01$. Source: \texttt {results/e2\_belief\_reward/seed\_\{0,1\}/eval\_metrics.json}}{table.caption.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{Seed~0 collapse.}{4}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Seed~1 recovery.}{4}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}E2 corrected ($\alpha = 0.001$) --- results pending}{4}{subsection.5.3}\protected@file@percent }
+\newlabel{sec:e2corrected}{{5.3}{4}{E2 corrected ($\alpha = 0.001$) --- results pending}{subsection.5.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces E2 corrected results ($\alpha =0.001$). Source: \texttt  {results/e2\_belief\_reward\_a001/seed\_\{0,1\}/eval\_metrics.json}. To be filled once training completes.}}{4}{table.caption.11}\protected@file@percent }
+\newlabel{tab:e2a001}{{5}{4}{E2 corrected results ($\alpha =0.001$). Source: \texttt {results/e2\_belief\_reward\_a001/seed\_\{0,1\}/eval\_metrics.json}. To be filled once training completes}{table.caption.11}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Summary and Gate Status}{5}{section.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Oracle experiment summary. E2$'$ denotes the corrected re-run with theoretically motivated $\alpha =0.001$. Gate requires simultaneously: mean P\&L $>32{,}854$, Sharpe $>2.507$, win rate $=100\%$.}}{5}{table.caption.12}\protected@file@percent }
+\newlabel{tab:summary}{{6}{5}{Oracle experiment summary. E2$'$ denotes the corrected re-run with theoretically motivated $\alpha =0.001$. Gate requires simultaneously: mean P\&L $>32{,}854$, Sharpe $>2.507$, win rate $=100\%$}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {paragraph}{Current interpretation.}{5}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Next steps.}{5}{section*.14}\protected@file@percent }
+\gdef \@abspage@last{5}

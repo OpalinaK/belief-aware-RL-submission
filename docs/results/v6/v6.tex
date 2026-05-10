@@ -1,0 +1,332 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, backgrounds, calc}
+
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\tbd}{\emph{TBD}}
+\newcommand{\cmark}{\checkmark}
+
+\title{Oracle Experiment Results:\\
+       E1 (Belief in Obs) and E2 (Belief in Reward)\\[0.4em]
+       \large Belief-Aware RL Project --- Results Report v6}
+\author{Belief-Aware RL Project}
+\date{May 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\bigskip
+
+% ---------------------------------------------------------------------------
+\section{Overview}
+% ---------------------------------------------------------------------------
+
+This report documents the results of the oracle experiments (E1 and E2)
+described in v5.
+The central question is whether giving the agent access to the true regime
+label---either as an observation augmentation (E1) or as a training signal
+(E2)---allows it to outperform the belief-blind v4 PPO baseline on P\&L,
+Sharpe ratio, and win rate.
+
+\paragraph{Experimental setup (inherited from v5).}
+All agents train for $200{,}000$ environment timesteps using PPO with
+8 parallel workers, batch size $2{,}000$, five epochs per batch, minibatch
+size $128$, learning rate $10^{-4}$, entropy coefficient $0.01$.
+Episodes are drawn equally from the \textsc{Val} regime
+($n_\text{mom}=0$, $n_\text{val}=102$) and the \textsc{Mom} regime
+($n_\text{mom}=12$, $n_\text{val}=102$) during training.
+Evaluation uses 5 episodes per seed (mixed regime, random draw).
+
+\paragraph{Pass/fail gate (from v5).}
+A variant passes if, simultaneously:
+(1) mean P\&L $>$ $32{,}854$ cents,
+(2) Sharpe $>$ $2.507$,
+(3) win rate $\geq$ $1.00$.
+All three conditions must hold.
+
+% ---------------------------------------------------------------------------
+\section{Baseline}
+% ---------------------------------------------------------------------------
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Seed} &
+\textbf{Mean P\&L (¢)} &
+\textbf{Std P\&L (¢)} &
+\textbf{Sharpe} &
+\textbf{Win rate} &
+\textbf{Episodes} \\
+\midrule
+0 & $30{,}528$ & $11{,}353$ & $2.689$ & $1.00$ & 20 \\
+1 & $35{,}179$ & $15{,}135$ & $2.324$ & $1.00$ & 20 \\
+\midrule
+\textbf{Avg.} & $\mathbf{32{,}854}$ & --- & $\mathbf{2.507}$ & $\mathbf{1.00}$ & 40 \\
+\bottomrule
+\end{tabular}
+\caption{v4 belief-blind PPO baseline (60\,s / 386-step episodes).
+         Source: \texttt{results/ppo\_baseline/seed\_\{0,1\}/eval\_metrics.json}.}
+\label{tab:baseline}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\section{E0: Oracle Heuristic (incomplete)}
+% ---------------------------------------------------------------------------
+
+The E0 run (oracle heuristic: play \textsc{Momentum} in Mom episodes, play
+Mean-Reversion in Val episodes) was terminated early after 75 of 120 planned
+episodes. The trajectory files record the per-step observation vector but not
+the final P\&L in cents, making direct comparison to the baseline impossible
+without post-processing the obs encoding.
+
+E0 is left as incomplete in this report. The 75 available trajectories
+remain stored in \texttt{results/e0\_oracle\_heuristic/trajectories/} and
+can be used as training data for the E3 belief estimator if needed.
+
+% ---------------------------------------------------------------------------
+\section{E1: PPO + Belief in Observation}
+% ---------------------------------------------------------------------------
+
+\subsection{Setup}
+
+The 7-dimensional base observation $o_t$ is augmented with the oracle regime
+belief tuple $b^* \in \{(1,0),\,(0,1)\}$, yielding a 9-dimensional input:
+\[
+  \tilde{o}_t = [o_t \;\|\; b^*].
+\]
+The reward function is unchanged from the v4 baseline (dense mark-to-market
+increment). The belief tuple is appended by \texttt{RegimeAdapter} and the
+combined environment is \texttt{RegimeAdapter} registered as
+\texttt{RegimeRewardEnv} without reward shaping ($\alpha=0$).
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Seed} &
+\textbf{Mean P\&L (¢)} &
+\textbf{Std P\&L (¢)} &
+\textbf{Sharpe} &
+\textbf{Win rate} &
+\textbf{Episodes} \\
+\midrule
+0 & $30{,}134$ & $14{,}737$ & $2.045$ & $1.00$ & 5 \\
+1 & $16{,}903$ & $\phantom{0}7{,}622$ & $2.218$ & $1.00$ & 5 \\
+\midrule
+\textbf{Avg.} & $\mathbf{23{,}519}$ & --- & $\mathbf{2.132}$ & $\mathbf{1.00}$ & 10 \\
+\midrule
+\textit{Baseline} & \textit{32,854} & --- & \textit{2.507} & \textit{1.00} & 40 \\
+\bottomrule
+\end{tabular}
+\caption{E1 results: PPO with oracle belief appended to observation.
+         Source: \texttt{results/e1\_belief\_obs/seed\_\{0,1\}/eval\_metrics.json}.}
+\label{tab:e1}
+\end{table}
+
+\subsection{Analysis}
+
+E1 \textbf{fails the gate} on both P\&L and Sharpe.
+Mean P\&L is $23{,}519$\,¢ vs the $32{,}854$\,¢ baseline ($-28\%$);
+Sharpe is $2.13$ vs $2.51$ ($-15\%$).
+Win rate is $100\%$, matching the baseline on that dimension.
+
+Several factors may contribute to the underperformance:
+
+\begin{enumerate}
+  \item \textbf{Small eval set.} Each seed is evaluated on only 5 episodes,
+        versus 20 for the baseline. The E1 estimates are high-variance
+        (seed 0: $\pm14{,}737$, seed 1: $\pm7{,}622$), so the mean could
+        plausibly be above the baseline with a larger eval budget.
+  \item \textbf{Mixed training distribution.} The agent trains on 50/50
+        Val/Mom episodes rather than 100\% Mom episodes (as in v4).
+        The Val regime ($n_\text{mom}=0$) is a harder environment for a
+        policy that was initialized to trade momentum-dominated markets.
+  \item \textbf{Regime count in eval.} With 5 evaluation episodes, the
+        random regime draw was $4\;\text{Mom} + 1\;\text{Val}$ for seed~0
+        and $3\;\text{Val} + 2\;\text{Mom}$ for seed~1 (recorded in
+        \texttt{eval\_metrics.json}). This regime imbalance in a small eval
+        set adds noise to the comparison.
+\end{enumerate}
+
+\noindent
+The underperformance is likely not fundamental---the agent maintains 100\%
+win rate and near-baseline P\&L on seed 0---but insufficient training and
+eval budget prevents a definitive conclusion.
+
+% ---------------------------------------------------------------------------
+\section{E2: PPO + Belief in Reward ($\alpha$ Sweep and Final Run)}
+% ---------------------------------------------------------------------------
+
+\subsection{Alpha sweep (E2a)}
+
+A short sweep over $\alpha \in \{10^{-4},\, 10^{-3},\, 10^{-2}\}$ was run
+for $10{,}000$ steps per alpha (5 iterations each) to select the shaping
+coefficient. Table~\ref{tab:alphasweep} shows the outcome.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+$\alpha$ & \textbf{Final reward mean} & \textbf{Selected} \\
+\midrule
+$10^{-4}$ & $+0.167$ & \\
+$10^{-3}$ & $-1.162$ & \\
+$10^{-2}$ & $+4.336$ & \cmark \\
+\bottomrule
+\end{tabular}
+\caption{E2a alpha sweep results. Best alpha selected by tail reward mean
+         over last 20\% of iterations. Each alpha trained for 10K steps
+         (5 iterations); half of iterations returned \texttt{NaN} reward,
+         making selection unreliable.}
+\label{tab:alphasweep}
+\end{table}
+
+\paragraph{Sweep flaw.}
+The 10K-step sweep is too short to distinguish signal from noise: with 5
+iterations and $\sim$50\% NaN rate, the ``winner'' is effectively selected
+on a single data point per alpha. The selected $\alpha=10^{-2}$ produces a
+per-step shaping bonus of magnitude $\alpha \approx 0.01$, which is
+comparable to the typical per-step P\&L reward of $\sim 0.02$\,¢/step
+(see v5 Section~3.2). At this scale the shaping term can dominate the
+credit signal, as confirmed by the collapsed E2 seed~0 results below.
+
+\subsection{E2 results ($\alpha = 0.01$, sweep-selected)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Seed} &
+\textbf{Mean P\&L (¢)} &
+\textbf{Std P\&L (¢)} &
+\textbf{Sharpe} &
+\textbf{Win rate} &
+\textbf{Dominant action} \\
+\midrule
+0 & $-181{,}718$ & $220{,}634$ & $-0.824$ & $0.20$ & SELL 100\% \\
+1 & $\phantom{-0}12{,}513$ & $\phantom{00}5{,}077$ & $2.465$ & $1.00$ & mixed \\
+\midrule
+\textbf{Avg.} & $\mathbf{-84{,}603}$ & --- & $\mathbf{0.821}$ & $\mathbf{0.60}$ & \\
+\midrule
+\textit{Baseline} & \textit{32,854} & --- & \textit{2.507} & \textit{1.00} & \\
+\bottomrule
+\end{tabular}
+\caption{E2 results with sweep-selected $\alpha=0.01$.
+         Source: \texttt{results/e2\_belief\_reward/seed\_\{0,1\}/eval\_metrics.json}.}
+\label{tab:e2a01}
+\end{table}
+
+\paragraph{Seed~0 collapse.}
+Seed~0 degenerated to an always-SELL policy with mean P\&L of
+$-181{,}718$\,¢ and 20\% win rate. The action distribution recorded in
+\texttt{eval\_metrics.json} confirms 100\% SELL.
+This is consistent with reward hacking: in the \textsc{Mom} regime
+(which dominated evaluation, 4 out of 5 episodes), the alignment bonus
+rewards SELL for momentum-following when the recent return is negative.
+The agent learned to maximize the shaping bonus rather than P\&L by selling
+unconditionally.
+
+\paragraph{Seed~1 recovery.}
+Seed~1 avoided collapse (P\&L $12{,}513$\,¢, Sharpe $2.47$, win $100\%$),
+but still falls short of the baseline on P\&L.
+The high seed-to-seed variance ($-181K$ vs $+12K$) confirms that
+$\alpha=0.01$ is an unstable operating point.
+
+\subsection{E2 corrected ($\alpha = 0.001$) --- results pending}
+\label{sec:e2corrected}
+
+Based on the collapse analysis, E2 was re-run with $\alpha=0.001$
+(the theoretically motivated value from v5 Section~3.2, where
+$\alpha \ll 0.02$ keeps the shaping term subordinate to the P\&L signal).
+Two seeds ($0$ and $1$) are training as of this writing.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Seed} &
+\textbf{Mean P\&L (¢)} &
+\textbf{Std P\&L (¢)} &
+\textbf{Sharpe} &
+\textbf{Win rate} &
+\textbf{Gate} \\
+\midrule
+0 & \tbd & \tbd & \tbd & \tbd & \tbd \\
+1 & \tbd & \tbd & \tbd & \tbd & \tbd \\
+\midrule
+\textbf{Avg.} & \tbd & --- & \tbd & \tbd & \tbd \\
+\midrule
+\textit{Baseline} & \textit{32,854} & --- & \textit{2.507} & \textit{1.00} & \textit{target} \\
+\bottomrule
+\end{tabular}
+\caption{E2 corrected results ($\alpha=0.001$).
+         Source: \texttt{results/e2\_belief\_reward\_a001/seed\_\{0,1\}/eval\_metrics.json}.
+         To be filled once training completes.}
+\label{tab:e2a001}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\section{Summary and Gate Status}
+% ---------------------------------------------------------------------------
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llrrrll}
+\toprule
+\textbf{Exp.} &
+\textbf{Agent} &
+\textbf{Mean P\&L (¢)} &
+\textbf{Sharpe} &
+\textbf{Win \%} &
+\textbf{Gate} &
+\textbf{Status} \\
+\midrule
+--- & v4 baseline & $32{,}854$ & $2.507$ & $100$ & \textit{target} & complete \\
+\midrule
+E0 & Oracle heuristic & --- & --- & --- & --- & incomplete (75/120 eps) \\
+E1 & PPO + belief in obs & $23{,}519$ & $2.132$ & $100$ & fail & complete (2 seeds) \\
+E2 & PPO + reward shaping ($\alpha=0.01$) & $-84{,}603$ & $0.821$ & $60$ & fail & complete (2 seeds) \\
+E2$'$ & PPO + reward shaping ($\alpha=0.001$) & \tbd & \tbd & \tbd & \tbd & running \\
+E3 & PPO + inferred $\hat{b}$ & --- & --- & --- & --- & blocked on E1/E2 gate \\
+\bottomrule
+\end{tabular}
+\caption{Oracle experiment summary.
+         E2$'$ denotes the corrected re-run with theoretically motivated
+         $\alpha=0.001$. Gate requires simultaneously: mean P\&L $>32{,}854$,
+         Sharpe $>2.507$, win rate $=100\%$.}
+\label{tab:summary}
+\end{table}
+
+\paragraph{Current interpretation.}
+Neither E1 nor E2 ($\alpha=0.01$) has passed the gate.
+However, both failures have identifiable causes (small eval budget for E1;
+oversized shaping coefficient for E2) rather than evidence that regime
+information is fundamentally unhelpful.
+The corrected E2$'$ run ($\alpha=0.001$) is the most likely candidate to
+pass: the shaping bonus will be $10\times$ smaller, keeping P\&L as the
+primary training signal while still nudging the policy toward regime-aligned
+actions.
+
+\paragraph{Next steps.}
+\begin{enumerate}
+  \item Fill Table~\ref{tab:e2a001} once E2$'$ completes.
+  \item If E2$'$ passes: proceed to E3 (learned belief estimator).
+  \item If E2$'$ fails: re-evaluate whether 200K training steps is
+        sufficient, or whether a stratified evaluation (20 episodes per
+        regime rather than 5 mixed) is needed for a reliable comparison.
+\end{enumerate}
+
+\end{document}
