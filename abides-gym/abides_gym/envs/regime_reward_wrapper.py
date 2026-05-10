@@ -23,6 +23,8 @@ Usage (E2 training):
   env  = RegimeRewardWrapper(base, alpha=0.001)
 """
 
+from typing import Any, Dict
+
 import numpy as np
 import gymnasium
 
@@ -62,3 +64,32 @@ class RegimeRewardWrapper(gymnasium.Wrapper):
             ret = float(obs[_RETURN_IDX])
             preferred = 0 if ret > 0.0 else 2
             return 1.0 if action == preferred else 0.0
+
+
+class RegimeRewardEnv(gymnasium.Env):
+    """
+    RLlib-compatible factory: constructs RegimeRewardWrapper(RegimeAdapter(env_config)).
+
+    Reads `reward_alpha` from env_config (default 0.001) and pops it before passing
+    the remainder to RegimeAdapter.  All other env_config keys are forwarded unchanged.
+
+    Use this class as the env for PPO training; use RegimeAdapter directly for eval.
+    """
+
+    def __init__(self, env_config: Dict[str, Any]):
+        from abides_gym.envs.regime_adapter import RegimeAdapter
+
+        cfg = dict(env_config)
+        alpha = float(cfg.pop("reward_alpha", 0.001))
+        self._env = RegimeRewardWrapper(RegimeAdapter(cfg), alpha=alpha)
+        self.observation_space = self._env.observation_space
+        self.action_space = self._env.action_space
+
+    def reset(self, **kwargs):
+        return self._env.reset(**kwargs)
+
+    def step(self, action):
+        return self._env.step(action)
+
+    def close(self):
+        return self._env.close()
