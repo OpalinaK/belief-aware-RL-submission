@@ -107,7 +107,7 @@ def _extract_reward_mean(result: Dict[str, Any]) -> float:
 
 def train_alpha(alpha: float, args, seed: int = 0) -> Dict[str, Any]:
     """Run a short PPO training for one alpha. Returns per-iteration reward history."""
-    _ts_log(f"  alpha={alpha:.1e}  seed={seed}  timesteps={args.timesteps}")
+    _ts_log(f"  alpha={alpha:.1e}  seed={seed}  timesteps={args.timesteps}  workers={args.num_workers}")
 
     train_env_config = dict(ENV_DEFAULTS)
     train_env_config["debug_mode"] = False
@@ -121,8 +121,8 @@ def train_alpha(alpha: float, args, seed: int = 0) -> Dict[str, Any]:
         PPOConfig()
         .environment(env=RegimeRewardEnv, env_config=train_env_config, disable_env_checking=True)
         .framework("torch")
-        .resources(num_gpus=0.0)
-        .env_runners(num_env_runners=0, observation_filter="MeanStdFilter")
+        .resources(num_gpus=args.num_gpus)
+        .env_runners(num_env_runners=args.num_workers, observation_filter="MeanStdFilter")
         .training(
             gamma=1.0,
             lr=1e-4,
@@ -175,10 +175,12 @@ def train_alpha(alpha: float, args, seed: int = 0) -> Dict[str, Any]:
 
 def parse_args():
     parser = argparse.ArgumentParser(description="E2a: alpha sweep for reward shaping")
-    parser.add_argument("--alphas",    nargs="+", type=float, default=[1e-4, 1e-3, 1e-2])
-    parser.add_argument("--timesteps", type=int,  default=50_000)
-    parser.add_argument("--seed",      type=int,  default=0)
-    parser.add_argument("--out-dir",   type=str,  default="results/e2_alpha_sweep")
+    parser.add_argument("--alphas",      nargs="+", type=float, default=[1e-4, 1e-3, 1e-2])
+    parser.add_argument("--timesteps",   type=int,  default=50_000)
+    parser.add_argument("--seed",        type=int,  default=0)
+    parser.add_argument("--out-dir",     type=str,  default="results/e2_alpha_sweep")
+    parser.add_argument("--num-workers", type=int,  default=0)
+    parser.add_argument("--num-gpus",    type=float, default=0.0)
     return parser.parse_args()
 
 
