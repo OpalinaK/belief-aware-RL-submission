@@ -1,0 +1,16 @@
+[
+  {
+    "seed": 100,
+    "total_reward": -1.5317948717948717,
+    "final_m2m": 994026.0,
+    "final_pnl": -5974.0,
+    "episode_length": 386,
+    "won": false,
+    "max_drawdown": 0.006053939460605394,
+    "action_counts": {
+      "BUY": 123,
+      "HOLD": 140,
+      "SELL": 123
+    }
+  }
+]

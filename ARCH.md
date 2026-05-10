@@ -23,6 +23,13 @@ abides-gym
   AbidesGymMarketsEnv      — adds financial agent (FinancialGymAgent) and market data buffer
   SubGymMarketsDailyInvestorEnv_v0 — concrete env: action=BUY/HOLD/SELL, obs=7-vector
   FinancialGymAgent        — injected ABIDES agent that bridges simulation → gym step loop
+
+planned PPO baseline
+  train_ppo_daily_investor.py — RLlib PPO trainer/evaluator for daily_investor
+  ResetMarkedToMarketWrapper — resets previous_marked_to_market after every env.reset()
+  GymnasiumDailyInvestorAdapter — gym->gymnasium API bridge + obs flattening
+  eval loop                  — RLModule-based deterministic held-out rollouts, writes JSON metrics
+  speed profile path         — timed smoke runs and throughput fields in timing.json
 ```
 
 ## Data Flow
@@ -42,6 +49,20 @@ env.step(action)
   └─ raw_state_to_reward()  → scalar reward
   └─ raw_state_to_done()    → bool
   └─ raw_state_to_info()    → dict (debug_mode=True for M2M, spread, etc.)
+```
+
+## Planned PPO Training Flow
+
+```
+train_ppo_daily_investor.py
+  └─ creates GymnasiumDailyInvestorAdapter
+      └─ gym.make("markets-daily_investor-v0", rmsc04 defaults)
+      └─ wraps env with ResetMarkedToMarketWrapper
+      └─ flattens obs (7,1)->(7,) and sanitizes info keys
+  └─ trains PPO on standard observation only
+  └─ saves checkpoints + train_metrics.json + timing.json
+  └─ evaluates checkpoint with RLModule inference on held-out seeds
+  └─ writes eval_episodes.json + eval_metrics.json
 ```
 
 ## Observation Vector (daily_investor-v0, state_history_length=4)
@@ -68,3 +89,6 @@ Sparse: `(M2M_final - starting_cash) / order_fixed_size / num_steps_per_episode`
 - **Two MM agents:** rmsc04 uses 2 AdaptiveMarketMakerAgents with identical params for thicker book
 - **No POVExecutionAgent:** rmsc04 (unlike rmsc03) has no large directional buyer; market is symmetric
 - **BUG 1:** `previous_marked_to_market` survives across resets — callers must reset it manually
+- **Baseline PPO first:** v1 trains a belief-blind PPO policy before oracle or learned-belief variants
+- **Sweep separation:** targeted fast sweep results are used for regime selection and should not be duplicated by PPO training
+- **Speed plan:** optimize env-side throughput first (debug/info path, worker reliability, profiling), then scale timesteps

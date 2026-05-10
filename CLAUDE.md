@@ -25,6 +25,11 @@ uv pip install --python .venv/bin/python -e abides-core -e abides-markets -e abi
 
 Do NOT install `ray[rllib]` unless you need RLlib training — the gym env works without it.
 
+For the baseline PPO plan (`plan-v1.md`), RLlib is required but is not currently installed in the
+project `.venv`. Do not reinstall from the root `requirements.txt` wholesale: that file is historical
+and still pins old Gym/Numpy/Ray/Pomegranate versions that conflict with the current working setup.
+Install Ray/RLlib explicitly after choosing a compatible version for Python 3.10 + Gym 0.25.2.
+
 ## Running Scripts
 
 Always prefix with `.venv/bin/python`. The venv is at `./belief-aware-RL-project/.venv`.
@@ -35,6 +40,9 @@ Always prefix with `.venv/bin/python`. The venv is at `./belief-aware-RL-project
 
 # Parameter sweep (the sweep plan)
 .venv/bin/python abides-gym/scripts/sweep.py
+
+# Baseline PPO training (planned entry point)
+.venv/bin/python abides-gym/scripts/train_ppo_daily_investor.py --help
 
 # Quick smoke test
 .venv/bin/python -c "import gym, abides_gym; env = gym.make('markets-daily_investor-v0', background_config='rmsc04'); env.seed(1); env.reset(); env.close(); print('ok')"
@@ -77,3 +85,15 @@ Key params for the sweep:
 - `mm_wake_up_freq` must be a string like `"60S"` — rmsc04 calls `str_to_ns()` internally
 - `window_size` accepts int or `"adaptive"` string
 - No ray import at top level (guard with try/except — see `abides_gym/__init__.py`)
+- PPO/RLlib training must use a reset-safe env wrapper because RLlib calls `env.reset()` internally
+
+## Speed Optimization Notes (speedip.md)
+
+- Baseline throughput should be measured with the same smoke command and compared using
+  `timing.json` (`env_steps_per_sec`, `wall_time_sec`, `eval_wall_time_sec`).
+- Keep training speed and evaluation fidelity separate:
+  - training path can use minimal info/debug settings
+  - eval path keeps required metrics (`marked_to_market`, action distribution, drawdown)
+- For Ray 2.55+, avoid deprecated policy inference calls in eval (`compute_single_action`);
+  use RLModule inference path.
+- Do not run duplicate sweeps while optimizing PPO throughput.

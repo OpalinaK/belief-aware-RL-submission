@@ -1,0 +1,20 @@
+{
+  "timesteps": 200,
+  "timestep_duration": "60s",
+  "wall_time_sec": 20.73144817352295,
+  "env_steps_per_sec": 9.6471794119732,
+  "train_iterations": 1,
+  "train_iterations_per_hour": 173.6492294155176,
+  "eval_wall_time_sec": 34.29366064071655,
+  "phases": {
+    "train_setup_sec": 25.705907821655273,
+    "train_loop_sec": 20.73144817352295,
+    "eval_sec": 34.29366064071655,
+    "env_probe": {
+      "n_steps": 5.0,
+      "reset_sec": 1.0204923152923584,
+      "total_step_sec": 0.3354201316833496,
+      "mean_step_sec": 0.06708402633666992
+    }
+  }
+}

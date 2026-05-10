@@ -1,0 +1,9 @@
+{
+  "timesteps": 200,
+  "timestep_duration": "60s",
+  "wall_time_sec": 21.235347509384155,
+  "env_steps_per_sec": 9.418258868220432,
+  "train_iterations": 1,
+  "train_iterations_per_hour": 169.5286596279678,
+  "eval_wall_time_sec": 33.38235402107239
+}

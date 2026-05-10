@@ -1,0 +1,18 @@
+{
+  "summary": {
+    "timesteps_total": 200,
+    "train_iterations": 1,
+    "wall_time_sec": 75.847252368927,
+    "env_steps_per_sec": 2.636878644293985,
+    "train_iterations_per_hour": 47.463815597291735
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "timesteps_total": 200,
+      "episode_reward_mean": -11.619230769230768,
+      "training_iteration": 1,
+      "iter_wall_time_sec": 75.70230388641357
+    }
+  ]
+}

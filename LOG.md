@@ -45,3 +45,29 @@
 - `numpy<2.0` required — gym 0.25.2 uses `np.bool8` which was removed in numpy 2.0.
 - All warnings in the test output are gym 0.25 deprecation notices, not errors.
 - To run the full sweep: `.venv/bin/python3 abides-gym/scripts/sweep.py --fast` (~2–3h with 10 eps/cell). For a single param: `--params mm_wake_up_freq --episodes 5`.
+
+## [2026-05-09] PPO training throughput (`speedip.md`)
+
+### Features Implemented
+- Separate train/eval `debug_mode` CLI flags; default train debug off
+- Adapter `train-info-mode` / `eval-info-mode` (`minimal` vs `full`)
+- Worker-safe env construction via `SubGymMarketsDailyInvestorEnv_v0(**kwargs)` instead of `gym.make` in Ray workers
+- `--profile-phases` with `timing.json` phase breakdown and local `env_probe` reset/step timings
+- Checkpoint cadence: default `--checkpoint-freq` 50; `0` = no mid-training saves (final checkpoint only); `config.json` records `checkpoint_freq` and `eval_after_train_only: true`
+
+### Files Changed
+| File | What changed |
+|------|-------------|
+| `abides-gym/scripts/train_ppo_daily_investor.py` | Speed and profiling flags; direct env ctor; checkpoint logic |
+| `TODO.md` | Speed plan chunks 1–5 marked complete |
+| `LOG.md` | This entry |
+
+### Functions Written
+| Function | File | Description |
+|----------|------|-------------|
+| `_env_reset_step_probe` | `train_ppo_daily_investor.py` | Times one adapter reset plus N HOLD steps when profiling |
+
+### Notes
+- Eval remains once after training only (no in-training eval loop in this script).
+- Smoke benchmarks: `--checkpoint-freq 1` vs `0` showed a small train-loop wall-time gain (~1.7%) on 200-step smoke; larger runs gain more from fewer saves.
+- For apples-to-apples throughput vs older docs, pass `--checkpoint-freq 1` explicitly.

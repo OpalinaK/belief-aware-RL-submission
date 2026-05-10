@@ -1,0 +1,114 @@
+{
+  "timesteps_target": 200,
+  "seed": 0,
+  "eval_seeds": [
+    100
+  ],
+  "env_id": "markets-daily_investor-v0",
+  "env_config": {
+    "train": {
+      "background_config": "rmsc04",
+      "mkt_close": "16:00:00",
+      "timestep_duration": "60s",
+      "starting_cash": 1000000,
+      "order_fixed_size": 10,
+      "state_history_length": 4,
+      "market_data_buffer_length": 5,
+      "first_interval": "00:05:00",
+      "reward_mode": "dense",
+      "done_ratio": 0.3,
+      "debug_mode": false,
+      "adapter_info_mode": "minimal",
+      "background_config_extra_kvargs": {
+        "starting_cash": 10000000,
+        "num_noise_agents": 1000,
+        "num_value_agents": 102,
+        "r_bar": 100000,
+        "kappa": 1.67e-15,
+        "lambda_a": 5.7e-12,
+        "kappa_oracle": 1.67e-16,
+        "sigma_s": 0,
+        "fund_vol": 5e-05,
+        "megashock_lambda_a": 2.77778e-18,
+        "megashock_mean": 1000,
+        "megashock_var": 50000,
+        "mm_window_size": "adaptive",
+        "mm_pov": 0.025,
+        "mm_num_ticks": 10,
+        "mm_wake_up_freq": "60S",
+        "mm_min_order_size": 1,
+        "mm_skew_beta": 0,
+        "mm_price_skew": 4,
+        "mm_level_spacing": 5,
+        "mm_spread_alpha": 0.75,
+        "mm_backstop_quantity": 0,
+        "mm_cancel_limit_delay": 50,
+        "num_momentum_agents": 12
+      }
+    },
+    "eval": {
+      "background_config": "rmsc04",
+      "mkt_close": "16:00:00",
+      "timestep_duration": "60s",
+      "starting_cash": 1000000,
+      "order_fixed_size": 10,
+      "state_history_length": 4,
+      "market_data_buffer_length": 5,
+      "first_interval": "00:05:00",
+      "reward_mode": "dense",
+      "done_ratio": 0.3,
+      "debug_mode": true,
+      "adapter_info_mode": "full",
+      "background_config_extra_kvargs": {
+        "starting_cash": 10000000,
+        "num_noise_agents": 1000,
+        "num_value_agents": 102,
+        "r_bar": 100000,
+        "kappa": 1.67e-15,
+        "lambda_a": 5.7e-12,
+        "kappa_oracle": 1.67e-16,
+        "sigma_s": 0,
+        "fund_vol": 5e-05,
+        "megashock_lambda_a": 2.77778e-18,
+        "megashock_mean": 1000,
+        "megashock_var": 50000,
+        "mm_window_size": "adaptive",
+        "mm_pov": 0.025,
+        "mm_num_ticks": 10,
+        "mm_wake_up_freq": "60S",
+        "mm_min_order_size": 1,
+        "mm_skew_beta": 0,
+        "mm_price_skew": 4,
+        "mm_level_spacing": 5,
+        "mm_spread_alpha": 0.75,
+        "mm_backstop_quantity": 0,
+        "mm_cancel_limit_delay": 50,
+        "num_momentum_agents": 12
+      }
+    }
+  },
+  "ppo": {
+    "gamma": 1.0,
+    "lr": 0.0001,
+    "train_batch_size": 200,
+    "minibatch_size": 64,
+    "num_epochs": 1,
+    "entropy_coeff": 0.01,
+    "framework": "torch",
+    "num_gpus": 0.0,
+    "num_env_runners": 32,
+    "env_runners": {
+      "observation_filter": "MeanStdFilter"
+    },
+    "model_config": {
+      "fcnet_hiddens": [
+        64,
+        64
+      ],
+      "fcnet_activation": "tanh"
+    }
+  },
+  "profile_phases": false,
+  "checkpoint_freq": 0,
+  "eval_after_train_only": true
+}
