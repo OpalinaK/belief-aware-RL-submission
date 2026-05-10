@@ -1,0 +1,75 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Motivation}{2}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Existing Data Supporting the Oracle Design}{2}{section.2}\protected@file@percent }
+\newlabel{sec:existing}{{2}{2}{Existing Data Supporting the Oracle Design}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}v4 PPO baseline (comparison target)}{2}{subsection.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces v4 belief-blind PPO baseline. Source: \texttt  {results/ppo\_baseline/seed\_\{0,1\}/eval\_metrics.json}. A third seed aborted during training; two-seed averages are used throughout.}}{2}{table.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:v4baseline}{{1}{2}{v4 belief-blind PPO baseline. Source: \texttt {results/ppo\_baseline/seed\_\{0,1\}/eval\_metrics.json}. A third seed aborted during training; two-seed averages are used throughout}{table.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Regime separation: targeted heuristic sweep}{2}{subsection.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Heuristic strategy performance by momentum-agent count. All P\&L values in cents; 300\,s timestep, 10 episodes per cell. Timed-out episodes omitted for $n_\text  {mom}=50$. Source: \texttt  {targeted\_sweep.json}.}}{3}{table.caption.3}\protected@file@percent }
+\newlabel{tab:sweepregime}{{2}{3}{Heuristic strategy performance by momentum-agent count. All P\&L values in cents; 300\,s timestep, 10 episodes per cell. Timed-out episodes omitted for $n_\text {mom}=50$. Source: \texttt {targeted\_sweep.json}}{table.caption.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Key observations.}{3}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}E0 oracle heuristic estimate (sweep protocol)}{3}{subsection.2.3}\protected@file@percent }
+\newlabel{sec:e0estimate}{{2.3}{3}{E0 oracle heuristic estimate (sweep protocol)}{subsection.2.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Oracle heuristic estimate vs.\ v4 PPO baseline. \textbf  {Warning:} heuristic rows use the 300\,s / 78-step sweep protocol; the v4 baseline uses the 60\,s / 386-step training protocol. Rows are \emph  {not} directly comparable --- see Section~\ref {sec:protocolgap}.}}{3}{table.caption.5}\protected@file@percent }
+\newlabel{tab:e0estimate}{{3}{3}{Oracle heuristic estimate vs.\ v4 PPO baseline. \textbf {Warning:} heuristic rows use the 300\,s / 78-step sweep protocol; the v4 baseline uses the 60\,s / 386-step training protocol. Rows are \emph {not} directly comparable --- see Section~\ref {sec:protocolgap}}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.1}Evaluation-protocol gap}{3}{subsubsection.2.3.1}\protected@file@percent }
+\newlabel{sec:protocolgap}{{2.3.1}{3}{Evaluation-protocol gap}{subsubsection.2.3.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Protocol differences between the targeted sweep and v4 PPO training.}}{4}{table.caption.6}\protected@file@percent }
+\newlabel{tab:protocolgap}{{4}{4}{Protocol differences between the targeted sweep and v4 PPO training}{table.caption.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{What the sweep does confirm.}{4}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Research Question}{4}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Oracle Regime Configurations}{4}{section.4}\protected@file@percent }
+\newlabel{sec:regimes}{{4}{4}{Oracle Regime Configurations}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Regime selection rationale}{4}{subsection.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Two oracle regime configurations. All other background parameters remain at the \texttt  {rmsc04} AAPL calibration defaults.}}{5}{table.caption.8}\protected@file@percent }
+\newlabel{tab:regimes}{{5}{5}{Two oracle regime configurations. All other background parameters remain at the \texttt {rmsc04} AAPL calibration defaults}{table.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Oracle belief tuple}{5}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Two Oracle Variants}{5}{section.5}\protected@file@percent }
+\newlabel{sec:variants}{{5}{5}{Two Oracle Variants}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Variant 1: belief in observation}{5}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Setup.}{5}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What this tests.}{5}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Expected outcome.}{5}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Variant 2: belief in reward}{6}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Setup.}{6}{section*.12}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Regime-alignment bonus. The alignment encoding assumes: in \textsc  {Val} episodes the agent should fade moves (sell on recent buys, buy on recent sells); in \textsc  {Mom} episodes it should follow pressure (buy on upward imbalance). Note: the table gives a simplified per-action version; a more accurate alignment could condition on the observation as well.}}{6}{table.caption.13}\protected@file@percent }
+\newlabel{tab:alignment}{{6}{6}{Regime-alignment bonus. The alignment encoding assumes: in \textsc {Val} episodes the agent should fade moves (sell on recent buys, buy on recent sells); in \textsc {Mom} episodes it should follow pressure (buy on upward imbalance). Note: the table gives a simplified per-action version; a more accurate alignment could condition on the observation as well}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {paragraph}{Calibrating $\alpha $.}{6}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What this tests.}{6}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation.}{6}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Experimental Protocol}{6}{section.6}\protected@file@percent }
+\newlabel{sec:protocol}{{6}{6}{Experimental Protocol}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Training}{6}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Evaluation}{7}{subsection.6.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Comparison conditions. All other hyperparameters are identical.}}{7}{table.caption.17}\protected@file@percent }
+\newlabel{tab:conditions}{{7}{7}{Comparison conditions. All other hyperparameters are identical}{table.caption.17}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Pass/fail gate}{7}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Testing Strategy}{7}{section.7}\protected@file@percent }
+\newlabel{sec:testing}{{7}{7}{Testing Strategy}{section.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Decision tree for the oracle experiment. Passing at least one variant unlocks the belief-estimator stage.}}{7}{figure.caption.18}\protected@file@percent }
+\newlabel{fig:decision}{{1}{7}{Decision tree for the oracle experiment. Passing at least one variant unlocks the belief-estimator stage}{figure.caption.18}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Do we need to test it?}{7}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Step-by-step test plan}{8}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Oracle Experiment Results}{8}{section.8}\protected@file@percent }
+\newlabel{sec:results}{{8}{8}{Oracle Experiment Results}{section.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Oracle experiment results summary. Mean P\&L and Std in cents; Sharpe and Win\,\% are episode-level. Gate column: \text  {$\mathsurround \z@ \mathchar "458$}{} if experiment passes the pass/fail criteria in Section~\ref {sec:protocol}. ``v4 PPO baseline'' row uses the two-seed average from Table~\ref {tab:v4baseline}.}}{8}{table.caption.19}\protected@file@percent }
+\newlabel{tab:results_summary}{{8}{8}{Oracle experiment results summary. Mean P\&L and Std in cents; Sharpe and Win\,\% are episode-level. Gate column: \checkmark {} if experiment passes the pass/fail criteria in Section~\ref {sec:protocol}. ``v4 PPO baseline'' row uses the two-seed average from Table~\ref {tab:v4baseline}}{table.caption.19}{}}
+\@writefile{toc}{\contentsline {paragraph}{Regime-stratified breakdown (to be filled).}{9}{section*.20}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Per-regime performance breakdown. The v4 PPO baseline was trained on the Mom regime only (default AAPL calibration); its Val-regime performance is unknown and should be measured as part of E0.}}{9}{table.caption.21}\protected@file@percent }
+\newlabel{tab:results_stratified}{{9}{9}{Per-regime performance breakdown. The v4 PPO baseline was trained on the Mom regime only (default AAPL calibration); its Val-regime performance is unknown and should be measured as part of E0}{table.caption.21}{}}
+\@writefile{toc}{\contentsline {paragraph}{Note on v4 baseline regime coverage.}{9}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}From Oracle to Inferred Belief}{9}{section.9}\protected@file@percent }
+\newlabel{sec:next}{{9}{9}{From Oracle to Inferred Belief}{section.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Inference-time architecture once the belief estimator replaces the oracle. $\Delta ^1$ denotes the 2-simplex (probability vector over two regimes). The estimator $f_\phi $ can be a small LSTM or sliding window MLP trained to predict the regime label from public history.}}{9}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:inferred}{{2}{9}{Inference-time architecture once the belief estimator replaces the oracle. $\Delta ^1$ denotes the 2-simplex (probability vector over two regimes). The estimator $f_\phi $ can be a small LSTM or sliding window MLP trained to predict the regime label from public history}{figure.caption.23}{}}
+\@writefile{toc}{\contentsline {paragraph}{Training the estimator.}{9}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation.}{9}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {10}Summary of Proposed Experiments}{10}{section.10}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Proposed experiment sequence. E0 is a fast sanity check; E1/E2 are the oracle variants; E3 is the full belief-aware RL agent.}}{10}{table.caption.26}\protected@file@percent }
+\newlabel{tab:experiments}{{10}{10}{Proposed experiment sequence. E0 is a fast sanity check; E1/E2 are the oracle variants; E3 is the full belief-aware RL agent}{table.caption.26}{}}
+\gdef \@abspage@last{10}
