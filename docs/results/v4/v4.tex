@@ -1,0 +1,166 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\geometry{margin=1in}
+
+\title{PPO Baseline on \texttt{markets-daily\_investor-v0}: Two-Seed Evaluation Report}
+\author{Belief-Aware RL Project}
+\date{May 2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope and motivation}
+
+This note records the \emph{belief-blind} proximal policy optimization (PPO) baseline on
+\texttt{markets-daily\_investor-v0}, trained with RLlib on the standard daily-investor observation
+vector only (no belief features). The purpose is to anchor later comparisons against a reproducible
+policy class $\pi_{\text{base}}(o_t)$, using the same reward definition (dense mark-to-market
+increment, scaled in the environment) as in the design document \texttt{v3.tex}.
+
+A third independent training seed was planned, but its run aborted during artifact I/O on the
+shared filesystem; we therefore restrict this report to the \textbf{two completed seeds} (train
+seeds $0$ and $1$). All conclusions are conditional on this two-sample slice of randomness.
+
+\section{Training and evaluation protocol}
+
+Each seed trains for $200{,}000$ environment timesteps with a $60$\,s trading-day timestep label,
+$16$ parallel environment runners, train batch size $2000$, five PPO epochs per batch, minibatch
+size $128$, learning rate $10^{-4}$, and entropy coefficient $0.01$. Checkpoints are written every
+$50$ iterations. After training, the final policy is evaluated on \textbf{twenty} held-out
+episodes drawn from evaluation seeds $100$--$119$ (inclusive), matching the plan-v1 harness.
+
+Metrics are exported by \texttt{train\_ppo\_daily\_investor.py} into per-seed directories under
+\texttt{results/ppo\_baseline/seed\_*}. Primary trading outcomes are episode-level final
+profit-and-loss in \emph{cent} units as reported in \texttt{eval\_metrics.json} (denoted below as
+final P\&L), together with Sharpe ratio, win rate, and mean maximum drawdown over episodes.
+
+\section{Results}
+
+\subsection{Aggregate view}
+
+Both seeds complete the full training budget and pass the held-out evaluation suite without
+degenerate failure modes. Mean final P\&L is strictly positive in each seed, with comparable
+dispersion across the twenty evaluation episodes. Win rate is $1.0$ in both cases under the
+exported definition (every evaluated episode records non-negative final P\&L in this run).
+
+Across the two seeds, mean final P\&L averages $32{,}853.4$ cents per episode, with seed $1$
+exceeding seed $0$ by about $4{,}651$ cents on average. Sharpe ratios are strong in both runs but
+\emph{not} identical: seed $0$ attains the higher risk-adjusted score, while seed $1$ attains the
+higher mean terminal P\&L, illustrating the usual mean--volatility tradeoff at small $n_{\text{seed}}$.
+
+\subsection{Per-seed metrics}
+
+Table~\ref{tab:two-seed} summarizes training wall time, evaluation wall time, and the main
+evaluation statistics for each completed seed.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrr}
+\toprule
+\textbf{Quantity} & \textbf{Seed $0$} & \textbf{Seed $1$} \\
+\midrule
+Train wall time (s) & $1597.8$ & $1554.4$ \\
+Eval wall time (s) & $654.2$ & $676.0$ \\
+Mean final P\&L (cents) & $30{,}528.1$ & $35{,}178.7$ \\
+Std.\ final P\&L (cents) & $11{,}352.9$ & $15{,}134.8$ \\
+Min / max final P\&L (cents) & $10{,}941$ / $56{,}394$ & $6{,}946$ / $59{,}655$ \\
+Mean episode total reward & $7.83$ & $9.02$ \\
+Sharpe (episode level) & $2.689$ & $2.324$ \\
+Win rate & $1.00$ & $1.00$ \\
+Mean max drawdown & $0.00298$ & $0.00341$ \\
+\bottomrule
+\end{tabular}
+\caption{Two-seed PPO baseline: training cost and held-out evaluation on twenty episodes per seed.}
+\label{tab:two-seed}
+\end{table}
+
+\subsection{Action mix}
+
+The learned policies allocate roughly half of decisions to aggressive sides (buy and sell) with
+the remainder in hold, but the \emph{hold} share differs materially between seeds: seed $0$ uses
+hold about $4.9\%$ of evaluated actions, whereas seed $1$ uses hold about $12.0\%$. Buy and sell
+masses remain near balance in both cases, which is consistent with a market-making style that
+leans on round-trip inventory risk rather than a persistent directional bet.
+
+\subsection{Interpretation}
+
+Taken together, the two seeds support a conservative headline: the PPO baseline under the stated
+hyperparameters reliably discovers policies that are profitable on the held-out evaluation slice
+and exhibit modest drawdowns relative to terminal P\&L. We do \emph{not} claim convergence to a
+unique policy: action statistics and Sharpe versus mean P\&L differ nontrivially between seeds.
+
+Because $n_{\text{seed}} = 2$, any aggregate (mean-of-seed-means) has large uncertainty; the third
+seed should be resumed once stable scratch space is available, and \texttt{summary.json} should be
+regenerated from three seeds for plan-v1 parity.
+
+\section{Supplement: targeted heuristic baseline sweep}
+
+This section summarizes a separate \emph{belief-free} diagnostic run: a one-at-a-time sweep of four
+\texttt{rmsc04} background knobs (\texttt{num\_value\_agents}, \texttt{num\_momentum\_agents},
+\texttt{kappa\_oracle}, \texttt{fund\_vol}), each at three values, crossed with four fixed heuristic
+trading policies (\textsc{Noise}, \textsc{Value}, \textsc{Momentum}, \textsc{MarketMaker}) implemented in
+\texttt{abides-gym/scripts/sweep.py}. Each $(\text{parameter}, \text{value}, \text{strategy})$ cell uses
+ten episodes (the script's \texttt{--fast} mode) with a $300$\,s simulator timestep label. All rows are
+aggregated in \texttt{targeted\_sweep.json} at the project root ($480$ rows total: $12$ cells $\times$
+four strategies $\times$ ten seeds).
+
+\paragraph{Robustness and timeouts.}
+Raw mean P\&L can be dominated by a handful of microstructure blow-ups (especially with many momentum
+followers). The discussion below therefore emphasizes \emph{medians} over the ten episode seeds within each
+cell, and excludes the eight episodes that hit a hard wall-clock cap (all eight occurred for
+\texttt{num\_momentum\_agents}${}=50$, under the episode-isolation guard added after an observed hang in
+exchange order-book imbalance computation). Those capped episodes are retained in the JSON with
+\texttt{timed\_out=true} and are omitted from the medians here.
+
+\paragraph{Regime sensitivity (\texttt{num\_momentum\_agents}).}
+Table~\ref{tab:sweep-mom} contrasts the three momentum-population settings while other background fields
+follow the sweep's per-cell overrides. Raising momentum participation from $0$ to $12$ leaves the
+\textsc{Value} / \textsc{Momentum} median split similar to the calibrated default ($12$ agents), whereas
+$50$ momentum agents produces sharply negative median outcomes for \textsc{Momentum} and
+\textsc{MarketMaker} and heavy left tails for \textsc{Noise} / \textsc{Value}---consistent with a crowded
+feedback-trading regime that is hostile to simple heuristics.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+\texttt{num\_momentum\_agents} &
+\multicolumn{2}{c}{\textsc{Value}} &
+\multicolumn{2}{c}{\textsc{Momentum}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+& median P\&L & win \% & median P\&L & win \% \\
+\midrule
+$0$   & $328$   & $50$ & $-1967$ & $30$ \\
+$12$  & $-2485$ & $30$ & $1690$  & $60$ \\
+$50$  & $-344{,}390$ & $50$ & $-1{,}561{,}646$ & $0$ \\
+\bottomrule
+\end{tabular}
+\caption{Median final P\&L (cents) and episode win rate within each \texttt{num\_momentum\_agents} cell,
+\textsc{Value} vs.\ \textsc{Momentum}, excluding timed-out episodes (typically $n=10$ episodes per
+strategy; $n=7$ for \textsc{Momentum} at fifty agents after removing three timed-out runs).}
+\label{tab:sweep-mom}
+\end{table}
+
+\paragraph{Oracle tightness (\texttt{kappa\_oracle}).}
+Across the three oracle-gain settings, median \textsc{Value} final P\&L stays mildly negative (roughly
+$-2.4$k to $-2.1$k cents), while \textsc{Momentum} medians range from about $-1.1$k to $+2.5$k cents. The
+middle setting $1.67\times 10^{-16}$ matches the default \texttt{rmsc04} calibration and overlaps the
+\texttt{num\_momentum\_agents}${}=12$ row in Table~\ref{tab:sweep-mom} because that sweep block reuses the
+same background template.
+
+\paragraph{Fundamental volatility (\texttt{fund\_vol}).}
+Median outcomes move with volatility: the highest tested \texttt{fund\_vol} ($5\times 10^{-4}$) raises
+\textsc{Momentum}'s median to about $+4.4\times 10^{4}$ cents (eight of ten seeds profitable) while pushing
+\textsc{Value} and \textsc{MarketMaker} medians further negative, suggesting that ``buy the drift'' heuristics
+benefit more than mean-reversion-style rules when shocks are large under this microstructure.
+
+\paragraph{Takeaway for the RL agenda.}
+The sweep is not a substitute for trained policies, but it quantifies \emph{where} the daily-investor MDP
+becomes harsh or unstable for fixed baselines---especially under many momentum agents---and motivates
+belief-aware modeling (Section~2 of \texttt{v3.tex}) as a way to condition on latent composition rather than
+assuming a single benign background.
+
+\end{document}
